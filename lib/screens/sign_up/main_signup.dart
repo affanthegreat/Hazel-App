@@ -34,10 +34,25 @@ class _SignUpState extends State<SignUp> {
     super.initState();
   }
 
-  onSignUpClick() {
-    if (emailController.text.isNotEmpty &&
+  onSignUpClick() async {
+   if (emailController.text.isNotEmpty &&
         EmailValidator.validate(emailController.text)) {
-      signUpBloc.add(SignUpEmailAddedEvent(emailController.text));
+      var user_exists = (await  UserEngine().checkUserExists({'user_email':emailController.text}));
+     if(!user_exists){
+       var snackBar = SnackBar(
+         backgroundColor: Colors.red,
+         content: Text(
+           'Looks like this email has been already registered with us.',
+           style: GoogleFonts.inter(
+             textStyle: Theme.of(context).textTheme.bodyMedium,
+             color: Colors.white,
+           ),
+         ),
+       );
+       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+     } else {
+       signUpBloc.add(SignUpEmailAddedEvent(emailController.text));
+     }
     } else {
       var snackBar = SnackBar(
         backgroundColor: Colors.red,
@@ -131,7 +146,7 @@ class _SignUpState extends State<SignUp> {
                                         text: "Sign-in from here.",
                                         recognizer: TapGestureRecognizer()
                                           ..onTap =
-                                              () => print('Tap Here onTap'),
+                                              () => Navigator.pushNamed(context, '/sign_in'),
                                         style: GoogleFonts.inter(
                                           height: 1,
                                           fontWeight: FontWeight.bold,
@@ -226,16 +241,33 @@ class _SignUpState extends State<SignUp> {
                   height: 50,
                   child: InkWell(
                     onTap: () async {
-                      if (usernameController.text.isNotEmpty &&
-                          await UserEngine.checkUserExists(
-                              {'user_name': userPassword1Controller.text})) {
-                        signUpBloc
-                            .add(SignUpUserNameEvent(usernameController.text));
+                      if (usernameController.text.isNotEmpty) {
+                        var status = await UserEngine().checkUserExists(
+                            {'user_name': usernameController.text});
+
+
+                        if(!status){
+                          var snackBar = SnackBar(
+                            backgroundColor: Colors.red,
+                            content: Text(
+                              'User name might have been already taken. Think something new.',
+                              style: GoogleFonts.inter(
+                                textStyle: Theme.of(context).textTheme.bodyMedium,
+                                color: Colors.white,
+                              ),
+                            ),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        }else{
+                          signUpBloc
+                              .add(SignUpUserNameEvent(usernameController.text));
+                        }
+
                       } else {
                         var snackBar = SnackBar(
                           backgroundColor: Colors.red,
                           content: Text(
-                            'User name might have been already taken. Think something new.',
+                            "Looks like you didn't choose your name. ",
                             style: GoogleFonts.inter(
                               textStyle: Theme.of(context).textTheme.bodyMedium,
                               color: Colors.white,
@@ -340,7 +372,7 @@ class _SignUpState extends State<SignUp> {
                   child: InkWell(
                     onTap: () async {
                       if (userPassword1Controller.text.isNotEmpty &&
-                          await UserEngine.validateStructure(
+                          await UserEngine().validateStructure(
                               userPassword1Controller.text)) {
                         signUpBloc.add(SignUpPasswordCheck1Event(
                             userPassword1Controller.text));
@@ -451,7 +483,7 @@ class _SignUpState extends State<SignUp> {
                     onTap: () {
                       if (userPassword1Controller.text ==
                           userPassword2Controller.text) {
-                        signUpBloc.add(SignUpDataCollectedEvent());
+                        signUpBloc.add(SignUpDataCollectedEvent(userPassword2Controller.text, emailController.text, usernameController.text));
                       } else {
                         var snackBar = SnackBar(
                           backgroundColor: Colors.red,
@@ -496,6 +528,8 @@ class _SignUpState extends State<SignUp> {
       bloc: signUpBloc,
       listener: (context, state) {},
       builder: (context, state) {
+        print("+++++++++");
+        print(state.runtimeType);
         return AnimatedSwitcher(
             duration: const Duration(milliseconds: 250),
             child: (state is SignUpStartSuccess)
@@ -515,13 +549,6 @@ class _SignUpState extends State<SignUp> {
                                       backgroundColor: isDarkTheme
                                           ? darkScaffoldColor
                                           : lightScaffoldColor,
-                                      leading: IconButton(
-                                        onPressed: () {
-                                          signUpBloc.add(SignUpUserNameEvent(
-                                              usernameController.text));
-                                        },
-                                        icon: const Icon(Icons.arrow_back),
-                                      ),
                                     ),
                                 body: Stack(
                                   children: [

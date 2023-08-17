@@ -19,7 +19,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
 
     FutureOr<void> signUpEmailAddedEvent(SignUpEmailAddedEvent event,
         Emitter<SignUpState> emit) async {
-      final bool user_status =await UserEngine.checkUserExists({'user_email':event.email});
+      final bool user_status =await UserEngine().checkUserExists({'user_email':event.email});
       if(user_status){
         emit(SignUpEmailAddedState());
       }else{
@@ -28,7 +28,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     }
     FutureOr<void> signUpUserNameEvent(SignUpUserNameEvent event,
         Emitter<SignUpState> emit) async {
-      final bool user_status = await UserEngine.checkUserExists(
+      final bool user_status = await UserEngine().checkUserExists(
           {'user_name': event.userName});
       if (user_status) {
         emit(SignUpUserNameAddedState());
@@ -37,15 +37,27 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
       }
     }
     FutureOr<void> signUpPasswordCheck1Event(SignUpPasswordCheck1Event event, Emitter<SignUpState> emit) {
-      if(UserEngine.validateStructure(event.password)){
+      if(UserEngine().validateStructure(event.password)){
         emit(SignUpUserPasswordState());
       } else{
         emit(SignUpPasswordErrorState());
       }
     }
 
-    FutureOr<void> signUpDataCollectedEvent(SignUpDataCollectedEvent event, Emitter<SignUpState> emit) {
-      emit(SignupAccountCreationLoading());
+    FutureOr<void> signUpDataCollectedEvent(SignUpDataCollectedEvent event, Emitter<SignUpState> emit) async{
+      var data = {
+        'user_email': event.email,
+        'user_password': event.password,
+        'user_name': event.userName
+      };
+      var creation_status = await UserEngine().createUser(data);
+      if(creation_status){
+        emit(SignupAccountCreationSuccessful());
+      } else{
+        emit(SignupAccountCreationError());
+      }
+
+
     }
 
     on<SignUpStartEvent>(signUpStartEvent);
