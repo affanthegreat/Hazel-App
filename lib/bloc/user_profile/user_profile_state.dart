@@ -12,3 +12,5 @@ class UserProfileSuccessfulLoading extends UserProfileState{
 }
 
 class UserProfileErrorLoading extends UserProfileState{}
+
+class UserProfileLoading extends UserProfileState{}

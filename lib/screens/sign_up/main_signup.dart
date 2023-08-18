@@ -30,7 +30,7 @@ class _SignUpState extends State<SignUp> {
   @override
   void initState() {
     // TODO: implement initState
-    signUpBloc.add(SignUpStartEvent());
+   signUpBloc.add(SignUpStartEvent());
     super.initState();
   }
 

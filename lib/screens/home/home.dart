@@ -5,6 +5,8 @@ import 'package:hazel_client/constants/colors.dart';
 import 'package:hazel_client/main.dart';
 import 'package:hazel_client/screens/home/home_main_screen.dart';
 import 'package:hazel_client/screens/home/user_profile.dart';
+import 'package:hazel_client/screens/leaderboards/leaderboard.dart';
+import 'package:hazel_client/screens/trending/trending.dart';
 import 'package:hazel_client/widgets/HazelCategoryHeading.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
@@ -28,8 +30,8 @@ class _HazelHomeState extends State<HazelHome> {
   List<Widget> _buildScreens() {
     return [
       HazelMainScreen(),
-      HazelMainScreen(),
-      HazelMainScreen(),
+      HazelTrending(),
+     HazelLeaderboard(),
       UserProfile(),
       Settings()
 
@@ -60,7 +62,7 @@ class _HazelHomeState extends State<HazelHome> {
       PersistentBottomNavBarItem(
         icon: Icon(Iconsax.profile_2user),
         title: ("Your account"),
-        activeColorPrimary: CupertinoColors.activeBlue,
+        activeColorPrimary: CupertinoColors.systemYellow,
         inactiveColorPrimary: CupertinoColors.systemGrey,
       ),
       PersistentBottomNavBarItem(
@@ -86,8 +88,6 @@ class _HazelHomeState extends State<HazelHome> {
       resizeToAvoidBottomInset: true, // This needs to be true if you want to move up the screen when keyboard appears. Default is true.
       stateManagement: true, // Default is true.
       hideNavigationBarWhenKeyboardShows: true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument. Default is true.
-      popAllScreensOnTapOfSelectedTab: true,
-      popActionScreens: PopActionScreensType.all,
       itemAnimationProperties:const  ItemAnimationProperties( // Navigation Bar's items animation properties.
         duration: Duration(milliseconds: 200),
         curve: Curves.ease,
@@ -97,7 +97,7 @@ class _HazelHomeState extends State<HazelHome> {
         curve: Curves.ease,
         duration: Duration(milliseconds: 200),
       ),
-      navBarStyle: NavBarStyle.style9, // Choose the nav bar style with this property.
+      navBarStyle: NavBarStyle.style12, // Choose the nav bar style with this property.
     );
   }
 

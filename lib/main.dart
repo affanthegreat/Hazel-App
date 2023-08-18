@@ -10,7 +10,7 @@ import 'package:hazel_client/screens/sign_up/sign_in.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-bool isDarkTheme = true;
+bool isDarkTheme = false;
 Map<String, String>? sessionData;
 void main()  async {
   await Hive.initFlutter();

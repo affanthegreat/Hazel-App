@@ -58,7 +58,7 @@ class UserEngine {
       if (result['message'] == "Login successful.") {
         await storage.write(key: 'auth_token', value: result['auth_token']);
         await storage.write(key: 'token', value: result['token']);
-
+        sessionData = await storage.readAll();
         return true;
       } else {
         return false;
@@ -68,10 +68,8 @@ class UserEngine {
     }
   }
 
-  Future<UserProfileModel?> fetchUserInfo() async {
-    var userProfileBox = await Hive.openBox('user_profile');
-    UserProfileModel? userData = userProfileBox.get('user_data');
-    if (userData == null) {
+  Future<UserProfileModel?> fetchUserInfo(bool refresh) async {
+
       try {
         var apiEndpoint = 'user_engine/get_user_info';
         var getCurrentUser = 'user_engine/current_user';
@@ -79,20 +77,20 @@ class UserEngine {
           'auth_token': sessionData!['auth_token'],
           'token': sessionData!['token']
         };
+        print(userTokens);
         final response = await dio.post(url + getCurrentUser, data: userTokens);
         final userName = json.decode(response.data)['user_name'];
+        print(userName);
         final userDetailsResponse =
         await dio.post(url + apiEndpoint, data: {'user_name': userName});
 
         final userProfileObj =
         UserProfileModel.fromJson(json.decode(userDetailsResponse.data));
-        userProfileBox.put('user_data', userProfileObj);
         print(userProfileObj.userEmail);
         return userProfileObj;
       } catch(e){
+        throw e;
         return null;
       }
     }
-    return userData;
-  }
 }

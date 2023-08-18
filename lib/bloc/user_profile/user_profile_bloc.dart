@@ -17,10 +17,14 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
   }
 
   FutureOr<void> userProfileSync(UserProfileOnBeginEvent event, Emitter<UserProfileState> emit) async{
-    UserProfileModel? userObj  = await UserEngine().fetchUserInfo();
-    if(userObj == null){
+    emit(UserProfileLoading());
+    UserProfileModel? userObj  = await UserEngine().fetchUserInfo(event.refresh);
+    print(userObj!.userExperiencePoints);
+    if(userObj == null || userObj.userEmail == null){
       emit(UserProfileErrorLoading());
+    }else{
+      emit(UserProfileSuccessfulLoading(userObj));
     }
-    emit(UserProfileSuccessfulLoading(userObj));
+
   }
 }

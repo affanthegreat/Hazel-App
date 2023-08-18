@@ -1,3 +1,5 @@
+import 'package:appinio_swiper/appinio_swiper.dart';
+import 'package:contained_tab_bar_view/contained_tab_bar_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,7 +29,7 @@ class _UserProfileState extends State<UserProfile> {
   @override
   void initState() {
     // TODO: implement initState
-    userProfileBloc.add(UserProfileOnBeginEvent());
+    userProfileBloc.add(UserProfileOnBeginEvent(true));
     super.initState();
   }
 
@@ -37,14 +39,15 @@ class _UserProfileState extends State<UserProfile> {
         appBar: AppBar(
           backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
           actions: [
-            IconButton(onPressed: (){}, icon: Icon(Iconsax.safe_home)),
-            IconButton(onPressed: (){}, icon: Icon(Iconsax.edit_2))
+            IconButton(onPressed: () {}, icon: Icon(Iconsax.safe_home)),
+            IconButton(onPressed: () {}, icon: Icon(Iconsax.edit_2))
           ],
         ),
         backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
         body: BlocConsumer<UserProfileBloc, UserProfileState>(
             bloc: userProfileBloc,
             listener: (context, state) {
+              print(state.runtimeType);
               if (state is UserProfileErrorLoading) {
                 var snackBar = SnackBar(
                   backgroundColor: Colors.red,
@@ -60,96 +63,175 @@ class _UserProfileState extends State<UserProfile> {
               }
             },
             builder: (context, state) {
-              if (state is UserProfileSuccessfulLoading) {
-                return Container(
-                  margin: const EdgeInsets.only(left: 10, right: 10),
+              print(state.runtimeType);
+              if (state is UserProfileLoading) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              if (state is UserProfileErrorLoading) {
+                return RefreshIndicator(
+                  backgroundColor:
+                      isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
+                  onRefresh: () async {
+                    userProfileBloc.add(UserProfileOnBeginEvent(true));
+                  },
                   child: ListView(
                     children: [
-                      Container(
-                          margin: EdgeInsets.only(left: 3, bottom: 5),
-                          child: HazelFieldHeading(
-                              text: "Hey ${state.obj!.userName}!")),
-                      Row(
-                        children: [
-                          HazelMetricWidget(
-                              label: "Total Leaves",
-                              value: (state.obj!.userPublicLeafCount! +
-                                      state.obj!.userPrivateLeafCount!)
-                                  .toString(),
-                              color: CupertinoColors.activeBlue),
-                          HazelMetricWidget(
-                            label: "Following",
-                            value: (state.obj!.userFollowing).toString(),
-                            color: CupertinoColors.activeBlue,
-                          ),
-                          HazelMetricWidget(
-                              label: "Followers",
-                              value: (state.obj!.userFollowers).toString(),
-                              color: CupertinoColors.activeBlue),
-                        ],
+                      Center(
+                        child: Text("Something went wrong. Pull to retry.",
+                            style: GoogleFonts.inter(
+                              textStyle: Theme.of(context).textTheme.bodyMedium,
+                              color: Colors.red,
+                            )),
                       ),
-                      Column(
-                        children: [
+                    ],
+                  ),
+                );
+              }
+              if (state is UserProfileSuccessfulLoading) {
+                return Container(
+                  margin: const EdgeInsets.only(left: 15, right: 15),
+                  child: RefreshIndicator(
+                    backgroundColor:
+                        isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
+                    onRefresh: () async {
+                      userProfileBloc.add(UserProfileOnBeginEvent(true));
+                    },
+                    child: ListView(
+                      children: [
+                        RichText(
+                          text: TextSpan(
 
-                          Row(
+                              children: [
+                                TextSpan(
+                                    text: "@" + state.obj!.userName!,
+                                    style: GoogleFonts.paytoneOne(
+                                      textStyle: Theme.of(context)
+                                          .textTheme.headlineSmall,
+                                      fontWeight: FontWeight.bold,
+                                      color: isDarkTheme
+                                          ? hazelLogoColorLight
+                                          : hazelLogoColor,
+                                    )),
+                              ]),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(top: 10),
+                          child: Row(
                             children: [
                               HazelMetricWidget(
-                                  label: "Level",
-                                  value: (state.obj!.userLevel!).toString(),
-                                  color: isDarkTheme? CupertinoColors.systemYellow: Colors.grey),
-                              HazelMetricWidget(
-                                label: "Experience points",
-                                value: ((state.obj!.userExperiencePoints)!
-                                        .toInt())
-                                    .toString(),
-                                color: isDarkTheme? CupertinoColors.systemYellow: Colors.grey,
+                                  label: "Total Leaves",
+                                  value: (state.obj!.userPublicLeafCount! +
+                                          state.obj!.userPrivateLeafCount!)
+                                      .toString(),
+                                  color: CupertinoColors.inactiveGray),
+                              Expanded(
+                                child: InkWell(
+                                  onTap: () {},
+                                  child: HazelMetricWidget(
+                                    label: "Following",
+                                    value: (state.obj!.userFollowing).toString(),
+                                    color: CupertinoColors.inactiveGray,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: InkWell(
+                                  onTap: () {},
+                                  child: HazelMetricWidget(
+                                      label: "Followers",
+                                      value:
+                                          (state.obj!.userFollowers).toString(),
+                                      color: CupertinoColors.inactiveGray),
+                                ),
                               ),
                             ],
                           ),
-                          Container(
-                            margin: EdgeInsets.only(top: 10,bottom: 10),
-                            child: LinearPercentIndicator(
-                              lineHeight: 20.0,
-                              percent:60/100,
-                              backgroundColor: Colors.grey.shade900,
-                              animation: true,
-                              barRadius: Radius.circular(10),
-                              alignment: MainAxisAlignment.center,
-                              center: Text(
-                                "${state.obj!.experienceNeededForLevelUp(state.obj!.userExperiencePoints!).toInt() - (state.obj!.userExperiencePoints)!.toInt()} points needed to level up.",
-                                style: GoogleFonts.inter(
-                                  textStyle:
-                                      Theme.of(context).textTheme.labelSmall,
-                                  color: Colors.white,
+                        ),
+                        Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: HazelMetricWidget(
+                                    label: "Experience points",
+                                    value: ((state.obj!.userExperiencePoints)!
+                                            .toInt())
+                                        .toString(),
+                                    color: isDarkTheme
+                                        ? CupertinoColors.inactiveGray
+                                        : Colors.grey,
+                                  ),
                                 ),
-                              ),
-                              trailing: Text(
-                                "${state.obj!.experienceNeededForLevelUp(state.obj!.userExperiencePoints!).toInt()}",
-                                style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.bold,
-                                  textStyle:
-                                      Theme.of(context).textTheme.bodyMedium,
-                                  color: isDarkTheme? Colors.white: Colors.black,
+                                Container(
+                                  width: 100,
+                                  child: HazelMetricWidget(
+                                      label: "Level",
+                                      value: (state.obj!.userLevel!).toString(),
+                                      color: isDarkTheme
+                                          ? CupertinoColors.inactiveGray
+                                          : Colors.grey),
                                 ),
-                              ),
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              // animateFromLastPercent: true,
-                              linearGradient: const LinearGradient(
-                                colors: [
-                                  CupertinoColors.activeBlue,
-                                  CupertinoColors.activeBlue,
-                                ],
-                              ),
-
-                              // onAnimationEnd: (){print('progress...');},
-                              // widgetIndicator: Icon(Icons.arrow_downward_outlined),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
-                      Divider(color: isDarkTheme? Colors.grey.shade900: Colors.grey.shade200,)
-                    ],
+                            Container(
+                              margin: EdgeInsets.only(top: 10, bottom: 10),
+                              child: LinearPercentIndicator(
+                                lineHeight: 40.0,
+                                percent: state.obj!.userExperiencePoints! /
+                                    state.obj!.experienceNeededForLevelUp(
+                                        state.obj!.userExperiencePoints!),
+                                backgroundColor:
+                                    Colors.grey.shade900.withOpacity(0.3),
+                                animation: true,
+                                barRadius: Radius.circular(10),
+                                alignment: MainAxisAlignment.center,
+                                center: Text(
+                                  "${state.obj!.experienceNeededForLevelUp(state.obj!.userExperiencePoints!).toInt() - (state.obj!.userExperiencePoints)!.toInt()} points needed to level up.",
+                                  style: GoogleFonts.inter(
+                                    textStyle:
+                                        Theme.of(context).textTheme.labelSmall,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                trailing: Text(
+                                  "${state.obj!.experienceNeededForLevelUp(state.obj!.userExperiencePoints!).toInt()}",
+                                  style: GoogleFonts.inter(
+                                    fontWeight: FontWeight.bold,
+                                    textStyle:
+                                        Theme.of(context).textTheme.bodyMedium,
+                                    color: isDarkTheme
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                ),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                // animateFromLastPercent: true,
+                                linearGradient: const LinearGradient(
+                                  colors: [
+                                    CupertinoColors.activeBlue,
+                                    CupertinoColors.systemYellow,
+                                  ],
+                                ),
+
+                                // onAnimationEnd: (){print('progress...');},
+                                // widgetIndicator: Icon(Icons.arrow_downward_outlined),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Divider(
+                          color: isDarkTheme? Colors.yellowAccent: Colors.yellowAccent.shade700
+                        ),
+                   
+
+                        Container(
+                          height: 100,
+                        )
+                      ],
+                    ),
                   ),
                 );
               }
