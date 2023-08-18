@@ -14,6 +14,8 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
 
 
     on<UserProfileOnBeginEvent>(userProfileSync);
+    on<UserProfileSearchEvent>(userProfileSearch);
+    on<UserProfileVisitEvent>(userProfileVisit);
   }
 
   FutureOr<void> userProfileSync(UserProfileOnBeginEvent event, Emitter<UserProfileState> emit) async{
@@ -26,5 +28,20 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
       emit(UserProfileSuccessfulLoading(userObj));
     }
 
+  }
+
+  FutureOr<void> userProfileSearch(UserProfileSearchEvent event, Emitter<UserProfileState> emit) async {
+    emit(UserProfileLoading());
+    try{
+        var user_list = await UserEngine().searchUserInfo({'search_query': event.search_query, 'page_number':event.page_number});
+        emit(UserProfileSearchSuccessful(user_list));
+
+    } catch(e){
+      emit(UserProfileSearchFailure());
+    }
+  }
+
+  FutureOr<void> userProfileVisit(UserProfileVisitEvent event, Emitter<UserProfileState> emit) {
+    emit(UserProfileVisit(event.profile));
   }
 }

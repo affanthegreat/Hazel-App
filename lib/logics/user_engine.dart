@@ -93,4 +93,29 @@ class UserEngine {
         return null;
       }
     }
+
+  Future<List<UserProfileModel?>> searchUserInfo(dynamic data) async {
+
+    try {
+      var apiEndpoint = 'user_engine/search_users';
+      var userTokens = {
+        'page_number': data['page_number'],
+        'search_query':  data['search_query'],
+        'auth_token': sessionData!['auth_token'],
+        'token': sessionData!['token']
+      };
+      final userDetailsResponse = await dio.post(url + apiEndpoint, data:userTokens);
+      List<dynamic> json_data = json.decode(userDetailsResponse.data)['data'];
+      List<UserProfileModel?> userProfilesList = [];
+      for(int i= 0; i < json_data.length; i++){
+        var userProfileObj = UserProfileModel.fromJson(json_data[i]);
+        print(userProfileObj.userName);
+        userProfilesList.add(userProfileObj);
+      }
+      return userProfilesList;
+    } catch(e){
+      throw e;
+      return [];
+    }
+  }
 }

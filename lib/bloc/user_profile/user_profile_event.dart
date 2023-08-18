@@ -10,3 +10,15 @@ class UserProfileOnBeginEvent extends UserProfileEvent{
 
 }
 
+class UserProfileSearchEvent extends UserProfileEvent{
+  final String search_query;
+  final int page_number;
+  UserProfileSearchEvent(this.search_query,this.page_number);
+}
+
+class UserProfileVisitEvent extends UserProfileEvent{
+  final UserProfileModel? profile;
+
+  UserProfileVisitEvent(this.profile);
+
+}

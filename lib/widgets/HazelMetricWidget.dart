@@ -17,6 +17,7 @@ class HazelMetricWidget extends StatelessWidget {
       margin: EdgeInsets.all(3),
       padding: const EdgeInsets.all(7.5),
       decoration: BoxDecoration(
+        border: Border.all(color: isDarkTheme? Colors.grey.shade900: Colors.grey.shade300,width: 1.5),
           color: isDarkTheme? Colors.grey.shade900.withOpacity(0.5) : Colors.grey.shade200,
           borderRadius: BorderRadius.circular(10)
       ),

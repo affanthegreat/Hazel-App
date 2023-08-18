@@ -14,3 +14,17 @@ class UserProfileSuccessfulLoading extends UserProfileState{
 class UserProfileErrorLoading extends UserProfileState{}
 
 class UserProfileLoading extends UserProfileState{}
+
+class UserProfileSearchSuccessful extends UserProfileState{
+  final List<UserProfileModel?> listOfUsers;
+
+  UserProfileSearchSuccessful(this.listOfUsers);
+}
+
+class UserProfileSearchFailure extends UserProfileState{}
+
+class UserProfileVisit extends UserProfileState{
+  final UserProfileModel? obj;
+
+  UserProfileVisit(this.obj);
+}
