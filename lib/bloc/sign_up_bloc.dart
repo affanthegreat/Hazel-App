@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:hazel_client/logics/user_engine.dart';
-import 'package:hazel_client/screens/sign_up/main_signup.dart';
 import 'package:meta/meta.dart';
 
 

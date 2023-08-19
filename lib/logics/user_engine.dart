@@ -77,7 +77,7 @@ class UserEngine {
       };
       final response = await dio.post(url + apiEndpoint, data: data);
       final result = json.decode(response.data);
-
+      print(result);
       if (result['message'] == "Logout successful.") {
         await storage.write(key: 'auth_token', value: result['auth_token']);
         await storage.write(key: 'token', value: result['token']);
@@ -130,11 +130,15 @@ class UserEngine {
       };
       final userDetailsResponse = await dio.post(url + apiEndpoint, data:userTokens);
       List<dynamic> json_data = json.decode(userDetailsResponse.data)['data'];
+
+      var box = await Hive.openBox('logged-in-user');
+      var logged_in_user = box.get('user_obj');
       List<UserProfileModel?> userProfilesList = [];
       for(int i= 0; i < json_data.length; i++){
         var userProfileObj = UserProfileModel.fromJson(json_data[i]);
-        print(userProfileObj.userName);
-        userProfilesList.add(userProfileObj);
+        if(userProfileObj.userId != logged_in_user.userId){
+          userProfilesList.add(userProfileObj);
+        }
       }
       return userProfilesList;
     } catch(e){
@@ -154,6 +158,7 @@ class UserEngine {
       };
       final userDetailsResponse = await dio.post(url + apiEndpoint, data:userTokens);
       List<dynamic> json_data = json.decode(userDetailsResponse.data)['data'];
+      print(json_data);
       List<UserProfileModel?> userProfilesList = [];
       for(int i= 0; i < json_data.length; i++){
         var userProfileObj = UserProfileModel.fromJson(json_data[i]);
@@ -178,15 +183,20 @@ class UserEngine {
       };
       final userDetailsResponse = await dio.post(
           url + apiEndpoint, data: userTokens);
-      List<dynamic> json_data = json.decode(userDetailsResponse.data)['data'];
+      List<dynamic> json_data =userDetailsResponse.data['data'];
+      print("||||||||||||||||");
+      print(json_data);
+
       List<UserProfileModel?> userProfilesList = [];
       for (int i = 0; i < json_data.length; i++) {
+        print("in for loop");
         var userProfileObj = UserProfileModel.fromJson(json_data[i]);
-        print(userProfileObj.userName);
         userProfilesList.add(userProfileObj);
       }
       return userProfilesList;
     } catch (e) {
+      print(e);
+      throw(e);
       return [];
     }
   }
@@ -257,7 +267,7 @@ class UserEngine {
       };
       final userDetailsResponse = await dio.post(
           url + apiEndpoint, data: userTokens);
-      List<dynamic> json_data = json.decode(userDetailsResponse.data)['dAtata'];
+      List<dynamic> json_data = json.decode(userDetailsResponse.data)['data'];
       List<UserProfileModel?> userProfilesList = [];
       for (int i = 0; i < json_data.length; i++) {
         var userProfileObj = UserProfileModel.fromJson(json_data[i]);
@@ -270,6 +280,24 @@ class UserEngine {
     }
   }
 
+  Future<dynamic> acceptFollowRequest(dynamic data) async {
+    try {
+      var apiEndpoint = 'user_engine/accept_follow_request';
+      var userTokens = {
+        'user_id': data['requested_to'],
+        'auth_token': sessionData!['auth_token'],
+        'token': sessionData!['token']
+      };
+      final response = await dio.post(
+          url + apiEndpoint, data: userTokens);
+      data = json.decode(response.data);
+      print("=========================");
+      print(data);
+      return data;
+    } catch (e) {
+      return false;
+    }
+  }
 
 }
 

@@ -40,6 +40,7 @@ class Settings extends StatelessWidget {
                   userProfileBox.delete('user_data');
                   Navigator.of(context, rootNavigator: true).pushReplacement(MaterialPageRoute(builder: (context) => const HazelLetsGetStarted()));
                 } else {
+                  print(logoutStatus);
                   var snackBar = SnackBar(
                     backgroundColor: Colors.red,
                     content: Text(

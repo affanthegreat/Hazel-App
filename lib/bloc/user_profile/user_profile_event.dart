@@ -45,3 +45,11 @@ class UserProfileRemoveFollowRequestEvent extends UserProfileEvent{
 
 
 class UserProfileViewFollowRequestsEvent extends UserProfileEvent{}
+
+
+class UserAcceptFollowRequest extends UserProfileEvent{
+  final UserProfileModel? obj;
+
+  UserAcceptFollowRequest(this.obj);
+
+}

@@ -49,3 +49,11 @@ class UserProfileGetFollowingSuccesful extends UserProfileState{
 }
 
 class UserProfileGetFollowingError extends UserProfileState{}
+
+class UserProfileShowAllFollowRequests extends UserProfileState{
+  final List<UserProfileModel?> listOfUsers;
+  UserProfileShowAllFollowRequests(this.listOfUsers);
+}
+
+class UserProfileFollowRequestsError extends UserProfileState{}
+

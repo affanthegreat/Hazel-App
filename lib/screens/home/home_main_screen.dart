@@ -44,8 +44,8 @@ class _HazelMainScreenState extends State<HazelMainScreen> {
           borderRadius: BorderRadius.circular(40),
           border: Border.all(
               color: isDarkTheme
-                  ? Colors.grey.shade900
-                  : Colors.black,
+                  ?Colors.pinkAccent.shade700
+                  : Colors.pinkAccent,
               width: 2),
         ),
         child: Padding(

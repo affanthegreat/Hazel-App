@@ -58,8 +58,8 @@ class _UserProfileState extends State<UserProfile> {
         borderRadius: BorderRadius.circular(40),
         border: Border.all(
             color: isDarkTheme
-                ? Colors.grey.shade900
-                : Colors.black,
+                ? Colors.pinkAccent.shade700
+                : Colors.pinkAccent,
             width: 2),
       ),
       child: Padding(
@@ -144,8 +144,135 @@ class _UserProfileState extends State<UserProfile> {
             },
             builder: (context, state) {
 
+              print(state.runtimeType);
+
+              if (state is UserProfileShowAllFollowRequests && state.listOfUsers.isEmpty){
+                return Scaffold(
+                  backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
+                  appBar: AppBar(
+                    toolbarHeight: 90,
+                    leading: IconButton(icon: const Icon(Icons.arrow_back),padding: EdgeInsets.zero ,onPressed: (){
+                      searchFieldController.clear();
+                      userProfileBloc.add(UserProfileOnBeginEvent(true));
+                    },),
+                    title: Text("Follow requests",style:GoogleFonts.poppins(
+                      textStyle: Theme.of(context).textTheme.bodyLarge,
+                      fontWeight: FontWeight.bold,
+                      color: isDarkTheme ? Colors.white: Colors.black,
+                    ) ,) ,
+                    backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
+                  ),
+                  body: Center(
+                    child: Text("Looks like you have no pending follow requests.",style:GoogleFonts.inter(
+                      textStyle: Theme.of(context).textTheme.bodyMedium,
+                      color: isDarkTheme ? Colors.white: Colors.black,
+                    ) ,),
+                  ),
+                );
+              }
+              if (state is UserProfileShowAllFollowRequests){
+                return Scaffold(
+                  backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
+                  appBar: AppBar(
+                    toolbarHeight: 90,
+                    leading: IconButton(icon: const Icon(Icons.arrow_back),padding: EdgeInsets.zero ,onPressed: (){
+                      searchFieldController.clear();
+                      userProfileBloc.add(UserProfileOnBeginEvent(true));
+                    },),
+                    title: Text("Follow requests",style:GoogleFonts.poppins(
+                      textStyle: Theme.of(context).textTheme.bodyLarge,
+                      fontWeight: FontWeight.bold,
+                      color: isDarkTheme ? Colors.white: Colors.black,
+                    ) ,) ,
+                    backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
+                  ),
+                  body: ListView.builder(itemCount: state.listOfUsers.length,itemBuilder: (context, index){
+                    return Container(
+                      margin: const EdgeInsets.only(top: 10),
+                      decoration: BoxDecoration(
+                          color: isDarkTheme?Colors.grey.shade900.withOpacity(0.3): Colors.grey.shade100,
+                          border: Border.all(color: isDarkTheme? Colors.grey.shade900:Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(10)
+                      ),
+                      child: Column(
+                        children: [
+                          InkWell(
+                            onTap: (){
+                              userProfileBloc.add(UserProfileVisitEvent(state.listOfUsers[index]));
+                            },
+                            child: Container(
+                              alignment: Alignment.centerLeft,
+                              margin: const EdgeInsets.only(top: 10,left: 10,bottom: 10),
+                              child: Text("@" + state.listOfUsers[index]!.userName.toString(), style: GoogleFonts.poppins(
+                                textStyle: Theme.of(context).textTheme.bodyLarge,
+                                fontWeight: FontWeight.bold,
+                                color: isDarkTheme
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),),
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  height: 40,
+                                  margin: const EdgeInsets.only(right: 2.5,bottom: 15,left: 10),
+                                  decoration: BoxDecoration(
+                                      color: isDarkTheme ? CupertinoColors.activeBlue : Colors.grey.shade100,
+                                      border: Border.all(color: isDarkTheme? Colors.black: Colors.grey.shade300),
+                                      borderRadius: BorderRadius.circular(8)
+                                  ),
+                                  child:InkWell(
+                                    onTap: (){
+                                        userProfileBloc.add(UserAcceptFollowRequest(state.listOfUsers[index]));
+                                    },
+                                    child: Center(
+                                      child:Text("Accept", style: GoogleFonts.inter(
+                                          textStyle: Theme.of(context).textTheme.labelMedium,
+                                          fontWeight: FontWeight.bold,
+                                          color: isDarkTheme? Colors.white: Colors.black
+                                      ),),
+                                    ),
+                                  ) ,
+
+                                ),
+                              ),
+                              Expanded(
+                                child: Container(
+                                  height: 40,
+                                  margin: const EdgeInsets.only(right: 10,bottom: 15,left:2.5),
+                                  decoration: BoxDecoration(
+                                      color: isDarkTheme ? Colors.grey.shade900.withOpacity(0.5) : Colors.grey.shade100,
+                                      border: Border.all(color: isDarkTheme? Colors.black: Colors.grey.shade300),
+                                      borderRadius: BorderRadius.circular(8)
+                                  ),
+                                  child:InkWell(
+                                    onTap: (){
+                                    },
+                                    child: Center(
+                                      child:Text("Deny", style: GoogleFonts.inter(
+                                          textStyle: Theme.of(context).textTheme.labelLarge,
+                                          fontWeight: FontWeight.bold,
+                                          color: isDarkTheme? Colors.white: Colors.black
+                                      ),),
+                                    ),
+                                  ) ,
+
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },)
+                );
+              }
 
               if (state is UserProfileGetFollowersSuccesful && state.listOfUsers.isEmpty){
+                print("ssssssssssssss");
+                print(state.listOfUsers);
                 return Scaffold(
                   backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
                   appBar: AppBar(
@@ -167,6 +294,57 @@ class _UserProfileState extends State<UserProfile> {
                       color: isDarkTheme ? Colors.white: Colors.black,
                     ) ,),
                   ),
+                );
+              }
+
+              if (state is UserProfileGetFollowersSuccesful){
+
+                return Scaffold(
+                    backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
+                    appBar: AppBar(
+                      toolbarHeight: 90,
+                      leading: IconButton(icon: const Icon(Icons.arrow_back),padding: EdgeInsets.zero ,onPressed: (){
+                        searchFieldController.clear();
+                        userProfileBloc.add(UserProfileOnBeginEvent(true));
+                      },),
+                      title: Text("Your Followers",style:GoogleFonts.poppins(
+                        textStyle: Theme.of(context).textTheme.bodyLarge,
+                        fontWeight: FontWeight.bold,
+                        color: isDarkTheme ? Colors.white: Colors.black,
+                      ) ,) ,
+                      backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
+                    ),
+                    body: ListView.builder(itemCount: state.listOfUsers.length,itemBuilder: (context, index){
+                      return Container(
+                        margin: const EdgeInsets.only(top: 10),
+                        decoration: BoxDecoration(
+                            color: isDarkTheme?Colors.grey.shade900.withOpacity(0.3): Colors.grey.shade100,
+                            border: Border.all(color: isDarkTheme? Colors.grey.shade900:Colors.grey.shade300),
+                            borderRadius: BorderRadius.circular(10)
+                        ),
+                        child: Column(
+                          children: [
+                            InkWell(
+                              onTap: (){
+                                userProfileBloc.add(UserProfileVisitEvent(state.listOfUsers[index]));
+                              },
+                              child: Container(
+                                alignment: Alignment.centerLeft,
+                                margin: const EdgeInsets.only(top: 10,left: 10,bottom: 10),
+                                child: Text("@" + state.listOfUsers[index]!.userName.toString(), style: GoogleFonts.poppins(
+                                  textStyle: Theme.of(context).textTheme.bodyLarge,
+                                  fontWeight: FontWeight.bold,
+                                  color: isDarkTheme
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),),
+                              ),
+                            ),
+
+                          ],
+                        ),
+                      );
+                    },)
                 );
               }
 
@@ -194,7 +372,9 @@ class _UserProfileState extends State<UserProfile> {
                   ),
                 );
               }
+
               if (state is UserProfileGetFollowingSuccesful && state.listOfUsers.isEmpty){
+
                 return Scaffold(
                   backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
                   appBar: AppBar(
@@ -216,6 +396,57 @@ class _UserProfileState extends State<UserProfile> {
                       color: isDarkTheme ? Colors.white: Colors.black,
                     ) ,),
                   ),
+                );
+              }
+
+              if (state is UserProfileGetFollowingSuccesful){
+
+                return Scaffold(
+                    backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
+                    appBar: AppBar(
+                      toolbarHeight: 90,
+                      leading: IconButton(icon: const Icon(Icons.arrow_back),padding: EdgeInsets.zero ,onPressed: (){
+                        searchFieldController.clear();
+                        userProfileBloc.add(UserProfileOnBeginEvent(true));
+                      },),
+                      title: Text("Your Following",style:GoogleFonts.poppins(
+                        textStyle: Theme.of(context).textTheme.bodyLarge,
+                        fontWeight: FontWeight.bold,
+                        color: isDarkTheme ? Colors.white: Colors.black,
+                      ) ,) ,
+                      backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
+                    ),
+                    body: ListView.builder(itemCount: state.listOfUsers.length,itemBuilder: (context, index){
+                      return Container(
+                        margin: const EdgeInsets.only(top: 10),
+                        decoration: BoxDecoration(
+                            color: isDarkTheme?Colors.grey.shade900.withOpacity(0.3): Colors.grey.shade100,
+                            border: Border.all(color: isDarkTheme? Colors.grey.shade900:Colors.grey.shade300),
+                            borderRadius: BorderRadius.circular(10)
+                        ),
+                        child: Column(
+                          children: [
+                            InkWell(
+                              onTap: (){
+                                userProfileBloc.add(UserProfileVisitEvent(state.listOfUsers[index]));
+                              },
+                              child: Container(
+                                alignment: Alignment.centerLeft,
+                                margin: const EdgeInsets.only(top: 10,left: 10,bottom: 10),
+                                child: Text("@" + state.listOfUsers[index]!.userName.toString(), style: GoogleFonts.poppins(
+                                  textStyle: Theme.of(context).textTheme.bodyLarge,
+                                  fontWeight: FontWeight.bold,
+                                  color: isDarkTheme
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),),
+                              ),
+                            ),
+                           
+                          ],
+                        ),
+                      );
+                    },)
                 );
               }
 
@@ -263,86 +494,61 @@ class _UserProfileState extends State<UserProfile> {
                   ),) ,):ListView.builder(
                       itemCount: state.listOfUsers.length,
                       itemBuilder: (context,index){
-                          if(index == 0){
-                            return Container(
-                              margin: const EdgeInsets.only(left: 10,right: 10),
-                              child: Column(
-                                children: [
-                                  const Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: HazelFieldLabel(text: "Found these profiles..")),
-                                  Container(
-                                    margin: const EdgeInsets.only(top: 10),
-                                    decoration: BoxDecoration(
-                                      color: isDarkTheme?Colors.grey.shade900.withOpacity(0.3): Colors.grey.shade100,
-                                      border: Border.all(color: isDarkTheme? Colors.grey.shade900:Colors.grey.shade300),
-                                      borderRadius: BorderRadius.circular(10)
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          alignment: Alignment.centerLeft,
-                                          margin: const EdgeInsets.only(top: 10,left: 10),
-                                          child: Text("@" + state.listOfUsers[index]!.userName.toString(), style: GoogleFonts.poppins(
-                                            textStyle: Theme.of(context).textTheme.bodyLarge,
-                                            fontWeight: FontWeight.bold,
-                                            color: isDarkTheme
-                                                ? Colors.white
-                                                : Colors.black,
-                                          ),),
-                                        ),
-                                        Container(
-                                          margin: const EdgeInsets.all(10),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              Expanded(child: HazelMetricWidget(label: "Followers", value:state.listOfUsers[index]!.userFollowers.toString() , color:CupertinoColors.activeBlue)),
-                                              Expanded(child: HazelMetricWidget(label: "Level", value:state.listOfUsers[index]!.userLevel.toString() , color:CupertinoColors.activeBlue)),
-                                              Expanded(child: HazelMetricWidget(label: "Exp points", value:state.listOfUsers[index]!.userExperiencePoints.toString() , color:CupertinoColors.activeBlue))
-
-                                            ],
-                                          ),
-                                        ),
-                                        Container(
-                                          height: 40,
-                                          margin: const EdgeInsets.only(right: 10,bottom: 15,left: 10),
-                                          decoration: BoxDecoration(
-                                              color: isDarkTheme ? Colors.grey.shade900.withOpacity(0.5) : Colors.grey.shade100,
-                                              border: Border.all(color: isDarkTheme? Colors.black: Colors.grey.shade300),
-                                              borderRadius: BorderRadius.circular(8)
-                                          ),
-                                          child:InkWell(
-                                            onTap: (){
-                                              userProfileBloc.add(UserProfileVisitEvent(state.listOfUsers[index]));
-                                            },
-                                            child: Center(
-                                              child:Text("Visit profile", style: GoogleFonts.inter(
-                                                  textStyle: Theme.of(context).textTheme.labelLarge,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: isDarkTheme? Colors.white: Colors.black
-                                              ),),
-                                            ),
-                                          ) ,
-
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
                           return Container(
-                            height: 100,
-                            width: 100,
-                            margin: const EdgeInsets.only(left: 10,right: 10),
+                            margin: const EdgeInsets.only(top: 10),
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              border: Border.all(
-                                  color: isDarkTheme
-                                      ? Colors.grey.shade900
-                                      : Colors.grey.shade200,
-                                  width: 3),
+                                color: isDarkTheme?Colors.grey.shade900.withOpacity(0.3): Colors.grey.shade100,
+                                border: Border.all(color: isDarkTheme? Colors.grey.shade900:Colors.grey.shade300),
+                                borderRadius: BorderRadius.circular(10)
+                            ),
+                            child: Column(
+                              children: [
+                                Container(
+                                  alignment: Alignment.centerLeft,
+                                  margin: const EdgeInsets.only(top: 10,left: 10),
+                                  child: Text("@" + state.listOfUsers[index]!.userName.toString(), style: GoogleFonts.poppins(
+                                    textStyle: Theme.of(context).textTheme.bodyLarge,
+                                    fontWeight: FontWeight.bold,
+                                    color: isDarkTheme
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),),
+                                ),
+                                Container(
+                                  margin: const EdgeInsets.all(10),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Expanded(child: HazelMetricWidget(label: "Followers", value:state.listOfUsers[index]!.userFollowers.toString() , color:CupertinoColors.activeBlue)),
+                                      Expanded(child: HazelMetricWidget(label: "Level", value:state.listOfUsers[index]!.userLevel.toString() , color:CupertinoColors.activeBlue)),
+                                      Expanded(child: HazelMetricWidget(label: "Exp points", value:state.listOfUsers[index]!.userExperiencePoints.toString() , color:CupertinoColors.activeBlue))
+
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  height: 40,
+                                  margin: const EdgeInsets.only(right: 10,bottom: 15,left: 10),
+                                  decoration: BoxDecoration(
+                                      color: isDarkTheme ? Colors.grey.shade900.withOpacity(0.5) : Colors.grey.shade100,
+                                      border: Border.all(color: isDarkTheme? Colors.black: Colors.grey.shade300),
+                                      borderRadius: BorderRadius.circular(8)
+                                  ),
+                                  child:InkWell(
+                                    onTap: (){
+                                      userProfileBloc.add(UserProfileVisitEvent(state.listOfUsers[index]));
+                                    },
+                                    child: Center(
+                                      child:Text("Visit profile", style: GoogleFonts.inter(
+                                          textStyle: Theme.of(context).textTheme.labelLarge,
+                                          fontWeight: FontWeight.bold,
+                                          color: isDarkTheme? Colors.white: Colors.black
+                                      ),),
+                                    ),
+                                  ) ,
+
+                                ),
+                              ],
                             ),
                           );
                   })
@@ -381,6 +587,8 @@ class _UserProfileState extends State<UserProfile> {
                       Container(
                         margin: EdgeInsets.only(bottom: 10),
                         child: IconButton(onPressed: () {
+                          userProfileBloc.followReqestsPage = 1;
+                          userProfileBloc.add(UserProfileViewFollowRequestsEvent());
                         }, icon:const  Icon(Iconsax.safe_home)),
                       ),
                     ],
@@ -390,6 +598,7 @@ class _UserProfileState extends State<UserProfile> {
                   ),
                 );
               }
+
               if (state is UserProfileErrorLoading) {
                 return Scaffold(
                   backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
@@ -401,6 +610,8 @@ class _UserProfileState extends State<UserProfile> {
                       Container(
                         margin: EdgeInsets.only(bottom: 10),
                         child: IconButton(onPressed: () {
+                          userProfileBloc.followReqestsPage = 1;
+                          userProfileBloc.add(UserProfileViewFollowRequestsEvent());
                         }, icon:const  Icon(Iconsax.safe_home)),
                       ),
                     ],
@@ -425,6 +636,7 @@ class _UserProfileState extends State<UserProfile> {
                   ),
                 );
               }
+
               if(state is UserProfileVisit){
                 return Scaffold(
                   backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
@@ -592,6 +804,7 @@ class _UserProfileState extends State<UserProfile> {
                   ),
                 );
               }
+
               if (state is UserProfileVisitError){
                 return Scaffold(
                   backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
@@ -612,6 +825,7 @@ class _UserProfileState extends State<UserProfile> {
                   ),
                 );
               }
+
               if (state is UserProfileSuccessfulLoading) {
                 return Scaffold(
                   backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
@@ -623,6 +837,8 @@ class _UserProfileState extends State<UserProfile> {
                       Container(
                         margin: EdgeInsets.only(bottom: 10),
                         child: IconButton(onPressed: () {
+                          userProfileBloc.followReqestsPage = 1;
+                          userProfileBloc.add(UserProfileViewFollowRequestsEvent());
                         }, icon:const  Icon(Iconsax.safe_home)),
                       ),
                     ],
