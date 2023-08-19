@@ -22,3 +22,26 @@ class UserProfileVisitEvent extends UserProfileEvent{
   UserProfileVisitEvent(this.profile);
 
 }
+
+class UserProfileSeeFollowersEvent extends UserProfileEvent{}
+
+class UserProfileSeeFollowingEvent extends UserProfileEvent{}
+
+class UserProfileSendFollowRequestEvent extends UserProfileEvent{
+  final UserProfileModel? obj;
+  final dynamic follow_map;
+
+  UserProfileSendFollowRequestEvent(this.obj, this.follow_map);
+
+}
+
+class UserProfileRemoveFollowRequestEvent extends UserProfileEvent{
+  final UserProfileModel? obj;
+  final dynamic follow_map;
+
+  UserProfileRemoveFollowRequestEvent(this.obj, this.follow_map);
+
+}
+
+
+class UserProfileViewFollowRequestsEvent extends UserProfileEvent{}

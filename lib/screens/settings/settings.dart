@@ -8,7 +8,7 @@ import 'package:hazel_client/screens/sign_up/lets_get_started.dart';
 import 'package:hazel_client/widgets/HazelFieldHeading.dart';
 import 'package:hive/hive.dart';
 import 'package:icons_plus/icons_plus.dart';
-import 'package:contained_tab_bar_view/contained_tab_bar_view.dart';
+
 
 class Settings extends StatelessWidget {
   const Settings({super.key});
@@ -22,7 +22,7 @@ class Settings extends StatelessWidget {
         toolbarHeight: 30,
       ),
       body: Container(
-        margin: EdgeInsets.only(left: 10,right: 10),
+        margin: const EdgeInsets.only(left: 10,right: 10),
         child: Column(
           children: [
             const Align(
@@ -30,26 +30,42 @@ class Settings extends StatelessWidget {
                 child: HazelFieldHeading(text: 'Main Settings')),
             InkWell(
               onTap: () async {
-                sessionData = null;
-                storage.delete(key: 'auth_token');
-                storage.delete(key: 'token');
-                var userProfileBox = await Hive.openBox('user_profile');
-                userProfileBox.delete('user_data');
-                Navigator.of(context, rootNavigator: true).pushReplacement(MaterialPageRoute(builder: (context) => HazelLetsGetStarted()));
+                var logoutStatus = await UserEngine().logout();
+                if(logoutStatus){
+                  sessionData = null;
+                  storage.delete(key: 'auth_token');
+                  storage.delete(key: 'token');
+
+                  var userProfileBox = await Hive.openBox('user_profile');
+                  userProfileBox.delete('user_data');
+                  Navigator.of(context, rootNavigator: true).pushReplacement(MaterialPageRoute(builder: (context) => const HazelLetsGetStarted()));
+                } else {
+                  var snackBar = SnackBar(
+                    backgroundColor: Colors.red,
+                    content: Text(
+                      "Something has happened and logout request has failed. Please try again.",
+                      style: GoogleFonts.inter(
+                        textStyle: Theme.of(context).textTheme.bodyMedium,
+                        color: Colors.white,
+                      ),
+                    ),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                }
 
               },
               child: Container(
                 height: 60,
-                margin: EdgeInsets.only(top: 10),
+                margin: const EdgeInsets.only(top: 10),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: isDarkTheme? Colors.grey.shade900.withOpacity(0.5): Colors.grey.shade200
+                  color: isDarkTheme? Colors.grey.shade900.withOpacity(0.5): Colors.grey.shade100
                 ),
                 child: Row(
                   children: [
                     Container(
-                        margin: EdgeInsets.only(right: 15,left: 10),
-                        child: Icon(Iconsax.logout, color: CupertinoColors.activeGreen,)),
+                        margin: const EdgeInsets.only(right: 15,left: 10),
+                        child: const Icon(Iconsax.logout, color: CupertinoColors.activeGreen,)),
                     Text("Sign out from device.", style: GoogleFonts.inter(
                       textStyle: Theme.of(context).textTheme.bodyMedium,
                       color: isDarkTheme? Colors.white: Colors.black,

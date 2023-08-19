@@ -1,16 +1,12 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hazel_client/constants/colors.dart';
 import 'package:hazel_client/main.dart';
 import 'package:hazel_client/screens/home/home_main_screen.dart';
 import 'package:hazel_client/screens/home/user_profile.dart';
 import 'package:hazel_client/screens/leaderboards/leaderboard.dart';
 import 'package:hazel_client/screens/trending/trending.dart';
-import 'package:hazel_client/widgets/HazelCategoryHeading.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
-import 'package:hazel_client/widgets/HazelLogoSmall.dart';
 
 import '../settings/settings.dart';
 
@@ -29,11 +25,11 @@ class _HazelHomeState extends State<HazelHome> {
 
   List<Widget> _buildScreens() {
     return [
-      HazelMainScreen(),
-      HazelTrending(),
-     HazelLeaderboard(),
-      UserProfile(),
-      Settings()
+      const HazelMainScreen(),
+      const HazelTrending(),
+      const HazelLeaderboard(),
+      const UserProfile(),
+      const Settings()
 
     ];
   }
@@ -42,31 +38,31 @@ class _HazelHomeState extends State<HazelHome> {
   List<PersistentBottomNavBarItem> _navBarsItems() {
     return [
       PersistentBottomNavBarItem(
-        icon: Icon(Iconsax.home),
+        icon: const Icon(Iconsax.home),
         title: ("Home"),
-        activeColorPrimary: CupertinoColors.activeGreen,
+        activeColorPrimary: CupertinoColors.systemYellow,
         inactiveColorPrimary: CupertinoColors.systemGrey,
       ),
       PersistentBottomNavBarItem(
-        icon: Icon(Iconsax.trend_up),
+        icon: const Icon(Iconsax.trend_up),
         title: ("Trending"),
         activeColorPrimary: CupertinoColors.activeOrange,
         inactiveColorPrimary: CupertinoColors.systemGrey,
       ),
       PersistentBottomNavBarItem(
-        icon: Icon(Iconsax.ranking),
+        icon: const Icon(Iconsax.ranking),
         title: ("Leaderboards"),
         activeColorPrimary: CupertinoColors.activeOrange,
         inactiveColorPrimary: CupertinoColors.systemGrey,
       ),
       PersistentBottomNavBarItem(
-        icon: Icon(Iconsax.profile_2user),
+        icon: const Icon(Iconsax.profile_2user),
         title: ("Your account"),
         activeColorPrimary: CupertinoColors.systemYellow,
         inactiveColorPrimary: CupertinoColors.systemGrey,
       ),
       PersistentBottomNavBarItem(
-        icon: Icon(Iconsax.setting),
+        icon: const Icon(Iconsax.setting),
         title: ("Settings"),
         activeColorPrimary: CupertinoColors.activeGreen,
         inactiveColorPrimary: CupertinoColors.systemGrey,

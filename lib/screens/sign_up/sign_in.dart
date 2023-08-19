@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hazel_client/constants/colors.dart';
@@ -127,7 +128,7 @@ class _HazelSignInState extends State<HazelSignIn> {
                         var status = await UserEngine().login(data);
                         if(status){
                           var snackBar = SnackBar(
-                            backgroundColor: Colors.green,
+                            backgroundColor: CupertinoColors.activeGreen,
                             content: Text(
                               "Login Successful",
                               style: GoogleFonts.inter(

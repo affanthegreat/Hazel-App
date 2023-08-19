@@ -25,6 +25,27 @@ class UserProfileSearchFailure extends UserProfileState{}
 
 class UserProfileVisit extends UserProfileState{
   final UserProfileModel? obj;
+  final dynamic follow_map;
 
-  UserProfileVisit(this.obj);
+  UserProfileVisit(this.obj, this.follow_map);
 }
+
+class UserProfileVisitError extends UserProfileState{
+}
+
+class UserProfileGetFollowersSuccesful extends UserProfileState{
+  final List<UserProfileModel?> listOfUsers;
+
+  UserProfileGetFollowersSuccesful(this.listOfUsers);
+}
+
+class UserProfileGetFollowersError extends UserProfileState{}
+
+
+class UserProfileGetFollowingSuccesful extends UserProfileState{
+  final List<UserProfileModel?> listOfUsers;
+
+  UserProfileGetFollowingSuccesful(this.listOfUsers);
+}
+
+class UserProfileGetFollowingError extends UserProfileState{}

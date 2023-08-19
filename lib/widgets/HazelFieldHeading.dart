@@ -12,7 +12,8 @@ class HazelFieldHeading extends StatelessWidget {
   Widget build(BuildContext context) {
     return  Text(text,
         textAlign: TextAlign.left,
-        style: GoogleFonts.paytoneOne(
+        style: GoogleFonts.poppins(
+          fontWeight: FontWeight.bold,
           color: isDarkTheme? Colors.white: Colors.black,
           textStyle:
           Theme.of(context).textTheme.headlineSmall,

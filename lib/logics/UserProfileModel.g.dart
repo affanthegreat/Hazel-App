@@ -30,13 +30,14 @@ class UserProfileModelAdapter extends TypeAdapter<UserProfileModel> {
       userUniversalDislikes: fields[10] as int?,
       userUniversalComments: fields[11] as int?,
       createdAt: fields[12] as String?,
+      userId: fields[13] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProfileModel obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(14)
       ..writeByte(0)
       ..write(obj.userEmail)
       ..writeByte(1)
@@ -62,7 +63,9 @@ class UserProfileModelAdapter extends TypeAdapter<UserProfileModel> {
       ..writeByte(11)
       ..write(obj.userUniversalComments)
       ..writeByte(12)
-      ..write(obj.createdAt);
+      ..write(obj.createdAt)
+      ..writeByte(13)
+      ..write(obj.userId);
   }
 
   @override
@@ -74,6 +77,4 @@ class UserProfileModelAdapter extends TypeAdapter<UserProfileModel> {
       other is UserProfileModelAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
-
-
 }

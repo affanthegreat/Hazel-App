@@ -31,6 +31,8 @@ class UserProfileModel {
   int? userUniversalComments;
   @HiveField(12)
   String? createdAt;
+  @HiveField(13)
+  String? userId;
 
   UserProfileModel(
       {this.userEmail,
@@ -45,7 +47,9 @@ class UserProfileModel {
         this.userUniversalLikes,
         this.userUniversalDislikes,
         this.userUniversalComments,
-        this.createdAt});
+        this.createdAt,
+        this.userId
+      });
 
   UserProfileModel.fromJson(Map<String, dynamic> json) {
     userEmail = json['user_email'];
@@ -61,6 +65,7 @@ class UserProfileModel {
     userUniversalDislikes = json['user_universal_dislikes'];
     userUniversalComments = json['user_universal_comments'];
     createdAt = json['created_at'];
+    userId = json['user_id'];
   }
 
   Map<String, dynamic> toJson() {
@@ -78,6 +83,7 @@ class UserProfileModel {
     data['user_universal_dislikes'] = this.userUniversalDislikes;
     data['user_universal_comments'] = this.userUniversalComments;
     data['created_at'] = this.createdAt;
+    data['userId'] = this.userId;
     return data;
   }
   int getExperiencePointsForLevel(int level, {int basePoints = 750, int multiplier = 2}) {

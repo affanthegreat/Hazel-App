@@ -1,19 +1,13 @@
-import 'package:appinio_swiper/appinio_swiper.dart';
-import 'package:appinio_swiper/enums.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hazel_client/bloc/home/home_bloc.dart';
 import 'package:hazel_client/constants/colors.dart';
-import 'package:hazel_client/logics/leaf_engine.dart';
 import 'package:hazel_client/main.dart';
-import 'package:hazel_client/widgets/HazelFieldHeading.dart';
-import 'package:hazel_client/widgets/HazelFieldLabel.dart';
 import 'package:hazel_client/widgets/HazelLogoSmall.dart';
 import 'package:icons_plus/icons_plus.dart';
 
-import '../../widgets/HazelCategoryHeading.dart';
 
 class HazelMainScreen extends StatefulWidget {
   const HazelMainScreen({super.key});
@@ -35,7 +29,6 @@ class _HazelMainScreenState extends State<HazelMainScreen> {
     super.initState();
   }
   createLeaf(String leafType) {
-    print("Here");
     homeBloc.add(HomeCreateLeafEvent(contentController.text, leafType));
     contentController.clear();
   }
@@ -52,8 +45,8 @@ class _HazelMainScreenState extends State<HazelMainScreen> {
           border: Border.all(
               color: isDarkTheme
                   ? Colors.grey.shade900
-                  : Colors.grey.shade200,
-              width: 3),
+                  : Colors.black,
+              width: 2),
         ),
         child: Padding(
           padding: const EdgeInsets.only(
@@ -134,9 +127,9 @@ class _HazelMainScreenState extends State<HazelMainScreen> {
                   ],
                 ),
                 border: InputBorder.none,
-                hintText: "What you're upto..",
-                hintStyle: GoogleFonts.sourceSansPro(
-                  textStyle: Theme.of(context).textTheme.bodyLarge,
+                hintText: "What you're up to..",
+                hintStyle: GoogleFonts.poppins(
+                  textStyle: Theme.of(context).textTheme.bodyMedium,
                   color: isDarkTheme
                       ? Colors.grey
                       : Colors.grey.shade700,
@@ -148,7 +141,6 @@ class _HazelMainScreenState extends State<HazelMainScreen> {
 
 
 
-    var height = MediaQuery.of(context).size.height * 0.75;
 
     return Scaffold(
         appBar: AppBar(
@@ -197,7 +189,7 @@ class _HazelMainScreenState extends State<HazelMainScreen> {
                     child: CircularProgressIndicator(strokeWidth: 5,color: Colors.yellowAccent,),
                   ),
                   Container(
-                    margin: EdgeInsets.only(top:10),
+                    margin: const EdgeInsets.only(top:10),
                     child: Text("This may take a few moments..", style: GoogleFonts.inter(
                       textStyle: Theme.of(context).textTheme.bodyMedium,
                       color: Colors.grey,
@@ -208,7 +200,7 @@ class _HazelMainScreenState extends State<HazelMainScreen> {
             }
             if(state is HomeInitial || state is  HomeSuccessfullyLoaded || state is HomeLeafCreationSuccessfulState){
               return Container(
-                margin: EdgeInsets.only(left: 10,right: 10),
+                margin: const EdgeInsets.only(left: 10,right: 10),
                 child: ListView(
                   children: [
                     postCreationTextField(),
