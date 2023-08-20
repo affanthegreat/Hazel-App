@@ -54,7 +54,7 @@ class UserEngine {
     try {
       final response = await dio.post(url + apiEndpoint, data: data);
       final result = json.decode(response.data);
-
+      print(response);
       if (result['message'] == "Login successful.") {
         await storage.write(key: 'auth_token', value: result['auth_token']);
         await storage.write(key: 'token', value: result['token']);
@@ -212,6 +212,7 @@ class UserEngine {
       };
       final follow_response = await dio.post(
           url + apiEndpoint, data: userTokens);
+      print(follow_response);
       data = json.decode(follow_response.data);
       print(data);
       return data;

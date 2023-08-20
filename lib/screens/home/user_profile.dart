@@ -638,6 +638,7 @@ class _UserProfileState extends State<UserProfile> {
               }
 
               if(state is UserProfileVisit){
+                print(state.follow_map);
                 return Scaffold(
                   backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
                   appBar: AppBar(
@@ -729,7 +730,7 @@ class _UserProfileState extends State<UserProfile> {
                               ),
                             ],
                           ),
-                          (!state.follow_map['follow_request_status'] && !state.follow_map!['following_status']) ? Container(
+                          (!state.follow_map['follow_request_status'] && !state.follow_map!['following_status']) && ! state.follow_map['follower_status'] ? Container(
                             height: 40,
                             margin: const EdgeInsets.only(top: 10,bottom: 10),
                             decoration: BoxDecoration(
@@ -749,7 +750,7 @@ class _UserProfileState extends State<UserProfile> {
                                 )),
                               ),
                             ),
-                          ): (state.follow_map!['following_status']) ? Container(
+                          ): (state.follow_map!['following_status']) && ! state.follow_map['follower_status'] ? Container(
                             height: 40,
                             margin: const EdgeInsets.only(top: 10,bottom: 10),
                             decoration: BoxDecoration(
@@ -766,7 +767,7 @@ class _UserProfileState extends State<UserProfile> {
                                     : hazelLogoColor,
                               )),
                             ),
-                          ): (state.follow_map!['follow_request_status']) ?  Container(
+                          ): (state.follow_map!['follow_request_status']) && !state.follow_map!['follower_status']?  Container(
                             height: 40,
                             margin: const EdgeInsets.only(top: 10,bottom: 10),
                             decoration: BoxDecoration(
@@ -789,7 +790,142 @@ class _UserProfileState extends State<UserProfile> {
                                 )),
                               ),
                             ),
-                          ): Container(),
+                          ):state.follow_map!['follow_request_status'] && state.follow_map!['follower_status']? Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Container(
+                                    height: 40,
+                                    margin: const EdgeInsets.only(right: 2.5,top: 10,bottom: 10),
+                                    decoration: BoxDecoration(
+                                        color: isDarkTheme? Colors.grey.shade900: Colors.grey.shade100,
+                                        borderRadius: BorderRadius.circular(10)
+                                    ),
+                                    child: InkWell(
+                                      onTap: (){
+                                        userProfileBloc.add(UserProfileRemoveFollowRequestEvent(state.obj, state.follow_map));
+                                      },
+                                      child: Center(
+                                        child: Text("Follow requested",style: GoogleFonts.inter(
+                                            textStyle: Theme.of(context)
+                                                .textTheme.bodyMedium,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white
+                                        )),
+                                      ),
+                                    )),
+                              ),
+                              Expanded(
+                                child: Container(
+                                    height: 40,
+                                    margin: const EdgeInsets.only(left: 2.5,top: 10,bottom: 10),
+                                    decoration: BoxDecoration(
+                                        color: isDarkTheme? Colors.grey.shade900: Colors.grey.shade100,
+                                        borderRadius: BorderRadius.circular(10)
+                                    ),
+                                    child: Center(
+                                      child: Text("Remove",style: GoogleFonts.inter(
+                                        textStyle: Theme.of(context)
+                                            .textTheme.bodyMedium,
+                                        fontWeight: FontWeight.bold,
+                                        color: isDarkTheme
+                                            ? hazelLogoColorLight
+                                            : hazelLogoColor,
+                                      )),
+                                    )),
+                              ),
+                            ],
+                          ): state.follow_map['follower_status'] &&!(state.follow_map!['follow_request_status']) && !state.follow_map['following_status'] ? Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Container(
+                                    height: 40,
+                                    margin: const EdgeInsets.only(right: 2.5,top: 10,bottom: 10),
+                                    decoration: BoxDecoration(
+                                        color: CupertinoColors.activeBlue,
+                                        borderRadius: BorderRadius.circular(10)
+                                    ),
+                                    child: InkWell(
+                                      onTap: (){
+                                        userProfileBloc.add(UserProfileSendFollowRequestEvent(state.obj, state.follow_map));
+                                      },
+                                      child: Center(
+                                        child: Text("Follow back",style: GoogleFonts.inter(
+                                          textStyle: Theme.of(context)
+                                              .textTheme.bodyMedium,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white
+                                        )),
+                                      ),
+                                    )),
+                              ),
+                              Expanded(
+                                child: Container(
+                                    height: 40,
+                                    margin: const EdgeInsets.only(left: 2.5,top: 10,bottom: 10),
+                                    decoration: BoxDecoration(
+                                        color: isDarkTheme? Colors.grey.shade900: Colors.grey.shade100,
+                                        borderRadius: BorderRadius.circular(10)
+                                    ),
+                                    child: Center(
+                                      child: Text("Remove",style: GoogleFonts.inter(
+                                        textStyle: Theme.of(context)
+                                            .textTheme.bodyMedium,
+                                        fontWeight: FontWeight.bold,
+                                        color: isDarkTheme
+                                            ? hazelLogoColorLight
+                                            : hazelLogoColor,
+                                      )),
+                                    )),
+                              ),
+                            ],
+                          ):state.follow_map['following_status'] &&!(state.follow_map!['follow_request_status']) ? Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Container(
+                                    height: 40,
+                                    margin: const EdgeInsets.only(right: 2.5,top: 10,bottom: 10),
+                                    decoration: BoxDecoration(
+                                        color: isDarkTheme? Colors.grey.shade900: Colors.grey.shade100,
+                                        borderRadius: BorderRadius.circular(10)
+                                    ),
+                                    child: InkWell(
+                                      onTap: (){
+
+                                      },
+                                      child: Center(
+                                        child: Text("Unfollow",style: GoogleFonts.inter(
+                                            textStyle: Theme.of(context)
+                                                .textTheme.bodyMedium,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white
+                                        )),
+                                      ),
+                                    )),
+                              ),
+                              Expanded(
+                                child: Container(
+                                    height: 40,
+                                    margin: const EdgeInsets.only(left: 2.5,top: 10,bottom: 10),
+                                    decoration: BoxDecoration(
+                                        color: isDarkTheme? Colors.grey.shade900: Colors.grey.shade100,
+                                        borderRadius: BorderRadius.circular(10)
+                                    ),
+                                    child: Center(
+                                      child: Text("Remove",style: GoogleFonts.inter(
+                                        textStyle: Theme.of(context)
+                                            .textTheme.bodyMedium,
+                                        fontWeight: FontWeight.bold,
+                                        color: isDarkTheme
+                                            ? hazelLogoColorLight
+                                            : hazelLogoColor,
+                                      )),
+                                    )),
+                              ),
+                            ],
+                          ):Container(),
                           Divider(
                               color: isDarkTheme? Colors.grey.shade800: Colors.grey.shade200
                           ),

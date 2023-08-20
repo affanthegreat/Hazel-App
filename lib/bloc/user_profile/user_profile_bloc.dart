@@ -62,6 +62,7 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
     try {
       var following_status = await UserEngine().getFollowingStatus(
           {'search_profile_id': event.profile!.userId});
+      print(following_status);
       emit(UserProfileVisit(event.profile, following_status));
     } catch (e) {
       emit(UserProfileVisitError());
