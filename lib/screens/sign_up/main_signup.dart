@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hazel_client/bloc/sign_up_bloc.dart';
@@ -526,10 +529,37 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     return BlocConsumer<SignUpBloc, SignUpState>(
       bloc: signUpBloc,
-      listener: (context, state) {},
+      listener: (context, state)async {
+
+        if(state is SignupAccountCreationSuccessful){
+          Timer(Duration(seconds: 4), () {});
+          var data = {
+            'user_name':usernameController.text,
+            'password': userPassword2Controller.text
+          };
+          var status = await UserEngine().login(data);
+          if(status== "true"){
+            var snackBar = SnackBar(
+              backgroundColor: CupertinoColors.activeGreen,
+              content: Text(
+                "Account successfully created.",
+                style: GoogleFonts.inter(
+                  textStyle: Theme.of(context).textTheme.bodyMedium,
+                  color: Colors.white,
+                ),
+              ),
+            );
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            Navigator.pushReplacementNamed(context, '/home');
+          }
+        }
+
+      },
       builder: (context, state) {
         print("+++++++++");
         print(state.runtimeType);
+
+
         return AnimatedSwitcher(
             duration: const Duration(milliseconds: 250),
             child: (state is SignUpStartSuccess)
@@ -575,15 +605,7 @@ class _SignUpState extends State<SignUp> {
                                         ],
                                       ),
                                     ),
-                                    (state is SignupAccountCreationSuccessful) ? Center(
-                                      child: Text("Object Creation successful.",
-                                        textAlign: TextAlign.center,
-                                        style: GoogleFonts.inter(
-                                          textStyle: Theme.of(context).textTheme.labelLarge,
-                                          color: isDarkTheme ? Colors.white : Colors.black,
-                                        ),
-                                      ),
-                                    ):const Center(
+                                   const Center(
                                       child: CircularProgressIndicator(
                                         strokeWidth: 5,
                                       ),

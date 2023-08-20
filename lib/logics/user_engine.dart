@@ -39,6 +39,7 @@ class UserEngine {
     try {
       final response = await dio.post(url + apiEndpoint, data: data);
       final result = json.decode(response.data);
+      print(result);
       if (result['message'] == "Success") {
         return true;
       } else {
@@ -49,21 +50,22 @@ class UserEngine {
     }
   }
 
-  Future<bool> login(dynamic data) async {
+  Future<String> login(dynamic data) async {
     var apiEndpoint = 'user_engine/login';
     try {
       final response = await dio.post(url + apiEndpoint, data: data);
       final result = json.decode(response.data);
+      print(result);
       if (result['message'] == "Login successful.") {
         await storage.write(key: 'auth_token', value: result['auth_token']);
         await storage.write(key: 'token', value: result['token']);
         sessionData = await storage.readAll();
-        return true;
+        return "true";
       } else {
-        return false;
+        return result['message'];
       }
     } catch (e) {
-      return false;
+      return "Error occurred.";
     }
   }
 

@@ -14,8 +14,8 @@ class HazelLogoSmall extends StatelessWidget {
       text: TextSpan(
           text: "Hazel",
           style: GoogleFonts.paytoneOne(
-            textStyle: Theme.of(context).textTheme.headlineSmall,
-            letterSpacing: -1,
+            textStyle: Theme.of(context).textTheme.headlineMedium,
+            letterSpacing: -0.7,
             fontWeight: FontWeight.bold,
             color: isDarkTheme? hazelLogoColorLight : hazelLogoColor,
           ),
@@ -23,7 +23,7 @@ class HazelLogoSmall extends StatelessWidget {
             TextSpan(
                 text: ".",
                 style: GoogleFonts.paytoneOne(
-                  textStyle: Theme.of(context).textTheme.headlineSmall,
+                  textStyle: Theme.of(context).textTheme.headlineMedium,
                   letterSpacing: -5,
                   fontWeight: FontWeight.bold,
                   color: hazelLogoDotColor,

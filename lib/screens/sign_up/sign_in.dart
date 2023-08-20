@@ -126,7 +126,7 @@ class _HazelSignInState extends State<HazelSignIn> {
                           'password': passwordController.text
                         };
                         var status = await UserEngine().login(data);
-                        if(status){
+                        if(status== "true"){
                           var snackBar = SnackBar(
                             backgroundColor: CupertinoColors.activeGreen,
                             content: Text(
@@ -139,11 +139,23 @@ class _HazelSignInState extends State<HazelSignIn> {
                           );
                           ScaffoldMessenger.of(context).showSnackBar(snackBar);
                           Navigator.pushReplacementNamed(context, '/home');
-                        } else{
+                        } else if(status == "User does not exists"){
                           var snackBar = SnackBar(
                             backgroundColor: Colors.red,
                             content: Text(
                               "Looks like this profile doesn't exist with us.",
+                              style: GoogleFonts.inter(
+                                textStyle: Theme.of(context).textTheme.bodyMedium,
+                                color: Colors.white,
+                              ),
+                            ),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        } else if(status == "invalid login details"){
+                          var snackBar = SnackBar(
+                            backgroundColor: Colors.red,
+                            content: Text(
+                              "Invalid login details. Are you sure you're using right user name and password?",
                               style: GoogleFonts.inter(
                                 textStyle: Theme.of(context).textTheme.bodyMedium,
                                 color: Colors.white,
