@@ -585,7 +585,9 @@ class _UserProfileState extends State<UserProfile> {
       return Container(
         height: 40,
         margin: const EdgeInsets.only(top: 10, bottom: 10),
-        decoration: BoxDecoration(color: CupertinoColors.activeBlue, borderRadius: BorderRadius.circular(10)),
+        decoration: BoxDecoration(
+          
+            color: CupertinoColors.activeBlue, borderRadius: BorderRadius.circular(10)),
         child: InkWell(
           onTap: () {
             userProfileBloc.add(UserProfileSendFollowRequestEvent(state.obj, state.follow_map));
@@ -607,7 +609,7 @@ class _UserProfileState extends State<UserProfile> {
             color: isDarkTheme? Colors.grey.shade900.withOpacity(0.5) : Colors.grey.shade50,
           ),
           child: Center(
-              child: Text(txt, style: GoogleFonts.inter(textStyle: Theme.of(context).textTheme.bodyMedium, fontWeight: FontWeight.bold, color: Colors.white)),
+              child: Text(txt, style: GoogleFonts.inter(textStyle: Theme.of(context).textTheme.bodySmall, fontWeight: FontWeight.bold, color: Colors.white)),
       ),
       );
     }
