@@ -49,7 +49,26 @@ class UserProfileViewFollowRequestsEvent extends UserProfileEvent{}
 
 class UserAcceptFollowRequest extends UserProfileEvent{
   final UserProfileModel? obj;
-
   UserAcceptFollowRequest(this.obj);
 
+}
+
+class UserProfileRemoveFollower extends UserProfileEvent{
+  final String? followerUserId;
+  final String? followingUserId;
+  final UserProfileModel? obj;
+
+  UserProfileRemoveFollower(this.followerUserId, this.followingUserId, this.obj);
+}
+
+class UserProfileBlockUserEvent extends UserProfileEvent{
+  final UserProfileModel? obj;
+
+  UserProfileBlockUserEvent(this.obj);
+}
+
+class UserProfileUnBlockUserEvent extends UserProfileEvent{
+  final UserProfileModel? obj;
+
+  UserProfileUnBlockUserEvent(this.obj);
 }

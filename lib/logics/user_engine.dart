@@ -54,7 +54,6 @@ class UserEngine {
     try {
       final response = await dio.post(url + apiEndpoint, data: data);
       final result = json.decode(response.data);
-      print(response);
       if (result['message'] == "Login successful.") {
         await storage.write(key: 'auth_token', value: result['auth_token']);
         await storage.write(key: 'token', value: result['token']);
@@ -77,7 +76,6 @@ class UserEngine {
       };
       final response = await dio.post(url + apiEndpoint, data: data);
       final result = json.decode(response.data);
-      print(result);
       if (result['message'] == "Logout successful.") {
         await storage.write(key: 'auth_token', value: result['auth_token']);
         await storage.write(key: 'token', value: result['token']);
@@ -104,12 +102,8 @@ class UserEngine {
         final userName = json.decode(response.data)['user_name'];
         final userDetailsResponse =
         await dio.post(url + apiEndpoint, data: {'user_name': userName});
-
-        print(json.decode(userDetailsResponse.data));
         final userProfileObj =
         UserProfileModel.fromJson(json.decode(userDetailsResponse.data));
-
-
         var box = await Hive.openBox('logged-in-user');
         box.put('user_obj',userProfileObj);
         return userProfileObj;
@@ -158,11 +152,9 @@ class UserEngine {
       };
       final userDetailsResponse = await dio.post(url + apiEndpoint, data:userTokens);
       List<dynamic> json_data = json.decode(userDetailsResponse.data)['data'];
-      print(json_data);
       List<UserProfileModel?> userProfilesList = [];
       for(int i= 0; i < json_data.length; i++){
         var userProfileObj = UserProfileModel.fromJson(json_data[i]);
-        print(userProfileObj.userName);
         userProfilesList.add(userProfileObj);
       }
       return userProfilesList;
@@ -184,19 +176,13 @@ class UserEngine {
       final userDetailsResponse = await dio.post(
           url + apiEndpoint, data: userTokens);
       List<dynamic> json_data =userDetailsResponse.data['data'];
-      print("||||||||||||||||");
-      print(json_data);
-
       List<UserProfileModel?> userProfilesList = [];
       for (int i = 0; i < json_data.length; i++) {
-        print("in for loop");
         var userProfileObj = UserProfileModel.fromJson(json_data[i]);
         userProfilesList.add(userProfileObj);
       }
       return userProfilesList;
     } catch (e) {
-      print(e);
-      throw(e);
       return [];
     }
   }
@@ -212,9 +198,7 @@ class UserEngine {
       };
       final follow_response = await dio.post(
           url + apiEndpoint, data: userTokens);
-      print(follow_response);
       data = json.decode(follow_response.data);
-      print(data);
       return data;
     } catch (e) {
       return false;
@@ -292,7 +276,33 @@ class UserEngine {
       final response = await dio.post(
           url + apiEndpoint, data: userTokens);
       data = json.decode(response.data);
-      print("=========================");
+
+      return data;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<dynamic> removeFollower(dynamic data) async {
+    try {
+      var apiEndpoint = 'user_engine/unfollow';
+      final response = await dio.post(
+          url + apiEndpoint, data: data);
+      data = json.decode(response.data);
+      return data;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<dynamic> blockUser(dynamic data) async {
+    try {
+      data['auth_token']= sessionData!['auth_token'];
+      data['token'] =  sessionData!['token'];
+      var apiEndpoint = 'user_engine/block_user';
+      final response = await dio.post(
+          url + apiEndpoint, data: data);
+      data = json.decode(response.data);
       print(data);
       return data;
     } catch (e) {
@@ -300,5 +310,18 @@ class UserEngine {
     }
   }
 
+  Future<dynamic> unblockUser(dynamic data) async {
+    try {
+      data['auth_token']= sessionData!['auth_token'];
+      data['token'] =  sessionData!['token'];
+      var apiEndpoint = 'user_engine/unblock_user';
+      final response = await dio.post(
+          url + apiEndpoint, data: data);
+      data = json.decode(response.data);
+      return data;
+    } catch (e) {
+      return false;
+    }
+  }
 }
 

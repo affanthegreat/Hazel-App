@@ -29,6 +29,9 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
     on<UserProfileRemoveFollowRequestEvent>(userRemoveFollowRequest);
     on<UserProfileViewFollowRequestsEvent>(userViewFollowRequests);
     on<UserAcceptFollowRequest>(userAcceptFollowRequest);
+    on<UserProfileRemoveFollower>(unFollow);
+    on<UserProfileBlockUserEvent>(block);
+    on<UserProfileUnBlockUserEvent>(unBlock);
   }
 
   FutureOr<void> userProfileSync(UserProfileOnBeginEvent event,
@@ -172,5 +175,49 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
     } catch (E) {
       emit(UserProfileFollowRequestsError());
     }
+  }
+
+  FutureOr<void> unFollow(UserProfileRemoveFollower event, Emitter<UserProfileState> emit) async{
+    emit(UserProfileLoading());
+    try {
+      await UserEngine().removeFollower(
+          {'follower': event.followerUserId,
+          'follows': event.followingUserId});
+
+      var following_status = await UserEngine().getFollowingStatus(
+          {'search_profile_id': event.obj!.userId});
+      emit(UserProfileVisit(event.obj, following_status));
+    } catch (E) {
+      emit(UserProfileFollowRequestsError());
+    }
+  }
+
+  FutureOr<void> block(UserProfileBlockUserEvent event, Emitter<UserProfileState> emit)async {
+    emit(UserProfileLoading());
+    try {
+      await UserEngine().blockUser(
+          {'blocked': event.obj!.userId});
+
+      var following_status = await UserEngine().getFollowingStatus(
+          {'search_profile_id': event.obj!.userId});
+      emit(UserProfileVisit(event.obj, following_status));
+    } catch (E) {
+      emit(UserProfileFollowRequestsError());
+    }
+  }
+
+  FutureOr<void> unBlock(UserProfileUnBlockUserEvent event, Emitter<UserProfileState> emit) async {
+    emit(UserProfileLoading());
+    try {
+      await UserEngine().unblockUser(
+          {'blocked': event.obj!.userId});
+
+      var following_status = await UserEngine().getFollowingStatus(
+          {'search_profile_id': event.obj!.userId});
+      emit(UserProfileVisit(event.obj, following_status));
+    } catch (E) {
+      emit(UserProfileFollowRequestsError());
+    }
+
   }
 }

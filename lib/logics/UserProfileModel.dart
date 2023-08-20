@@ -96,11 +96,7 @@ class UserProfileModel {
 
   int experienceNeededForLevelUp(int currentExp, {int basePoints = 750, int multiplier = 2}) {
     int currentLevel = 1;
-    int currentLevelPoints = getExperiencePointsForLevel(currentLevel, basePoints: basePoints, multiplier: multiplier);
     int nextLevelPoints = getExperiencePointsForLevel(currentLevel + 1, basePoints: basePoints, multiplier: multiplier);
-    print(currentLevelPoints);
-    print(currentLevel);
-    print(nextLevelPoints);
     return nextLevelPoints;
   }
 
