@@ -7,8 +7,9 @@ class UserProfileInitial extends UserProfileState {}
 
 class UserProfileSuccessfulLoading extends UserProfileState{
   final UserProfileModel? obj;
-
-  UserProfileSuccessfulLoading(this.obj);
+  final Set<LeafModel?> privateLeafSet;
+  final Set<LeafModel?> publicLeafSet;
+  UserProfileSuccessfulLoading(this.obj, this.publicLeafSet, this.privateLeafSet);
 }
 
 class UserProfileErrorLoading extends UserProfileState{}
@@ -16,7 +17,7 @@ class UserProfileErrorLoading extends UserProfileState{}
 class UserProfileLoading extends UserProfileState{}
 
 class UserProfileSearchSuccessful extends UserProfileState{
-  final List<UserProfileModel?> listOfUsers;
+  final Set<UserProfileModel?> listOfUsers;
 
   UserProfileSearchSuccessful(this.listOfUsers);
 }
@@ -34,7 +35,7 @@ class UserProfileVisitError extends UserProfileState{
 }
 
 class UserProfileGetFollowersSuccesful extends UserProfileState{
-  final List<UserProfileModel?> listOfUsers;
+  final Set<UserProfileModel?> listOfUsers;
 
   UserProfileGetFollowersSuccesful(this.listOfUsers);
 }
@@ -43,7 +44,7 @@ class UserProfileGetFollowersError extends UserProfileState{}
 
 
 class UserProfileGetFollowingSuccesful extends UserProfileState{
-  final List<UserProfileModel?> listOfUsers;
+  final Set<UserProfileModel?> listOfUsers;
 
   UserProfileGetFollowingSuccesful(this.listOfUsers);
 }
@@ -51,7 +52,7 @@ class UserProfileGetFollowingSuccesful extends UserProfileState{
 class UserProfileGetFollowingError extends UserProfileState{}
 
 class UserProfileShowAllFollowRequests extends UserProfileState{
-  final List<UserProfileModel?> listOfUsers;
+  final Set<UserProfileModel?> listOfUsers;
   UserProfileShowAllFollowRequests(this.listOfUsers);
 }
 

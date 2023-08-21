@@ -39,7 +39,6 @@ class UserEngine {
     try {
       final response = await dio.post(url + apiEndpoint, data: data);
       final result = json.decode(response.data);
-      print(result);
       if (result['message'] == "Success") {
         return true;
       } else {
@@ -55,7 +54,6 @@ class UserEngine {
     try {
       final response = await dio.post(url + apiEndpoint, data: data);
       final result = json.decode(response.data);
-      print(result);
       if (result['message'] == "Login successful.") {
         await storage.write(key: 'auth_token', value: result['auth_token']);
         await storage.write(key: 'token', value: result['token']);
@@ -115,7 +113,7 @@ class UserEngine {
       }
     }
 
-  Future<List<UserProfileModel?>> searchUserInfo(dynamic data) async {
+  Future<Set<UserProfileModel?>> searchUserInfo(dynamic data) async {
 
     try {
       var apiEndpoint = 'user_engine/search_users';
@@ -130,7 +128,7 @@ class UserEngine {
 
       var box = await Hive.openBox('logged-in-user');
       var logged_in_user = box.get('user_obj');
-      List<UserProfileModel?> userProfilesList = [];
+      Set<UserProfileModel?> userProfilesList = {};
       for(int i= 0; i < json_data.length; i++){
         var userProfileObj = UserProfileModel.fromJson(json_data[i]);
         if(userProfileObj.userId != logged_in_user.userId){
@@ -139,11 +137,11 @@ class UserEngine {
       }
       return userProfilesList;
     } catch(e){
-      return [];
+      return {};
     }
   }
 
-  Future<List<UserProfileModel?>> getUserFollowers(dynamic data) async {
+  Future<Set<UserProfileModel?>> getUserFollowers(dynamic data) async {
 
     try {
       var apiEndpoint = 'user_engine/get_followers';
@@ -155,7 +153,7 @@ class UserEngine {
       };
       final userDetailsResponse = await dio.post(url + apiEndpoint, data:userTokens);
       List<dynamic> json_data = json.decode(userDetailsResponse.data)['data'];
-      List<UserProfileModel?> userProfilesList = [];
+      Set<UserProfileModel?> userProfilesList = {};
       for(int i= 0; i < json_data.length; i++){
         var userProfileObj = UserProfileModel.fromJson(json_data[i]);
         userProfilesList.add(userProfileObj);
@@ -163,11 +161,11 @@ class UserEngine {
       return userProfilesList;
 
     } catch(e){
-      return [];
+      return {};
     }
   }
 
-  Future<List<UserProfileModel?>> getUserFollowing(dynamic data) async {
+  Future<Set<UserProfileModel?>> getUserFollowing(dynamic data) async {
     try {
       var apiEndpoint = 'user_engine/get_following';
       var box = await Hive.openBox('logged-in-user');
@@ -179,14 +177,14 @@ class UserEngine {
       final userDetailsResponse = await dio.post(
           url + apiEndpoint, data: userTokens);
       List<dynamic> json_data =userDetailsResponse.data['data'];
-      List<UserProfileModel?> userProfilesList = [];
+      Set<UserProfileModel?> userProfilesList = {};
       for (int i = 0; i < json_data.length; i++) {
         var userProfileObj = UserProfileModel.fromJson(json_data[i]);
         userProfilesList.add(userProfileObj);
       }
       return userProfilesList;
     } catch (e) {
-      return [];
+      return {};
     }
   }
 
@@ -244,7 +242,7 @@ class UserEngine {
     }
   }
 
-  Future<List<UserProfileModel?>> getFollowRequests(dynamic data) async {
+  Future<Set<UserProfileModel?>> getFollowRequests(dynamic data) async {
     try {
       var apiEndpoint = 'user_engine/fetch_all_follow_request_view';
       var box = await Hive.openBox('logged-in-user');
@@ -256,7 +254,7 @@ class UserEngine {
       final userDetailsResponse = await dio.post(
           url + apiEndpoint, data: userTokens);
       List<dynamic> json_data = json.decode(userDetailsResponse.data)['data'];
-      List<UserProfileModel?> userProfilesList = [];
+      Set<UserProfileModel?> userProfilesList = {};
       for (int i = 0; i < json_data.length; i++) {
         var userProfileObj = UserProfileModel.fromJson(json_data[i]);
         print(userProfileObj.userName);
@@ -264,7 +262,7 @@ class UserEngine {
       }
       return userProfilesList;
     } catch (e) {
-      return [];
+      return {};
     }
   }
 
@@ -306,7 +304,6 @@ class UserEngine {
       final response = await dio.post(
           url + apiEndpoint, data: data);
       data = json.decode(response.data);
-      print(data);
       return data;
     } catch (e) {
       return false;
@@ -341,26 +338,51 @@ class UserEngine {
     try {
       var endPoint = "user_engine/modify_user_details";
       final response = await dio.post(url+ endPoint, data: data);
-      print(response.data);
       return response.data;
     } catch (e) {
       return false;
     }
   }
 
-  Future<dynamic> getUserDetails(String userId) async {
+  Future<dynamic> getUserDetails() async {
     try {
+      var box = await Hive.openBox('logged-in-user');
+      var user_obj = box.get('user_obj');
       var endPoint = "user_engine/get_user_details";
       var data = {
-        'user_id': userId
+        'user_id':user_obj.userId
       };
       final response = await dio.post(url+ endPoint, data: data);
-      print(response.data);
       return response.data;
     } catch (e) {
-      throw(e);
       return false;
     }
   }
+
+  Future<Set<UserProfileModel?>> getBlockedAccounts(int page_number) async {
+    try {
+      var apiEndpoint = 'user_engine/fetch_blocked_accounts';
+      var box = await Hive.openBox('logged-in-user');
+      var user_obj = box.get('user_obj');
+      var userTokens = {
+        'page_number': page_number,
+        'user_id': user_obj.userId
+      };
+      final userDetailsResponse = await dio.post(
+          url + apiEndpoint, data: userTokens);;
+      List<dynamic> json_data = json.decode(userDetailsResponse.data)['data'];
+      Set<UserProfileModel?> userProfilesList = {};
+      for (int i = 0; i < json_data.length; i++) {
+        var userProfileObj = UserProfileModel.fromJson(json_data[i]);
+        userProfilesList.add(userProfileObj);
+      }
+      return userProfilesList;
+    } catch (e) {
+      return {};
+    }
+  }
+
+
+
 }
 

@@ -39,14 +39,10 @@ class _HazelMainScreenState extends State<HazelMainScreen> {
 
     Widget postCreationTextField(){
       return    Container(
-        margin: const EdgeInsets.only(top: 0, bottom: 10),
+        margin: const EdgeInsets.only(top: 10, bottom: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(40),
-          border: Border.all(
-              color: isDarkTheme
-                  ?Colors.pinkAccent.shade700
-                  : Colors.pinkAccent,
-              width: 2),
+          border: Border.all(color: isDarkTheme ? Colors.grey.shade700 : Colors.grey, width: 2),
         ),
         child: Padding(
           padding: const EdgeInsets.only(
@@ -76,7 +72,7 @@ class _HazelMainScreenState extends State<HazelMainScreen> {
                       icon: const Icon(
                         Iconsax.attach_circle,
                         size: 28,
-                        color: CupertinoColors.systemGrey,
+                        color: CupertinoColors.systemYellow,
                       ),
                       onPressed: () {
                         var snackBar = SnackBar(
@@ -164,6 +160,7 @@ class _HazelMainScreenState extends State<HazelMainScreen> {
                   ),
                 );
                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                homeBloc.add(HomeSuccessfullyLoadedEvent());
               }
 
               if(state is HomeLeafCreationSuccessfulState){

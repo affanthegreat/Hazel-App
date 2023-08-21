@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:hazel_client/logics/LeafModel.dart';
 import 'package:hazel_client/logics/UserProfileModel.dart';
+import 'package:hazel_client/logics/leaf_engine.dart';
 import 'package:hazel_client/logics/user_engine.dart';
 import 'package:meta/meta.dart';
 
@@ -11,12 +13,16 @@ part 'user_profile_state.dart';
 class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
 
 
-  List<UserProfileModel?> followersList = [];
-  List<UserProfileModel?> followingList = [];
-  List<UserProfileModel?> followingRequests = [];
+  Set<UserProfileModel?> followersList = {};
+  Set<UserProfileModel?> followingList = {};
+  Set<UserProfileModel?> followingRequests = {};
+  Set<LeafModel?> publicLeavesPost = {};
+  Set<LeafModel?> privateLeafPost = {};
   int followersPage = 1;
   int followingPage = 1;
   int followReqestsPage = 1;
+  int publicLeafPage = 1;
+  int privateLeafPage = 1;
 
 
   UserProfileBloc() : super(UserProfileInitial()) {
@@ -37,11 +43,25 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
   FutureOr<void> userProfileSync(UserProfileOnBeginEvent event,
       Emitter<UserProfileState> emit) async {
     emit(UserProfileLoading());
+    privateLeafPage = 1;
+    publicLeafPage = 1;
     UserProfileModel? userObj = await UserEngine().fetchUserInfo(event.refresh);
+    var public_leaf_set = await LeafEngine().getAllPublicLeaf(publicLeafPage);
+    var private_leaf_set = await LeafEngine().getAllPrivateLeaf(privateLeafPage);
+
     if (userObj == null || userObj.userEmail == null) {
       emit(UserProfileErrorLoading());
     } else {
-      emit(UserProfileSuccessfulLoading(userObj));
+      if (publicLeafPage == 1 && privateLeafPage == 1) {
+        publicLeavesPost = public_leaf_set;
+        privateLeafPost = private_leaf_set;
+      } else {
+        publicLeavesPost.addAll(public_leaf_set);
+        privateLeafPost.addAll(private_leaf_set);
+      }
+      publicLeafPage++;
+      privateLeafPage++;
+      emit(UserProfileSuccessfulLoading(userObj, publicLeavesPost,privateLeafPost));
     }
   }
 
@@ -167,8 +187,8 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
           {'requested_to': event.obj!.userId});
 
       for(int i =0; i< followingRequests.length; i++){
-        if(followingRequests[i]!.userId == event.obj!.userId){
-          followingRequests.removeAt(i);
+        if(followingRequests!.elementAt(i)!.userId == event.obj!.userId){
+          followingRequests.remove(followingRequests.elementAt(i));
         }
       }
       emit(UserProfileShowAllFollowRequests(followingRequests));

@@ -35,9 +35,8 @@ class _HazelUserDetailsCollectionState extends State<HazelUserDetailsCollection>
 
 
   updateData() async {
-    var box = await Hive.openBox('logged-in-user');
-    var user_obj = box.get('user_obj');
-    var data =json.decode(await UserEngine().getUserDetails(user_obj.userId));
+
+    var data =json.decode(await UserEngine().getUserDetails());
     setState(() {
       userFullName.text = data['user_full_name'];
       age.text = data['user_age'].toString();
@@ -131,7 +130,7 @@ class _HazelUserDetailsCollectionState extends State<HazelUserDetailsCollection>
                       labelStyle: GoogleFonts.inter(
                         textStyle: Theme.of(context).textTheme.bodyMedium,
                         fontWeight: FontWeight.bold,
-                        color: isDarkTheme ? (gender == "male") ? Colors.black: Colors.white : (gender == "male")? Colors.black: Colors.white,
+                        color: isDarkTheme ? (gender == "male") ? Colors.black: Colors.white : (gender == "male")? Colors.black: Colors.black,
                       ),
                       backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
                       selected: gender == "male",
@@ -150,7 +149,7 @@ class _HazelUserDetailsCollectionState extends State<HazelUserDetailsCollection>
                       labelStyle: GoogleFonts.inter(
                         textStyle: Theme.of(context).textTheme.bodyMedium,
                         fontWeight: FontWeight.bold,
-                        color: isDarkTheme ? (gender == "female") ? Colors.black: Colors.white : (gender == "female")? Colors.black: Colors.white,
+                        color: isDarkTheme ? (gender == "female") ? Colors.black: Colors.white : (gender == "female")? Colors.black: Colors.black,
                       ),
                       backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
                       selected: gender == "female",
@@ -169,7 +168,7 @@ class _HazelUserDetailsCollectionState extends State<HazelUserDetailsCollection>
                       labelStyle: GoogleFonts.inter(
                         textStyle: Theme.of(context).textTheme.bodyMedium,
                         fontWeight: FontWeight.bold,
-                        color: isDarkTheme ? (gender == "other") ? Colors.black: Colors.white : (gender == "other")? Colors.black: Colors.white,
+                        color: isDarkTheme ? (gender == "other") ? Colors.black: Colors.white : (gender == "other")? Colors.black: Colors.black,
                       ),
                       backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
                       selected: gender == "other",

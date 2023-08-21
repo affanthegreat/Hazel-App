@@ -21,8 +21,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         'leaf_type': event.leaf_type,
         'text_content': event.text_content
       });
-      print("Leaf creation response");
-      print(response);
       if(response){
         emit(HomeLeafCreationSuccessfulState());
       } else {

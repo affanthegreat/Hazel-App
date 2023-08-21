@@ -532,7 +532,6 @@ class _SignUpState extends State<SignUp> {
       listener: (context, state)async {
 
         if(state is SignupAccountCreationSuccessful){
-          Timer(const Duration(seconds: 4), () {});
           var data = {
             'user_name':usernameController.text,
             'password': userPassword2Controller.text
