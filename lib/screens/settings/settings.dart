@@ -5,6 +5,7 @@ import 'package:hazel_client/constants/colors.dart';
 import 'package:hazel_client/logics/user_engine.dart';
 import 'package:hazel_client/main.dart';
 import 'package:hazel_client/screens/sign_up/lets_get_started.dart';
+import 'package:hazel_client/screens/sign_up/user_details_collection.dart';
 import 'package:hazel_client/widgets/HazelFieldHeading.dart';
 import 'package:hazel_client/widgets/HazelFieldLabel.dart';
 import 'package:hive/hive.dart';
@@ -61,7 +62,11 @@ class Settings extends StatelessWidget {
             Container(
                 margin: const EdgeInsets.only(top: 10),
                 child: const HazelFieldHeading(text: 'Main Settings')),
-            settingsButton("Update your details", Icon(Iconsax.user_tag,color: isDarkTheme ? Colors.greenAccent.shade700 : Colors.greenAccent,)),
+            InkWell(
+                onTap: (){
+                  Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context) => HazelUserDetailsCollection(update:true)));
+                },
+                child: settingsButton("Update your details", Icon(Iconsax.user_tag,color: isDarkTheme ? Colors.greenAccent.shade700 : Colors.greenAccent,))),
             settingsButton("See blocked profiles", Icon(Iconsax.user,color: isDarkTheme ? Colors.redAccent : Colors.redAccent,)),
             settingsButton("Privacy settings", Icon(Iconsax.security,color: isDarkTheme ? Colors.blueAccent.shade700 : Colors.blueAccent,)),
             InkWell(
@@ -75,7 +80,6 @@ class Settings extends StatelessWidget {
                   userProfileBox.delete('user_data');
                   Navigator.of(context, rootNavigator: true).pushReplacement(MaterialPageRoute(builder: (context) => const HazelLetsGetStarted()));
                 } else {
-                  print(logoutStatus);
                   var snackBar = SnackBar(
                     backgroundColor: Colors.red,
                     content: Text(
@@ -88,7 +92,6 @@ class Settings extends StatelessWidget {
                   );
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 }
-
               },
               child: settingsButton("Sign out from device", Icon(Iconsax.logout,color: isDarkTheme ? Colors.grey.shade700 : Colors.grey.shade300,)),
             ),

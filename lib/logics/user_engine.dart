@@ -59,6 +59,7 @@ class UserEngine {
       if (result['message'] == "Login successful.") {
         await storage.write(key: 'auth_token', value: result['auth_token']);
         await storage.write(key: 'token', value: result['token']);
+        fetchUserInfo(true);
         sessionData = await storage.readAll();
         return "true";
       } else {
@@ -322,6 +323,42 @@ class UserEngine {
       data = json.decode(response.data);
       return data;
     } catch (e) {
+      return false;
+    }
+  }
+
+  Future<dynamic> fetchUserLocation() async {
+    try {
+      var url = "http://ip-api.com/json";
+      final response = await dio.get(url);
+      return response.data;
+    } catch (e) {
+      return {};
+    }
+  }
+
+  Future<dynamic> updateUserDetails(dynamic data) async {
+    try {
+      var endPoint = "user_engine/modify_user_details";
+      final response = await dio.post(url+ endPoint, data: data);
+      print(response.data);
+      return response.data;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<dynamic> getUserDetails(String userId) async {
+    try {
+      var endPoint = "user_engine/get_user_details";
+      var data = {
+        'user_id': userId
+      };
+      final response = await dio.post(url+ endPoint, data: data);
+      print(response.data);
+      return response.data;
+    } catch (e) {
+      throw(e);
       return false;
     }
   }

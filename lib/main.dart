@@ -7,6 +7,7 @@ import 'package:hazel_client/screens/home/home.dart';
 import 'package:hazel_client/screens/sign_up/lets_get_started.dart';
 import 'package:hazel_client/screens/sign_up/main_signup.dart';
 import 'package:hazel_client/screens/sign_up/sign_in.dart';
+import 'package:hazel_client/screens/sign_up/user_details_collection.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -39,7 +40,8 @@ class MyApp extends StatelessWidget {
         '/': (context) => const HazelLetsGetStarted(),
         '/sign_up': (context) => const SignUp(),
         '/sign_in': (context) => const HazelSignIn(),
-        '/home': (context) => const HazelHome()
+        '/home': (context) => const HazelHome(),
+        '/user_data': (context)=> HazelUserDetailsCollection(update: false)
       },
     );
   }

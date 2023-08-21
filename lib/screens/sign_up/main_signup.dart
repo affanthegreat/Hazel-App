@@ -532,7 +532,7 @@ class _SignUpState extends State<SignUp> {
       listener: (context, state)async {
 
         if(state is SignupAccountCreationSuccessful){
-          Timer(Duration(seconds: 4), () {});
+          Timer(const Duration(seconds: 4), () {});
           var data = {
             'user_name':usernameController.text,
             'password': userPassword2Controller.text
@@ -550,7 +550,7 @@ class _SignUpState extends State<SignUp> {
               ),
             );
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
-            Navigator.pushReplacementNamed(context, '/home');
+            Navigator.pushReplacementNamed(context, '/user_data');
           }
         }
 
