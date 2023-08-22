@@ -14,3 +14,12 @@ class LeafSuccessfulLoadState extends LeafState{
 
   LeafSuccessfulLoadState(this.map);
 }
+
+
+class LeafFullScreenState extends LeafState{
+  final Map<String, bool> map;
+  final LeafModel? leaf;
+  final UserProfileModel currentUser;
+
+  LeafFullScreenState(this.map, this.leaf, this.currentUser);
+}

@@ -163,25 +163,29 @@ class _UserProfileState extends State<UserProfile> {
             },
             child: CustomScrollView(
               slivers: [
+
                 SliverList(
                   delegate: SliverChildListDelegate([
-                    RichText(
-                      text: TextSpan(children: [
-                        TextSpan(
-                            text: "Hello there, ",
-                            style: GoogleFonts.poppins(
-                              textStyle: Theme.of(context).textTheme.headlineSmall,
-                              fontWeight: FontWeight.bold,
-                              color: isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade600,
-                            )),
-                        TextSpan(
-                            text: "@" + state.obj!.userName!,
-                            style: GoogleFonts.poppins(
-                              textStyle: Theme.of(context).textTheme.headlineSmall,
-                              fontWeight: FontWeight.bold,
-                              color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,
-                            )),
-                      ]),
+                    Container(
+                      margin: EdgeInsets.only(top: 10),
+                      child: RichText(
+                        text: TextSpan(children: [
+                          TextSpan(
+                              text: "Hello there, ",
+                              style: GoogleFonts.poppins(
+                                textStyle: Theme.of(context).textTheme.bodyLarge,
+                                fontWeight: FontWeight.bold,
+                                color: isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade600,
+                              )),
+                          TextSpan(
+                              text: "@" + state.obj!.userName!,
+                              style: GoogleFonts.poppins(
+                                textStyle: Theme.of(context).textTheme.headlineSmall,
+                                fontWeight: FontWeight.bold,
+                                color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,
+                              )),
+                        ]),
+                      ),
                     ),
                     Container(
                       margin: EdgeInsets.only(top: 5),
@@ -242,7 +246,7 @@ class _UserProfileState extends State<UserProfile> {
                         barRadius: const Radius.circular(8),
                         alignment: MainAxisAlignment.center,
                         center: Text(
-                          "${numToEng(state.obj!.experienceNeededForLevelUp(state.obj!.userExperiencePoints!).toInt() - (state.obj!.userExperiencePoints)!.toInt())} points needed to level up",
+                          "${state.obj!.experienceNeededForLevelUp(state.obj!.userExperiencePoints!).toInt() - (state.obj!.userExperiencePoints)!.toInt()} points needed to level up",
                           style: GoogleFonts.poppins(
                             textStyle: Theme.of(context).textTheme.labelMedium,
                             fontWeight: FontWeight.bold,

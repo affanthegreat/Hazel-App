@@ -17,6 +17,7 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
     on<LeafLikeRemoveEvent>(removeLike);
     on<LeafDislikeEvent>(dislikeLeaf);
     on<LeafDislikeRemoveEvent>(removeDislike);
+    on<LeafFullScreenViewEvent>(fullScreenView);
   }
 
   FutureOr<void> likeLeaf(LeafLikeEvent event, Emitter<LeafState> emit) async{
@@ -106,5 +107,10 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
       throw(e);
     }
 
+  }
+
+  FutureOr<void> fullScreenView(LeafFullScreenViewEvent event, Emitter<LeafState> emit) {
+    emit(LeafLoadingState());
+    emit(LeafFullScreenState(event.map, event.obj, event.currentUser));
   }
 }

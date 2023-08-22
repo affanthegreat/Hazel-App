@@ -1,3 +1,4 @@
+import 'package:animated_tree_view/animated_tree_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,8 +9,10 @@ import 'package:hazel_client/logics/LeafModel.dart';
 import 'package:hazel_client/logics/UserProfileModel.dart';
 import 'package:hazel_client/logics/leaf_engine.dart';
 import 'package:hazel_client/main.dart';
+import 'package:hazel_client/widgets/HazelLeafFullScreenView.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:intl/intl.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class HazelLeafWidget extends StatefulWidget {
   final LeafModel? leaf_obj;
@@ -58,6 +61,52 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
 
   @override
   Widget build(BuildContext context) {
+    Widget textField() {
+      return Container(
+        margin: const EdgeInsets.only(top: 0, bottom: 10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(40),
+          border: Border.all(color: isDarkTheme ? Colors.grey.shade700 : Colors.grey, width: 2),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(
+            left: 15,
+            right: 10,
+          ),
+          child: TextField(
+            maxLength: 400,
+            style: GoogleFonts.sourceSansPro(
+              textStyle: Theme.of(context).textTheme.bodyLarge,
+              color: isDarkTheme ? Colors.white : Colors.black,
+            ),
+            maxLines: null,
+            decoration: InputDecoration(
+                counterText: '',
+                suffixIcon: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        Icons.search,
+                        color: isDarkTheme ? Colors.white : Colors.black,
+                        size: 24,
+                      ),
+                      onPressed: () {},
+                    ),
+                  ],
+                ),
+                border: InputBorder.none,
+                hintText: "Find your friends..",
+                hintStyle: GoogleFonts.poppins(
+                  textStyle: Theme.of(context).textTheme.bodyMedium,
+                  color: isDarkTheme ? Colors.grey : Colors.grey.shade700,
+                )),
+          ),
+        ),
+      );
+    }
+
     return BlocConsumer<LeafBloc, LeafState>(
       bloc: leafBloc,
       listener: (context, state) {
@@ -73,7 +122,9 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
             ),
           );
         }
-
+        if(state is LeafFullScreenState){
+          return HazelLeafFullScreenView();
+        }
         if (state is LeafSuccessfulLoadState) {
           bool like_status = state.map['like']!;
           bool dislike_status = state.map['dislike']!;
@@ -158,28 +209,27 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                         IconButton(
                             onPressed: () async {
                               var status = await leafEngineObj.checkLike(widget!.leaf_obj!);
-                              if(dislike_status){
+                              if (dislike_status) {
                                 var dislike_removal_status = await leafEngineObj.removeDisLikeLeaf(widget!.leaf_obj!);
                                 widget!.leaf_obj!.dislikesCount = widget!.leaf_obj!.dislikesCount! - 1;
 
-                                if(status && dislike_removal_status){
+                                if (status && dislike_removal_status) {
                                   leafBloc.add(LeafLikeRemoveEvent(widget.leaf_obj));
-                                } else{
+                                } else {
                                   leafBloc.add(LeafLikeEvent(widget.leaf_obj));
                                 }
-                              } else{
-                                if(status){
+                              } else {
+                                if (status) {
                                   leafBloc.add(LeafLikeRemoveEvent(widget.leaf_obj));
-                                } else{
+                                } else {
                                   leafBloc.add(LeafLikeEvent(widget.leaf_obj));
                                 }
                               }
-
                             },
-                            icon:Icon(
+                            icon: Icon(
                               Iconsax.heart,
                               size: 28,
-                              color: !like_status ? (isDarkTheme ? Colors.grey.shade600:Colors.grey.shade400):Colors.redAccent,
+                              color: !like_status ? (isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400) : Colors.redAccent,
                             )),
                         Text(numToEng(widget.leaf_obj!.likesCount!),
                             style: GoogleFonts.poppins(
@@ -194,27 +244,26 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                         IconButton(
                             onPressed: () async {
                               var status = await leafEngineObj.checkDisLike(widget!.leaf_obj!);
-                              if(like_status){
+                              if (like_status) {
                                 var like_removal_status = await leafEngineObj.removeLikeLeaf(widget!.leaf_obj!);
                                 widget!.leaf_obj!.likesCount = widget!.leaf_obj!.likesCount! - 1;
-                                if(status && like_removal_status){
+                                if (status && like_removal_status) {
                                   leafBloc.add(LeafDislikeRemoveEvent(widget.leaf_obj));
-                                } else{
+                                } else {
                                   leafBloc.add(LeafDislikeEvent(widget.leaf_obj));
                                 }
-                              } else{
-                                if(status){
+                              } else {
+                                if (status) {
                                   leafBloc.add(LeafDislikeRemoveEvent(widget.leaf_obj));
-                                } else{
+                                } else {
                                   leafBloc.add(LeafDislikeEvent(widget.leaf_obj));
                                 }
                               }
-
                             },
                             icon: Icon(
                               Iconsax.heart_remove,
                               size: 28,
-                              color: !dislike_status? (isDarkTheme? Colors.grey.shade600: Colors.grey.shade400): Colors.blue.shade800,
+                              color: !dislike_status ? (isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400) : Colors.blue.shade800,
                             )),
                         Text(numToEng(widget.leaf_obj!.dislikesCount!),
                             style: GoogleFonts.poppins(
@@ -261,7 +310,20 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                   ],
                 ),
                 Divider(color: isDarkTheme ? Colors.grey.shade900 : Colors.grey.shade300),
-
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: IconButton(
+                    onPressed: (){
+                      PersistentNavBarNavigator.pushNewScreen(
+                        context,
+                        screen: HazelLeafFullScreenView(),
+                        withNavBar: true, // OPTIONAL VALUE. True by default.
+                        pageTransitionAnimation: PageTransitionAnimation.fade,
+                      );
+                    },
+                    icon: Icon(Icons.fullscreen_rounded,color: (isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400),),
+                  ),
+                )
               ],
             ),
           );

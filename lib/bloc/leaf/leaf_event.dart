@@ -32,3 +32,13 @@ class LeafDislikeRemoveEvent extends LeafEvent{
 
   LeafDislikeRemoveEvent(this.obj);
 }
+
+
+class LeafFullScreenViewEvent extends LeafEvent{
+  final LeafModel? obj;
+  final UserProfileModel currentUser;
+  final Map<String, bool> map;
+
+  LeafFullScreenViewEvent(this.obj, this.currentUser, this.map);
+
+}
