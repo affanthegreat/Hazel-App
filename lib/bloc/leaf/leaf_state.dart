@@ -5,6 +5,12 @@ abstract class LeafState {}
 
 class LeafInitial extends LeafState {}
 
-class LeafLoadingState extends LeafState{}
+class LeafLoadingState extends LeafState{
 
-class LeafSuccessfulLoadState extends LeafState{}
+}
+
+class LeafSuccessfulLoadState extends LeafState{
+  final Map<String, bool> map;
+
+  LeafSuccessfulLoadState(this.map);
+}

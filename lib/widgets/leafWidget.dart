@@ -6,6 +6,7 @@ import 'package:hazel_client/bloc/leaf/leaf_bloc.dart';
 import 'package:hazel_client/constants/colors.dart';
 import 'package:hazel_client/logics/LeafModel.dart';
 import 'package:hazel_client/logics/UserProfileModel.dart';
+import 'package:hazel_client/logics/leaf_engine.dart';
 import 'package:hazel_client/main.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:intl/intl.dart';
@@ -30,6 +31,16 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
     }
   }
 
+  String numToEngDouble(double num) {
+    if (num >= 1000000) {
+      return (num / 1000000).toStringAsFixed(1) + ' mil';
+    } else if (num >= 1000) {
+      return (num / 1000).toStringAsFixed(1) + 'k';
+    } else {
+      return num.toString();
+    }
+  }
+
   String dateTimeToWords(String dateTimeStr) {
     var dateTime = DateTime.parse(dateTimeStr);
     var formatter = DateFormat('MMMM d, y h:mm a');
@@ -41,7 +52,7 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
   @override
   void initState() {
     // TODO: implement initState
-    leafBloc.add(LeafLoadedEvent(widget.leaf_obj));
+    leafBloc.add(LeafLoadedEvent(widget.leaf_obj, widget.user_obj));
     super.initState();
   }
 
@@ -64,6 +75,8 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
         }
 
         if (state is LeafSuccessfulLoadState) {
+          bool like_status = state.map['like']!;
+          bool dislike_status = state.map['dislike']!;
           return Container(
             width: double.infinity,
             margin: const EdgeInsets.only(top: 10),
@@ -84,7 +97,7 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                         style: GoogleFonts.poppins(
                           textStyle: Theme.of(context).textTheme.labelMedium,
                           fontWeight: FontWeight.bold,
-                          color: isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade700,
+                          color: isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400,
                         )),
                     Align(
                       alignment: Alignment.centerRight,
@@ -122,7 +135,7 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                           style: GoogleFonts.poppins(
                             textStyle: Theme.of(context).textTheme.bodyLarge,
                             fontWeight: FontWeight.bold,
-                            color: isDarkTheme ? Colors.grey.shade700 : Colors.grey.shade900,
+                            color: isDarkTheme ? Colors.grey.shade400 : Colors.grey.shade900,
                           )),
                     ]),
                   ),
@@ -133,7 +146,7 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                       style: GoogleFonts.sourceSansPro(
                         letterSpacing: -0.5,
                         color: isDarkTheme ? Colors.white : Colors.black,
-                        textStyle: Theme.of(context).textTheme.titleLarge,
+                        textStyle: Theme.of(context).textTheme.bodyLarge,
                       )),
                 ),
                 Divider(color: isDarkTheme ? Colors.grey.shade900 : Colors.grey.shade300),
@@ -143,13 +156,30 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                     Row(
                       children: [
                         IconButton(
-                            onPressed: () {
-                              leafBloc.add(LeafLikeEvent(widget.leaf_obj));
+                            onPressed: () async {
+                              var status = await leafEngineObj.checkLike(widget!.leaf_obj!);
+                              if(dislike_status){
+                                var dislike_removal_status = await leafEngineObj.removeDisLikeLeaf(widget!.leaf_obj!);
+                                widget!.leaf_obj!.dislikesCount = widget!.leaf_obj!.dislikesCount! - 1;
+
+                                if(status && dislike_removal_status){
+                                  leafBloc.add(LeafLikeRemoveEvent(widget.leaf_obj));
+                                } else{
+                                  leafBloc.add(LeafLikeEvent(widget.leaf_obj));
+                                }
+                              } else{
+                                if(status){
+                                  leafBloc.add(LeafLikeRemoveEvent(widget.leaf_obj));
+                                } else{
+                                  leafBloc.add(LeafLikeEvent(widget.leaf_obj));
+                                }
+                              }
+
                             },
-                            icon: Icon(
+                            icon:Icon(
                               Iconsax.heart,
                               size: 28,
-                              color: Colors.redAccent,
+                              color: !like_status ? (isDarkTheme ? Colors.grey.shade600:Colors.grey.shade400):Colors.redAccent,
                             )),
                         Text(numToEng(widget.leaf_obj!.likesCount!),
                             style: GoogleFonts.poppins(
@@ -162,13 +192,29 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                     Row(
                       children: [
                         IconButton(
-                            onPressed: () {
-                              leafBloc.add(LeafDislikeEvent(widget.leaf_obj));
+                            onPressed: () async {
+                              var status = await leafEngineObj.checkDisLike(widget!.leaf_obj!);
+                              if(like_status){
+                                var like_removal_status = await leafEngineObj.removeLikeLeaf(widget!.leaf_obj!);
+                                widget!.leaf_obj!.likesCount = widget!.leaf_obj!.likesCount! - 1;
+                                if(status && like_removal_status){
+                                  leafBloc.add(LeafDislikeRemoveEvent(widget.leaf_obj));
+                                } else{
+                                  leafBloc.add(LeafDislikeEvent(widget.leaf_obj));
+                                }
+                              } else{
+                                if(status){
+                                  leafBloc.add(LeafDislikeRemoveEvent(widget.leaf_obj));
+                                } else{
+                                  leafBloc.add(LeafDislikeEvent(widget.leaf_obj));
+                                }
+                              }
+
                             },
                             icon: Icon(
                               Iconsax.heart_remove,
                               size: 28,
-                              color: Colors.grey.shade800,
+                              color: !dislike_status? (isDarkTheme? Colors.grey.shade600: Colors.grey.shade400): Colors.blue.shade800,
                             )),
                         Text(numToEng(widget.leaf_obj!.dislikesCount!),
                             style: GoogleFonts.poppins(
@@ -183,11 +229,11 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                         IconButton(
                             onPressed: () {},
                             icon: Icon(
-                              Iconsax.message,
+                              Iconsax.huobi_token_ht,
                               size: 28,
                               color: !isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
                             )),
-                        Text(numToEng(widget.leaf_obj!.commentsCount!),
+                        Text(numToEngDouble(double.parse(widget.leaf_obj!.experienceRating!)),
                             style: GoogleFonts.poppins(
                               textStyle: Theme.of(context).textTheme.labelMedium,
                               fontWeight: FontWeight.bold,
@@ -215,6 +261,7 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                   ],
                 ),
                 Divider(color: isDarkTheme ? Colors.grey.shade900 : Colors.grey.shade300),
+
               ],
             ),
           );

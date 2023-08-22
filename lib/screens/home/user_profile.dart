@@ -125,179 +125,17 @@ class _UserProfileState extends State<UserProfile> {
       return num.toString();
     }
   }
+
   String dateTimeToWords(String dateTimeStr) {
     var dateTime = DateTime.parse(dateTimeStr);
     var formatter = DateFormat('MMMM d, y h:mm a');
     return formatter.format(dateTime.toLocal());
   }
 
-
   @override
   Widget build(BuildContext context) {
-
-    Widget leafCard(LeafModel? leaf_obj, UserProfileModel? user_obj){
-      return Container(
-        width: double.infinity,
-        margin: EdgeInsets.only(top:10),
-        padding: EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          //border: Border.all(color: isDarkTheme? Colors.grey.shade900: Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: isDarkTheme? Colors.grey.shade900: Colors.grey.shade300,width: 1.5),
-          color: isDarkTheme? Colors.grey.shade900.withOpacity(0.5) : Colors.grey.shade50,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(dateTimeToWords(leaf_obj!.createdDate!), style: GoogleFonts.poppins(
-                  textStyle: Theme.of(context).textTheme.labelMedium,
-                  fontWeight: FontWeight.bold,
-                  color: isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade700,
-                )),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Container(
-                    height: 40,
-                    width: 100,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: isDarkTheme? Colors.grey.shade800: Colors.grey.shade100),
-                      color: leaf_obj!.leafType == "public"? isDarkTheme? Colors.grey.shade900: Colors.grey.shade800: Colors.greenAccent
-                    ),
-                    child: Center(
-                      child: Text(leaf_obj!.leafType.toString().toUpperCase(), style:GoogleFonts.poppins(
-                        textStyle: Theme.of(context).textTheme.labelSmall,
-                        fontWeight: FontWeight.bold,
-                        color: leaf_obj!.leafType == "public"? Colors.white: Colors.black,
-                      ) ,),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Container(
-              margin: EdgeInsets.only(left: 20,right: 20),
-              child: RichText(
-                text: TextSpan(children: [
-                  TextSpan(
-                      text: "@" + user_obj!.userName!,
-                      style: GoogleFonts.poppins(
-                        textStyle: Theme.of(context).textTheme.bodyLarge,
-                        fontWeight: FontWeight.bold,
-                        color: isDarkTheme? Colors.grey.shade700: Colors.grey.shade900,
-                      )),
-                ]),
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.only(left: 20,right: 20),
-              child: Text(leaf_obj!.textContent!, style: GoogleFonts.sourceSansPro(
-                letterSpacing: -0.5,
-                color: isDarkTheme? Colors.white: Colors.black,
-                textStyle:
-                Theme.of(context).textTheme.titleLarge,
-              )),
-            ),
-            Divider(color: isDarkTheme ? Colors.grey.shade900 : Colors.grey.shade300),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    IconButton(onPressed: (){}, icon: Icon(Iconsax.heart,size: 28, color: Colors.redAccent,)),
-                    Text(numToEng(leaf_obj!.likesCount!), style: GoogleFonts.poppins(
-                      textStyle: Theme.of(context).textTheme.labelMedium,
-                      fontWeight: FontWeight.bold,
-                      color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,
-                    ))
-                  ],
-                ),
-                Row(
-                  children: [
-                    IconButton(onPressed: (){}, icon: Icon(Iconsax.heart_remove,size: 28, color: Colors.grey.shade800,)),
-                    Text(numToEng(leaf_obj!.dislikesCount!), style: GoogleFonts.poppins(
-                      textStyle: Theme.of(context).textTheme.labelMedium,
-                      fontWeight: FontWeight.bold,
-                      color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,
-                    ))
-                  ],
-                ),
-                Row(
-                  children: [
-                    IconButton(onPressed: (){}, icon: Icon(Iconsax.message,size: 28, color: !isDarkTheme ? darkScaffoldColor: lightScaffoldColor,)),
-                    Text(numToEng(leaf_obj!.commentsCount!), style: GoogleFonts.poppins(
-                      textStyle: Theme.of(context).textTheme.labelMedium,
-                      fontWeight: FontWeight.bold,
-                      color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,
-                    ))
-                  ],
-                ),
-                Row(
-                  children: [
-                    IconButton(onPressed: (){}, icon: Icon(Iconsax.activity,size: 28, color: CupertinoColors.systemYellow,)),
-                    Text(numToEng(leaf_obj!.viewCount!), style: GoogleFonts.poppins(
-                      textStyle: Theme.of(context).textTheme.labelMedium,
-                      fontWeight: FontWeight.bold,
-                      color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,
-                    ))
-                  ],
-                ),
-              ],
-            ),
-            Divider(color: isDarkTheme ? Colors.grey.shade900 : Colors.grey.shade300),
-          ],
-        ),
-
-      );
-    }
-
     var isPublicSelected = true;
     Widget userProfilePage(UserProfileSuccessfulLoading state) {
-
-      Set<Widget> columnWidgetsPublicSet = {};
-      Set<Widget> columnWidgetsPrivateSet = {};
-      for(int i = 0; i< state.publicLeafSet.length; i++){
-        columnWidgetsPublicSet.add(HazelLeafWidget(leaf_obj: state.publicLeafSet!.elementAt(i), user_obj: state!.obj));
-      }
-      for(int i = 0; i< state.privateLeafSet.length; i++){
-        columnWidgetsPrivateSet.add(HazelLeafWidget(leaf_obj: state.privateLeafSet!.elementAt(i), user_obj: state!.obj));
-      }
-
-      List<Widget> columnWidgetsPublic = columnWidgetsPublicSet.toList();
-      List<Widget> columnWidgetsPrivate = columnWidgetsPrivateSet.toList();
-      if(columnWidgetsPublic.isEmpty){
-        columnWidgetsPublic.add(Container(
-          margin: EdgeInsets.only(top: 40),
-          child: Center(
-            child: Text(
-              "No public leaves",
-                style: GoogleFonts.poppins(
-                  textStyle: Theme.of(context).textTheme.labelMedium,
-                  fontWeight: FontWeight.bold,
-                  color: isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400,
-                )
-            ),
-          ),
-        ));
-      }
-
-      if(columnWidgetsPrivate.isEmpty){
-        columnWidgetsPrivate.add(Container(
-          margin: EdgeInsets.only(top: 40),
-          child: Center(
-            child: Text(
-                "No private leaves",
-                style: GoogleFonts.poppins(
-                  textStyle: Theme.of(context).textTheme.labelMedium,
-                  color: isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400,
-                )
-            ),
-          ),
-        ));
-      }
       return Scaffold(
         backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
         appBar: AppBar(
@@ -323,178 +161,184 @@ class _UserProfileState extends State<UserProfile> {
             onRefresh: () async {
               userProfileBloc.add(UserProfileOnBeginEvent(true));
             },
-            child: ListView(
-              children: [
-                RichText(
-                  text: TextSpan(children: [
-                    TextSpan(
-                        text: "Hello there, " ,
-                        style: GoogleFonts.poppins(
-                          textStyle: Theme.of(context).textTheme.headlineSmall,
-                          fontWeight: FontWeight.bold,
-                          color: isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade600,
-                        )),
-                    TextSpan(
-                        text: "@" + state.obj!.userName!,
-                        style: GoogleFonts.poppins(
-                          textStyle: Theme.of(context).textTheme.headlineSmall,
-                          fontWeight: FontWeight.bold,
-                          color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,
-                        )),
-
+            child: CustomScrollView(
+              slivers: [
+                SliverList(
+                  delegate: SliverChildListDelegate([
+                    RichText(
+                      text: TextSpan(children: [
+                        TextSpan(
+                            text: "Hello there, ",
+                            style: GoogleFonts.poppins(
+                              textStyle: Theme.of(context).textTheme.headlineSmall,
+                              fontWeight: FontWeight.bold,
+                              color: isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade600,
+                            )),
+                        TextSpan(
+                            text: "@" + state.obj!.userName!,
+                            style: GoogleFonts.poppins(
+                              textStyle: Theme.of(context).textTheme.headlineSmall,
+                              fontWeight: FontWeight.bold,
+                              color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,
+                            )),
+                      ]),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 5),
+                      child: Row(
+                        children: [
+                          HazelMetricWidget(label: "Total Leaves", value: numToEng(state.obj!.userPublicLeafCount! + state.obj!.userPrivateLeafCount!).toString(), color: CupertinoColors.activeBlue),
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                userProfileBloc.followingPage = 1;
+                                userProfileBloc.add(UserProfileSeeFollowingEvent());
+                              },
+                              child: HazelMetricWidget(
+                                label: "Following",
+                                value: numToEng(state!.obj!.userFollowing!).toString(),
+                                color: CupertinoColors.activeBlue,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                userProfileBloc.followersPage = 1;
+                                userProfileBloc.add(UserProfileSeeFollowersEvent());
+                              },
+                              child: HazelMetricWidget(label: "Followers", value: numToEng(state.obj!.userFollowers!).toString(), color: CupertinoColors.activeBlue),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: HazelMetricWidget(
+                            label: "Experience points",
+                            value: numToEng(state!.obj!.userExperiencePoints!),
+                            color: CupertinoColors.systemYellow,
+                          ),
+                        ),
+                        Container(
+                          width: 100,
+                          child: HazelMetricWidget(
+                            label: "Level",
+                            value: (state.obj!.userLevel!).toString(),
+                            color: CupertinoColors.systemYellow,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(top: 10, bottom: 10),
+                      child: LinearPercentIndicator(
+                        lineHeight: 40.0,
+                        percent: state.obj!.userExperiencePoints! / state.obj!.experienceNeededForLevelUp(state.obj!.userExperiencePoints!),
+                        backgroundColor: isDarkTheme ? Colors.grey.shade900.withOpacity(0.5) : Colors.grey.shade200,
+                        animation: true,
+                        barRadius: const Radius.circular(8),
+                        alignment: MainAxisAlignment.center,
+                        center: Text(
+                          "${numToEng(state.obj!.experienceNeededForLevelUp(state.obj!.userExperiencePoints!).toInt() - (state.obj!.userExperiencePoints)!.toInt())} points needed to level up",
+                          style: GoogleFonts.poppins(
+                            textStyle: Theme.of(context).textTheme.labelMedium,
+                            fontWeight: FontWeight.bold,
+                            color: isDarkTheme ? Colors.white : Colors.black,
+                          ),
+                        ),
+                        trailing: Text(
+                          "${numToEng(state.obj!.experienceNeededForLevelUp(state.obj!.userExperiencePoints!).toInt())}",
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.bold,
+                            textStyle: Theme.of(context).textTheme.bodyMedium,
+                            color: isDarkTheme ? Colors.white : Colors.black,
+                          ),
+                        ),
+                        padding: const EdgeInsets.only(right: 10, left: 2),
+                        // animateFromLastPercent: true,
+                        linearGradient: const LinearGradient(
+                          colors: [
+                            CupertinoColors.activeBlue,
+                            CupertinoColors.systemYellow,
+                          ],
+                        ),
+                      ),
+                    ),
+                    Divider(
+                      color: isDarkTheme ? Colors.grey.shade900 : Colors.grey.shade400,
+                      thickness: 5,
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(10),
+                      margin: EdgeInsets.only(top: 5),
+                      decoration: BoxDecoration(color: isDarkTheme ? Colors.grey.shade900.withOpacity(0.6) : Colors.grey.shade200, borderRadius: BorderRadius.circular(10)),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 40,
+                              decoration: BoxDecoration(color: isPublicSelected ? CupertinoColors.activeBlue : Colors.grey.shade900, borderRadius: BorderRadius.circular(5)),
+                              margin: EdgeInsets.only(right: 5),
+                              child: InkWell(
+                                onTap: () {
+                                  isPublicSelected = true;
+                                  userProfileBloc.add(UserProfileOnBeginEvent(true));
+                                },
+                                child: Center(
+                                  child: Text(
+                                    "Public Leaves",
+                                    style: GoogleFonts.inter(
+                                      textStyle: Theme.of(context).textTheme.labelMedium,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              height: 40,
+                              decoration: BoxDecoration(color: !isPublicSelected ? CupertinoColors.activeBlue : Colors.grey.shade900, borderRadius: BorderRadius.circular(5)),
+                              margin: EdgeInsets.only(left: 5),
+                              child: InkWell(
+                                onTap: () {
+                                  isPublicSelected = false;
+                                  userProfileBloc.add(UserProfileOnBeginEvent(true));
+                                },
+                                child: Center(
+                                  child: Text(
+                                    "Private Leaves",
+                                    style: GoogleFonts.inter(
+                                      textStyle: Theme.of(context).textTheme.labelMedium,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Divider(
+                      color: isDarkTheme ? Colors.grey.shade900 : Colors.grey.shade400,
+                      thickness: 1,
+                    ),
 
                   ]),
                 ),
-                Container(
-                  margin: EdgeInsets.only(top: 5),
-                  child: Row(
-                    children: [
-                      HazelMetricWidget(label: "Total Leaves", value: numToEng(state.obj!.userPublicLeafCount! + state.obj!.userPrivateLeafCount!).toString(), color: CupertinoColors.activeBlue),
-                      Expanded(
-                        child: InkWell(
-                          onTap: () {
-                            userProfileBloc.followingPage = 1;
-                            userProfileBloc.add(UserProfileSeeFollowingEvent());
-                          },
-                          child: HazelMetricWidget(
-                            label: "Following",
-                            value: numToEng(state!.obj!.userFollowing!).toString(),
-                            color: CupertinoColors.activeBlue,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: InkWell(
-                          onTap: () {
-                            userProfileBloc.followersPage = 1;
-                            userProfileBloc.add(UserProfileSeeFollowersEvent());
-                          },
-                          child: HazelMetricWidget(label: "Followers", value: numToEng(state.obj!.userFollowers!).toString(), color: CupertinoColors.activeBlue),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: HazelMetricWidget(
-                        label: "Experience points",
-                        value: numToEng(state!.obj!.userExperiencePoints!),
-                        color: CupertinoColors.systemYellow,
-                      ),
-                    ),
-                    Container(
-                      width: 100,
-                      child: HazelMetricWidget(
-                        label: "Level",
-                        value: (state.obj!.userLevel!).toString(),
-                        color: CupertinoColors.systemYellow,
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  margin: const EdgeInsets.only(top: 10, bottom: 10),
-                  child: LinearPercentIndicator(
-                    lineHeight: 40.0,
-                    percent: state.obj!.userExperiencePoints! / state.obj!.experienceNeededForLevelUp(state.obj!.userExperiencePoints!),
-                    backgroundColor: isDarkTheme? Colors.grey.shade900.withOpacity(0.5): Colors.grey.shade200,
-                    animation: true,
-                    barRadius: const Radius.circular(8),
-                    alignment: MainAxisAlignment.center,
-                    center: Text(
-                      "${numToEng(state.obj!.experienceNeededForLevelUp(state.obj!.userExperiencePoints!).toInt() - (state.obj!.userExperiencePoints)!.toInt())} points needed to level up",
-                      style: GoogleFonts.poppins(
-                        textStyle: Theme.of(context).textTheme.labelMedium,
-                        fontWeight: FontWeight.bold,
-                        color: isDarkTheme? Colors.white: Colors.black,
-                      ),
-                    ),
-                    trailing: Text(
-                      "${numToEng(state.obj!.experienceNeededForLevelUp(state.obj!.userExperiencePoints!).toInt())}",
-                      style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.bold,
-                        textStyle: Theme.of(context).textTheme.bodyMedium,
-                        color: isDarkTheme ? Colors.white : Colors.black,
-                      ),
-                    ),
-                    padding: const EdgeInsets.only(right: 10,left: 2),
-                    // animateFromLastPercent: true,
-                    linearGradient: const LinearGradient(
-                      colors: [
-                        CupertinoColors.activeBlue,
-                        CupertinoColors.systemYellow,
-                      ],
-                    ),
-                  ),
-                ),
-                Divider(color: isDarkTheme ? Colors.grey.shade900 : Colors.grey.shade400, thickness: 5,),
 
-                Container(
-                  padding: EdgeInsets.all(10),
-                  margin: EdgeInsets.only(top: 5),
-                  decoration: BoxDecoration(
-                    color: isDarkTheme ? Colors.grey.shade900.withOpacity(0.6): Colors.grey.shade200,
-                    borderRadius: BorderRadius.circular(10)
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: isPublicSelected? CupertinoColors.activeBlue: Colors.grey.shade900,
-                            borderRadius: BorderRadius.circular(5)
-                          ),
-                          margin: EdgeInsets.only(right: 5),
-                          child: InkWell(
-                            onTap: (){
-                              isPublicSelected = true;
-                              userProfileBloc.add(UserProfileOnBeginEvent(true));
-                            },
-                            child: Center(
-                              child: Text("Public Leaves", style: GoogleFonts.inter(
-                                textStyle: Theme.of(context).textTheme.labelMedium,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          height: 40,
-                          decoration: BoxDecoration(
-                              color: !isPublicSelected? CupertinoColors.activeBlue: Colors.grey.shade900,
-                              borderRadius: BorderRadius.circular(5)
-                          ),
-                          margin: EdgeInsets.only(left: 5),
-                          child: InkWell(
-                            onTap: (){
-                              isPublicSelected = false;
-                              userProfileBloc.add(UserProfileOnBeginEvent(true));
-                            },
-                            child: Center(
-                              child: Text("Private Leaves", style: GoogleFonts.inter(
-                                textStyle: Theme.of(context).textTheme.labelMedium,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                SliverList(
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    return isPublicSelected ? HazelLeafWidget(leaf_obj: state.publicLeafSet!.elementAt(index), user_obj: state.obj) : HazelLeafWidget(leaf_obj: state.privateLeafSet!.elementAt(index), user_obj: state.obj);
+                  }, childCount: isPublicSelected ? state.publicLeafSet.length : state.privateLeafSet.length),
                 ),
-                Column(
-                  children: isPublicSelected? columnWidgetsPublic : columnWidgetsPrivate,
-                ),
-                Container(
-                  height: 100,
-                )
               ],
             ),
           ),
@@ -512,7 +356,7 @@ class _UserProfileState extends State<UserProfile> {
             onPressed: () {
               searchFieldController.clear();
               userProfileBloc.publicLeafPage = 1;
-              userProfileBloc.privateLeafPage =1;
+              userProfileBloc.privateLeafPage = 1;
               userProfileBloc.privateLeafPost = {};
               userProfileBloc.publicLeavesPost = {};
               userProfileBloc.add(UserProfileOnBeginEvent(true));
@@ -620,7 +464,7 @@ class _UserProfileState extends State<UserProfile> {
 
     Widget userCard(UserProfileModel? obj) {
       return Container(
-        margin: const EdgeInsets.only(top: 10,left: 10,right: 10),
+        margin: const EdgeInsets.only(top: 10, left: 10, right: 10),
         decoration: BoxDecoration(color: isDarkTheme ? Colors.grey.shade900.withOpacity(0.3) : Colors.grey.shade50, border: Border.all(color: isDarkTheme ? Colors.grey.shade900 : Colors.grey.shade300), borderRadius: BorderRadius.circular(10)),
         child: Column(
           children: [
@@ -670,7 +514,7 @@ class _UserProfileState extends State<UserProfile> {
 
     Widget userFollowRequestCard(UserProfileShowAllFollowRequests state, UserProfileModel? obj) {
       return Container(
-        margin: const EdgeInsets.only(left: 10,right: 10,bottom: 10),
+        margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
         decoration: BoxDecoration(color: isDarkTheme ? Colors.grey.shade900.withOpacity(0.3) : Colors.grey.shade100, border: Border.all(color: isDarkTheme ? Colors.grey.shade900 : Colors.grey.shade300), borderRadius: BorderRadius.circular(10)),
         child: Column(
           children: [
@@ -717,11 +561,9 @@ class _UserProfileState extends State<UserProfile> {
                     margin: const EdgeInsets.only(right: 10, bottom: 15, left: 2.5),
                     decoration: BoxDecoration(color: isDarkTheme ? Colors.grey.shade900.withOpacity(0.5) : Colors.grey.shade100, border: Border.all(color: isDarkTheme ? Colors.black : Colors.grey.shade300), borderRadius: BorderRadius.circular(8)),
                     child: InkWell(
-                      onTap: () async{
-
-
+                      onTap: () async {
                         await UserEngine().removeFollowRequest({'requested_to': obj.userId});
-                        var following_status = await UserEngine().getFollowingStatus({'search_profile_id':obj!.userId});
+                        var following_status = await UserEngine().getFollowingStatus({'search_profile_id': obj!.userId});
                         print(following_status);
                         userProfileBloc.followReqestsPage = 1;
                         userProfileBloc.add(UserProfileViewFollowRequestsEvent());
@@ -753,7 +595,7 @@ class _UserProfileState extends State<UserProfile> {
             onPressed: () {
               searchFieldController.clear();
               userProfileBloc.publicLeafPage = 1;
-              userProfileBloc.privateLeafPage =1;
+              userProfileBloc.privateLeafPage = 1;
               userProfileBloc.privateLeafPost = {};
               userProfileBloc.publicLeavesPost = {};
               userProfileBloc.add(UserProfileOnBeginEvent(true));
@@ -792,7 +634,7 @@ class _UserProfileState extends State<UserProfile> {
             onPressed: () {
               searchFieldController.clear();
               userProfileBloc.publicLeafPage = 1;
-              userProfileBloc.privateLeafPage =1;
+              userProfileBloc.privateLeafPage = 1;
               userProfileBloc.privateLeafPost = {};
               userProfileBloc.publicLeavesPost = {};
               userProfileBloc.add(UserProfileOnBeginEvent(true));
@@ -830,7 +672,7 @@ class _UserProfileState extends State<UserProfile> {
             onPressed: () {
               searchFieldController.clear();
               userProfileBloc.publicLeafPage = 1;
-              userProfileBloc.privateLeafPage =1;
+              userProfileBloc.privateLeafPage = 1;
               userProfileBloc.privateLeafPost = {};
               userProfileBloc.publicLeavesPost = {};
               userProfileBloc.add(UserProfileOnBeginEvent(true));
@@ -862,9 +704,7 @@ class _UserProfileState extends State<UserProfile> {
       return Container(
         height: 40,
         margin: const EdgeInsets.only(top: 10, bottom: 10),
-        decoration: BoxDecoration(
-          
-            color: CupertinoColors.activeBlue, borderRadius: BorderRadius.circular(10)),
+        decoration: BoxDecoration(color: CupertinoColors.activeBlue, borderRadius: BorderRadius.circular(10)),
         child: InkWell(
           onTap: () {
             userProfileBloc.add(UserProfileSendFollowRequestEvent(state.obj, state.follow_map));
@@ -876,26 +716,23 @@ class _UserProfileState extends State<UserProfile> {
       );
     }
 
-    Widget blockButton(String txt){
-     return Container(
-          margin: EdgeInsets.all(10),
-          height: 50,
-          width: 120,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: isDarkTheme? Colors.grey.shade900.withOpacity(0.5) : Colors.grey.shade700,
-          ),
-          child: Center(
-              child: Text(txt, style: GoogleFonts.inter(textStyle: Theme.of(context).textTheme.bodySmall, fontWeight: FontWeight.bold, color: Colors.white)),
-      ),
+    Widget blockButton(String txt) {
+      return Container(
+        margin: EdgeInsets.all(10),
+        height: 50,
+        width: 120,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: isDarkTheme ? Colors.grey.shade900.withOpacity(0.5) : Colors.grey.shade700,
+        ),
+        child: Center(
+          child: Text(txt, style: GoogleFonts.inter(textStyle: Theme.of(context).textTheme.bodySmall, fontWeight: FontWeight.bold, color: Colors.white)),
+        ),
       );
     }
 
-
     return BlocConsumer<UserProfileBloc, UserProfileState>(
         bloc: userProfileBloc,
-
-
         listener: (context, state) {
           if (state is UserProfileErrorLoading) {
             var snackBar = SnackBar(
@@ -926,7 +763,7 @@ class _UserProfileState extends State<UserProfile> {
                     onPressed: () {
                       searchFieldController.clear();
                       userProfileBloc.publicLeafPage = 1;
-                      userProfileBloc.privateLeafPage =1;
+                      userProfileBloc.privateLeafPage = 1;
                       userProfileBloc.privateLeafPost = {};
                       userProfileBloc.publicLeavesPost = {};
                       userProfileBloc.add(UserProfileOnBeginEvent(true));
@@ -942,11 +779,13 @@ class _UserProfileState extends State<UserProfile> {
                   ),
                   backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
                 ),
-                body: ListView.builder(
-                  itemCount: state.listOfUsers.length,
-                  itemBuilder: (context, index) {
-                    return userFollowRequestCard(state, state.listOfUsers!.elementAt(index));
-                  },
+                body: CustomScrollView(
+                  slivers: [
+                    SliverList(
+                        delegate: SliverChildBuilderDelegate((context, index) {
+                      return userFollowRequestCard(state, state.listOfUsers!.elementAt(index));
+                    }, childCount: state.listOfUsers!.length))
+                  ],
                 ));
           }
 
@@ -956,37 +795,39 @@ class _UserProfileState extends State<UserProfile> {
 
           if (state is UserProfileGetFollowersSuccesful) {
             return Scaffold(
-                backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
-                appBar: AppBar(
-                  toolbarHeight: 90,
-                  leading: IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    padding: EdgeInsets.zero,
-                    onPressed: () {
-                      searchFieldController.clear();
-                      userProfileBloc.publicLeafPage = 1;
-                      userProfileBloc.privateLeafPage =1;
-                      userProfileBloc.privateLeafPost = {};
-                      userProfileBloc.publicLeavesPost = {};
-                      userProfileBloc.add(UserProfileOnBeginEvent(true));
-                    },
-                  ),
-                  title: Text(
-                    "Your Followers",
-                    style: GoogleFonts.poppins(
-                      textStyle: Theme.of(context).textTheme.bodyLarge,
-                      fontWeight: FontWeight.bold,
-                      color: isDarkTheme ? Colors.white : Colors.black,
-                    ),
-                  ),
-                  backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
-                ),
-                body: ListView.builder(
-                  itemCount: state.listOfUsers.length,
-                  itemBuilder: (context, index) {
-                    return userCard(state.listOfUsers!.elementAt(index));
+              backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
+              appBar: AppBar(
+                toolbarHeight: 90,
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  padding: EdgeInsets.zero,
+                  onPressed: () {
+                    searchFieldController.clear();
+                    userProfileBloc.publicLeafPage = 1;
+                    userProfileBloc.privateLeafPage = 1;
+                    userProfileBloc.privateLeafPost = {};
+                    userProfileBloc.publicLeavesPost = {};
+                    userProfileBloc.add(UserProfileOnBeginEvent(true));
                   },
-                ));
+                ),
+                title: Text(
+                  "Your Followers",
+                  style: GoogleFonts.poppins(
+                    textStyle: Theme.of(context).textTheme.bodyLarge,
+                    fontWeight: FontWeight.bold,
+                    color: isDarkTheme ? Colors.white : Colors.black,
+                  ),
+                ),
+                backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
+              ),
+              body: CustomScrollView(
+                slivers: [
+                  SliverList(delegate: SliverChildBuilderDelegate((context, index) {
+                    return userCard(state.listOfUsers!.elementAt(index));
+                  },childCount: state.listOfUsers!.length))
+                ],
+              ),
+            );
           }
 
           if (state is UserProfileGetFollowersError) {
@@ -998,37 +839,39 @@ class _UserProfileState extends State<UserProfile> {
 
           if (state is UserProfileGetFollowingSuccesful) {
             return Scaffold(
-                backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
-                appBar: AppBar(
-                  toolbarHeight: 90,
-                  leading: IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    padding: EdgeInsets.zero,
-                    onPressed: () {
-                      searchFieldController.clear();
-                      userProfileBloc.publicLeafPage = 1;
-                      userProfileBloc.privateLeafPage =1;
-                      userProfileBloc.privateLeafPost = {};
-                      userProfileBloc.publicLeavesPost = {};
-                      userProfileBloc.add(UserProfileOnBeginEvent(true));
-                    },
-                  ),
-                  title: Text(
-                    "Your Following",
-                    style: GoogleFonts.poppins(
-                      textStyle: Theme.of(context).textTheme.bodyLarge,
-                      fontWeight: FontWeight.bold,
-                      color: isDarkTheme ? Colors.white : Colors.black,
-                    ),
-                  ),
-                  backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
-                ),
-                body: ListView.builder(
-                  itemCount: state.listOfUsers.length,
-                  itemBuilder: (context, index) {
-                    return userCard(state.listOfUsers!.elementAt(index));
+              backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
+              appBar: AppBar(
+                toolbarHeight: 90,
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  padding: EdgeInsets.zero,
+                  onPressed: () {
+                    searchFieldController.clear();
+                    userProfileBloc.publicLeafPage = 1;
+                    userProfileBloc.privateLeafPage = 1;
+                    userProfileBloc.privateLeafPost = {};
+                    userProfileBloc.publicLeavesPost = {};
+                    userProfileBloc.add(UserProfileOnBeginEvent(true));
                   },
-                ));
+                ),
+                title: Text(
+                  "Your Following",
+                  style: GoogleFonts.poppins(
+                    textStyle: Theme.of(context).textTheme.bodyLarge,
+                    fontWeight: FontWeight.bold,
+                    color: isDarkTheme ? Colors.white : Colors.black,
+                  ),
+                ),
+                backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
+              ),
+              body: CustomScrollView(
+                slivers: [
+                  SliverList(delegate: SliverChildBuilderDelegate((context, index) {
+                    return userCard(state.listOfUsers!.elementAt(index));
+                  }, childCount: state.listOfUsers!.length))
+                ],
+              ),
+            );
           }
 
           if (state is UserProfileGetFollowingError) {
@@ -1037,35 +880,38 @@ class _UserProfileState extends State<UserProfile> {
 
           if (state is UserProfileSearchSuccessful) {
             return Scaffold(
-                backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
-                appBar: AppBar(
-                  toolbarHeight: 90,
-                  leading: IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () {
-                      searchFieldController.clear();
-                      userProfileBloc.publicLeafPage = 1;
-                      userProfileBloc.privateLeafPage =1;
-                      userProfileBloc.privateLeafPost = {};
-                      userProfileBloc.publicLeavesPost = {};
-                      userProfileBloc.add(UserProfileOnBeginEvent(true));
-                    },
-                  ),
-                  title: searchUserField(),
-                  backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
+              backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
+              appBar: AppBar(
+                toolbarHeight: 90,
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () {
+                    searchFieldController.clear();
+                    userProfileBloc.publicLeafPage = 1;
+                    userProfileBloc.privateLeafPage = 1;
+                    userProfileBloc.privateLeafPost = {};
+                    userProfileBloc.publicLeavesPost = {};
+                    userProfileBloc.add(UserProfileOnBeginEvent(true));
+                  },
                 ),
-                body: state.listOfUsers.isEmpty
-                    ? Center(
-                        child: Text(
-                          'No Users found.',
-                          style: GoogleFonts.inter(textStyle: Theme.of(context).textTheme.bodyMedium, fontWeight: FontWeight.bold, color: isDarkTheme ? Colors.white : Colors.black),
-                        ),
-                      )
-                    : ListView.builder(
-                        itemCount: state.listOfUsers.length,
-                        itemBuilder: (context, index) {
+                title: searchUserField(),
+                backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
+              ),
+              body: state.listOfUsers.isEmpty
+                  ? Center(
+                      child: Text(
+                        'No Users found.',
+                        style: GoogleFonts.inter(textStyle: Theme.of(context).textTheme.bodyMedium, fontWeight: FontWeight.bold, color: isDarkTheme ? Colors.white : Colors.black),
+                      ),
+                    )
+                  : CustomScrollView(
+                      slivers: [
+                        SliverList(delegate: SliverChildBuilderDelegate((context, index) {
                           return userCard(state.listOfUsers!.elementAt(index));
-                        }));
+                        }, childCount: state.listOfUsers!.length))
+                      ],
+                    ),
+            );
           }
 
           if (state is UserProfileSearchFailure) {
@@ -1143,7 +989,7 @@ class _UserProfileState extends State<UserProfile> {
             var isUserFollowingThisUser = state.follow_map['following_status'];
             var isUserAFollower = state.follow_map['follower_status'];
             var isUserBlocked = state.follow_map['block_status'];
-            var isUserBlockedBy =state.follow_map['blocked_by_status'];
+            var isUserBlockedBy = state.follow_map['blocked_by_status'];
             print(state.follow_map);
             return Scaffold(
               backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
@@ -1154,7 +1000,7 @@ class _UserProfileState extends State<UserProfile> {
                   onPressed: () {
                     searchFieldController.clear();
                     userProfileBloc.publicLeafPage = 1;
-                    userProfileBloc.privateLeafPage =1;
+                    userProfileBloc.privateLeafPage = 1;
                     userProfileBloc.privateLeafPost = {};
                     userProfileBloc.publicLeavesPost = {};
                     print("here");
@@ -1164,138 +1010,144 @@ class _UserProfileState extends State<UserProfile> {
                     userProfileBloc.add(UserProfileOnBeginEvent(true));
                   },
                 ),
-                actions:isUserBlockedBy?[]: [
-                  isUserBlocked? InkWell(
-                      onTap: () async {
-                        userProfileBloc.add(UserProfileUnBlockUserEvent(state.obj));
-                      },
-                      child: blockButton("Unblock User")) : InkWell(
-                      onTap: (){
-                        userProfileBloc.add(UserProfileBlockUserEvent(state.obj));
-                      },
-                      child: blockButton('Block User'))
-                ],
+                actions: isUserBlockedBy
+                    ? []
+                    : [
+                        isUserBlocked
+                            ? InkWell(
+                                onTap: () async {
+                                  userProfileBloc.add(UserProfileUnBlockUserEvent(state.obj));
+                                },
+                                child: blockButton("Unblock User"))
+                            : InkWell(
+                                onTap: () {
+                                  userProfileBloc.add(UserProfileBlockUserEvent(state.obj));
+                                },
+                                child: blockButton('Block User'))
+                      ],
               ),
-              body: isUserBlockedBy? Container(
-                child: Container(
-                  margin: EdgeInsets.only(left: 10,right: 10),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      RichText(
-                        text: TextSpan(children: [
-                          TextSpan(
-                              text: "@" + state.obj!.userName!,
-                              style: GoogleFonts.poppins(
-                                textStyle: Theme.of(context).textTheme.headlineSmall,
-                                fontWeight: FontWeight.bold,
-                                color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,
-                              )),
-                        ]),
-                      ),
-                      const HazelFieldLabel(text: "This user has blocked you.")
-                    ],
-                  ),
-                ),
-              ): Container(
-                margin: const EdgeInsets.only(left: 15, right: 15),
-                child: RefreshIndicator(
-                  backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
-                  onRefresh: () async {
-                    userProfileBloc.publicLeafPage = 1;
-                    userProfileBloc.privateLeafPage =1;
-                    userProfileBloc.privateLeafPost = {};
-                    userProfileBloc.publicLeavesPost = {};
-                    userProfileBloc.add(UserProfileOnBeginEvent(true));
-                  },
-                  child: ListView(
-                    children: [
-                      RichText(
-                        text: TextSpan(children: [
-                          TextSpan(
-                              text: "This belongs to " ,
-                              style: GoogleFonts.poppins(
-                                textStyle: Theme.of(context).textTheme.headlineSmall,
-                                fontWeight: FontWeight.bold,
-                                color: isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade600,
-                              )),
-                          TextSpan(
-                              text: "@" + state.obj!.userName!,
-                              style: GoogleFonts.poppins(
-                                textStyle: Theme.of(context).textTheme.headlineSmall,
-                                fontWeight: FontWeight.bold,
-                                color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,
-                              )),
-
-
-                        ]),
-                      ),
-                      Row(
-                        children: [
-                          HazelMetricWidget(label: "Total Leaves", value: (state.obj!.userPublicLeafCount! + state.obj!.userPrivateLeafCount!).toString(), color: CupertinoColors.activeBlue),
-                          Expanded(
-                            child: InkWell(
-                              onTap: () {},
-                              child: HazelMetricWidget(
-                                label: "Following",
-                                value: (state.obj!.userFollowing).toString(),
-                                color: CupertinoColors.activeBlue,
-                              ),
+              body: isUserBlockedBy
+                  ? Container(
+                      child: Container(
+                        margin: EdgeInsets.only(left: 10, right: 10),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            RichText(
+                              text: TextSpan(children: [
+                                TextSpan(
+                                    text: "@" + state.obj!.userName!,
+                                    style: GoogleFonts.poppins(
+                                      textStyle: Theme.of(context).textTheme.headlineSmall,
+                                      fontWeight: FontWeight.bold,
+                                      color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,
+                                    )),
+                              ]),
                             ),
-                          ),
-                          Expanded(
-                            child: InkWell(
-                              onTap: () {},
-                              child: HazelMetricWidget(label: "Followers", value: (state.obj!.userFollowers).toString(), color: CupertinoColors.activeBlue),
-                            ),
-                          ),
-                        ],
+                            const HazelFieldLabel(text: "This user has blocked you.")
+                          ],
+                        ),
                       ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: HazelMetricWidget(
-                              label: "Experience points",
-                              value: ((state.obj!.userExperiencePoints)!.toInt()).toString(),
-                              color: CupertinoColors.systemYellow,
+                    )
+                  : Container(
+                      margin: const EdgeInsets.only(left: 15, right: 15),
+                      child: RefreshIndicator(
+                        backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
+                        onRefresh: () async {
+                          userProfileBloc.publicLeafPage = 1;
+                          userProfileBloc.privateLeafPage = 1;
+                          userProfileBloc.privateLeafPost = {};
+                          userProfileBloc.publicLeavesPost = {};
+                          userProfileBloc.add(UserProfileOnBeginEvent(true));
+                        },
+                        child: ListView(
+                          children: [
+                            RichText(
+                              text: TextSpan(children: [
+                                TextSpan(
+                                    text: "This belongs to ",
+                                    style: GoogleFonts.poppins(
+                                      textStyle: Theme.of(context).textTheme.headlineSmall,
+                                      fontWeight: FontWeight.bold,
+                                      color: isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade600,
+                                    )),
+                                TextSpan(
+                                    text: "@" + state.obj!.userName!,
+                                    style: GoogleFonts.poppins(
+                                      textStyle: Theme.of(context).textTheme.headlineSmall,
+                                      fontWeight: FontWeight.bold,
+                                      color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,
+                                    )),
+                              ]),
                             ),
-                          ),
-                          Container(
-                            width: 100,
-                            child: HazelMetricWidget(label: "Level", value: (state.obj!.userLevel!).toString(), color: isDarkTheme ? CupertinoColors.systemYellow : CupertinoColors.systemYellow),
-                          ),
-                        ],
-                      ),
-                      (isUserBlocked)? Container(): (isUserAFollower && isUserFollowingThisUser)
-                          ? Row(
-                              children: [Expanded(child: unfollowButton(state)), Expanded(child: removeFollowerButton(state))],
+                            Row(
+                              children: [
+                                HazelMetricWidget(label: "Total Leaves", value: (state.obj!.userPublicLeafCount! + state.obj!.userPrivateLeafCount!).toString(), color: CupertinoColors.activeBlue),
+                                Expanded(
+                                  child: InkWell(
+                                    onTap: () {},
+                                    child: HazelMetricWidget(
+                                      label: "Following",
+                                      value: (state.obj!.userFollowing).toString(),
+                                      color: CupertinoColors.activeBlue,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: InkWell(
+                                    onTap: () {},
+                                    child: HazelMetricWidget(label: "Followers", value: (state.obj!.userFollowers).toString(), color: CupertinoColors.activeBlue),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: HazelMetricWidget(
+                                    label: "Experience points",
+                                    value: ((state.obj!.userExperiencePoints)!.toInt()).toString(),
+                                    color: CupertinoColors.systemYellow,
+                                  ),
+                                ),
+                                Container(
+                                  width: 100,
+                                  child: HazelMetricWidget(label: "Level", value: (state.obj!.userLevel!).toString(), color: isDarkTheme ? CupertinoColors.systemYellow : CupertinoColors.systemYellow),
+                                ),
+                              ],
+                            ),
+                            (isUserBlocked)
+                                ? Container()
+                                : (isUserAFollower && isUserFollowingThisUser)
+                                    ? Row(
+                                        children: [Expanded(child: unfollowButton(state)), Expanded(child: removeFollowerButton(state))],
+                                      )
+                                    : (!isUserAFollower && isUserFollowingThisUser && !isFollowRequestSent)
+                                        ? Row(
+                                            children: [Expanded(child: followBackButton(state)), Expanded(child: removeFollowerButton(state))],
+                                          )
+                                        : (!isUserAFollower && isUserFollowingThisUser && isFollowRequestSent)
+                                            ? Row(
+                                                children: [Expanded(child: followRequestedInfoButton(state)), Expanded(child: removeFollowerButton(state))],
+                                              )
+                                            : (isUserAFollower && !isUserFollowingThisUser && !isFollowRequestSent)
+                                                ? followBackButton(state)
+                                                : (isUserAFollower && !isUserFollowingThisUser && isFollowRequestSent)
+                                                    ? followRequestedInfoButton(state)
+                                                    : (!isUserAFollower && !isUserFollowingThisUser && isFollowRequestSent)
+                                                        ? followRequestedInfoButton(state)
+                                                        : (!isUserAFollower && !isUserFollowingThisUser && !isFollowRequestSent)
+                                                            ? followButton(state)
+                                                            : Container(),
+                            Divider(color: isDarkTheme ? Colors.grey.shade800 : Colors.grey.shade200),
+                            Container(
+                              height: 100,
                             )
-                          : (!isUserAFollower && isUserFollowingThisUser && !isFollowRequestSent)
-                              ? Row(
-                                  children: [Expanded(child: followBackButton(state)), Expanded(child: removeFollowerButton(state))],
-                                )
-                              : (!isUserAFollower && isUserFollowingThisUser && isFollowRequestSent)
-                                  ? Row(
-                                      children: [Expanded(child: followRequestedInfoButton(state)), Expanded(child: removeFollowerButton(state))],
-                                    )
-                                  : (isUserAFollower && !isUserFollowingThisUser && !isFollowRequestSent)
-                                      ? followBackButton(state)
-                                      : (isUserAFollower && !isUserFollowingThisUser && isFollowRequestSent)
-                                          ? followRequestedInfoButton(state)
-                                          : (!isUserAFollower && !isUserFollowingThisUser && isFollowRequestSent)
-                                              ? followRequestedInfoButton(state)
-                                              : (!isUserAFollower && !isUserFollowingThisUser && !isFollowRequestSent)
-                                                  ? followButton(state)
-                                                  : Container(),
-                      Divider(color: isDarkTheme ? Colors.grey.shade800 : Colors.grey.shade200),
-                      Container(
-                        height: 100,
-                      )
-                    ],
-                  ),
-                ),
-              ),
+                          ],
+                        ),
+                      ),
+                    ),
             );
           }
 

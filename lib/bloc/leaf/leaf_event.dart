@@ -5,7 +5,8 @@ abstract class LeafEvent {}
 
 class LeafLoadedEvent extends LeafEvent{
   final LeafModel? obj;
-  LeafLoadedEvent(this.obj);
+  final UserProfileModel? user_obj;
+  LeafLoadedEvent(this.obj, this.user_obj);
 }
 
 class LeafLikeEvent extends LeafEvent{
