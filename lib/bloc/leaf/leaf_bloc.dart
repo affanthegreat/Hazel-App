@@ -117,11 +117,7 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
 
   FutureOr<void> fullScreenView(LeafFullScreenViewEvent event, Emitter<LeafState> emit) async{
     emit(LeafLoadingState());
-
-      var comment_data = await leafEngineObj.getAllComments(event.obj!, commentsPage);
-      print("COMMENT DATA");
-      print(comment_data);
-
+    var comment_data = await leafEngineObj.getAllComments(event.obj!, commentsPage);
     emit(LeafFullScreenState(event.map, event.obj, event.currentUser, comment_data));
   }
 

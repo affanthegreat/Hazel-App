@@ -187,7 +187,6 @@ class LeafEngine {
       data['page_number'] = page_number;
       data['leaf_id'] = leaf_obj.leafId;
       final response = await dio.post(url + apiEndpoint, data: data);
-      print(response);
       List<dynamic> result = response.data['data'];
 
       Map<String, dynamic> comment_set = {};
@@ -203,6 +202,7 @@ class LeafEngine {
       CommentsRepo commentsRepo = CommentsRepo();
       commentsRepo.commentsTree = tree;
       commentsRepo.commentsMap = comment_set;
+      commentsRepo.sortRootComments();
       return commentsRepo;
   }
 

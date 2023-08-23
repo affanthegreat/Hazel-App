@@ -307,26 +307,20 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
                                 showRootNode: false,
                                 indentation: const Indentation(style: IndentStyle.roundJoint,color: Colors.yellowAccent,thickness: 1.5,width: 30),
                                 builder: (context, node) {
-                                  // build your node item here
-                                  // return any widget that you need
+
                                   return Text(state.commentData.commentsMap[node.key].comment, style: TextStyle(color: Colors.white));
-                                  return ListTile(
-                                    title: Text("Item ${node.level}-${node.key}", style: TextStyle(color: Colors.white)),
-                                    subtitle: Text('Level ${node.level}',style: TextStyle(color: Colors.white)),
-                                  );
                                 },
                               ),
                             ],
                           ),
                         ),
                       ),
-
                     ],
                   ),
                 );
               }
               return Container();
-            },
+            }
           ),
         ));
   }
