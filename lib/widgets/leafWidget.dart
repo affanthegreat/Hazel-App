@@ -116,8 +116,8 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
         print(state.runtimeType);
         if (state is LeafLoadingState) {
           return Container(
-            margin: EdgeInsets.only(top: 50),
-            child: Center(
+            margin: const EdgeInsets.only(top: 50),
+            child: const Center(
               child: CircularProgressIndicator(),
             ),
           );
@@ -133,13 +133,13 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
           bool dislike_status = state.map['dislike']!;
           return Container(
             width: double.infinity,
-            margin: const EdgeInsets.only(top: 10),
+            //margin: const EdgeInsets.only(top: 10),
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               //border: Border.all(color: isDarkTheme? Colors.grey.shade900: Colors.grey.shade300),
-              borderRadius: BorderRadius.circular(10),
+              //borderRadius: BorderRadius.circular(10),
               border: Border.all(color: isDarkTheme ? Colors.grey.shade900 : Colors.grey.shade300, width: 1.5),
-              color: isDarkTheme ? Colors.grey.shade900.withOpacity(0.5) : Colors.grey.shade50,
+              //color: isDarkTheme ? Colors.grey.shade900.withOpacity(0.5) : Colors.grey.shade50,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,33 +151,53 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                         style: GoogleFonts.poppins(
                           textStyle: Theme.of(context).textTheme.labelMedium,
                           fontWeight: FontWeight.bold,
-                          color: isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400,
+                          color: isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade500,
                         )),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Container(
-                        height: 40,
-                        width: 100,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: isDarkTheme ? Colors.grey.shade800 : Colors.grey.shade100),
-                            color: widget.leaf_obj!.leafType == "public"
-                                ? isDarkTheme
+                    Row(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Container(
+                            height: 30,
+                            width: 80,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: isDarkTheme ? Colors.grey.shade800 : Colors.grey.shade100),
+                                color: widget.leaf_obj!.leafType == "public"
+                                    ? isDarkTheme
                                     ? Colors.grey.shade900
-                                    : Colors.grey.shade800
-                                : Colors.greenAccent),
-                        child: Center(
-                          child: Text(
-                            widget.leaf_obj!.leafType.toString().toUpperCase(),
-                            style: GoogleFonts.poppins(
-                              textStyle: Theme.of(context).textTheme.labelSmall,
-                              fontWeight: FontWeight.bold,
-                              color: widget.leaf_obj!.leafType == "public" ? Colors.white : Colors.black,
+                                    : Colors.grey.shade200
+                                    : Colors.greenAccent),
+                            child: Center(
+                              child: Text(
+                                widget.leaf_obj!.leafType.toString().toUpperCase(),
+                                style: GoogleFonts.poppins(
+                                  textStyle: Theme.of(context).textTheme.labelSmall,
+                                  fontWeight: FontWeight.bold,
+                                  color: widget.leaf_obj!.leafType == "public" ? (isDarkTheme? Colors.white: Colors.grey.shade500) : Colors.black,
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
+                        Container(
+                          width: 28,
+                          height: 28,
+                          margin: EdgeInsets.only(left: 5,right: 5,bottom: 10),
+                          child: IconButton(
+                            onPressed: (){
+                              PersistentNavBarNavigator.pushNewScreen(
+                                context,
+                                screen:HazelLeafFullScreenView(leafObj: widget.leaf_obj, userObj: widget.user_obj!, map: state.map),
+                                withNavBar: true, // OPTIONAL VALUE. True by default.
+                                pageTransitionAnimation: PageTransitionAnimation.sizeUp,
+                              );
+                            },
+                            icon: Icon(Icons.fullscreen_rounded,color: (isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400),),
+                          ),
+                        ),
+                      ],
+                    )
                   ],
                 ),
                 Container(
@@ -187,9 +207,9 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                       TextSpan(
                           text: "@" + widget.user_obj!.userName!,
                           style: GoogleFonts.inter(
-                            textStyle: Theme.of(context).textTheme.bodyLarge,
+                            textStyle: Theme.of(context).textTheme.labelLarge,
                             fontWeight: FontWeight.bold,
-                            color: isDarkTheme ? Colors.grey.shade400 : Colors.grey.shade900,
+                            color: isDarkTheme ? Colors.grey.shade400 : Colors.grey.shade700,
                           )),
                     ]),
                   ),
@@ -199,6 +219,7 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                   child: Text(widget.leaf_obj!.textContent!,
                       style: GoogleFonts.sourceSansPro(
                         letterSpacing: -0.5,
+                        fontSize: 21,
                         color: isDarkTheme ? Colors.white : Colors.black,
                         textStyle: Theme.of(context).textTheme.bodyLarge,
                       )),
@@ -310,23 +331,10 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                             ))
                       ],
                     ),
+
                   ],
                 ),
-                Divider(color: isDarkTheme ? Colors.grey.shade900 : Colors.grey.shade300),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: IconButton(
-                    onPressed: (){
-                      PersistentNavBarNavigator.pushNewScreen(
-                        context,
-                        screen:HazelLeafFullScreenView(leafObj: widget.leaf_obj, userObj: widget.user_obj!, map: state.map),
-                        withNavBar: true, // OPTIONAL VALUE. True by default.
-                        pageTransitionAnimation: PageTransitionAnimation.sizeUp,
-                      );
-                    },
-                    icon: Icon(Icons.fullscreen_rounded,color: (isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400),),
-                  ),
-                )
+
               ],
             ),
           );

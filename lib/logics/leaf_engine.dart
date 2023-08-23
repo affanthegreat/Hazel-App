@@ -227,8 +227,11 @@ class LeafEngine {
       data['auth_token'] = sessionData!['auth_token'];
       data['token']  = sessionData!['token'];
       final response = await dio.post(url + apiEndpoint, data: data);
-
-      return response.data;
+      if(response.data['message'] == -100){
+        return true;
+      } else{
+        return false;
+      }
     } catch (e) {
       return false;
     }
@@ -236,34 +239,4 @@ class LeafEngine {
 
 }
 
-
-class CommentNode {
-  final Map<String, dynamic> comment;
-  final List<CommentNode> children;
-
-  CommentNode({required this.comment, this.children = const []});
-}
-
-List<CommentNode> constructCommentTree(List<Map<String, dynamic>> sortedComments) {
-  Map<String, CommentNode> commentTree = {};
-
-  for (var commentData in sortedComments) {
-    final commentId = commentData['comment_id'];
-    final parentCommentId = commentData['parent_comment_id'];
-
-    final commentNode = CommentNode(comment: commentData, children: []);
-
-    if (!commentTree.containsKey(commentId)) {
-      commentTree[commentId] = commentNode;
-    }
-
-    if (parentCommentId != null) {
-      if (commentTree.containsKey(parentCommentId)) {
-        commentTree[parentCommentId]!.children.add(commentNode);
-      }
-    }
-  }
-
-  return commentTree.values.where((node) => node.comment['comment_depth'] == 1).toList();
-}
 

@@ -6,9 +6,11 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hazel_client/bloc/leaf/leaf_bloc.dart';
 import 'package:hazel_client/constants/colors.dart';
+import 'package:hazel_client/logics/CommentModels.dart';
 import 'package:hazel_client/logics/LeafModel.dart';
 import 'package:hazel_client/logics/UserProfileModel.dart';
 import 'package:hazel_client/main.dart';
+import 'package:hazel_client/widgets/HazelFieldHeading.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:intl/intl.dart';
 
@@ -59,14 +61,13 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
 
   @override
   Widget build(BuildContext context) {
-
     TextEditingController replyController = TextEditingController();
     Widget textField() {
       return Container(
         margin: const EdgeInsets.only(top: 10, bottom: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(40),
-          border: Border.all(color: isDarkTheme ? Colors.grey.shade900 : Colors.grey, width: 2),
+          border: Border.all(color: isDarkTheme ? Colors.grey.shade800 : Colors.grey, width: 2),
         ),
         child: Padding(
           padding: const EdgeInsets.only(
@@ -107,6 +108,7 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
         ),
       );
     }
+
     void _addNode(TreeNode parent, String key, Map<dynamic, dynamic> children) {
       final newNode = TreeNode(key: key);
       if (children.isNotEmpty) {
@@ -117,7 +119,6 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
       parent.add(newNode);
     }
 
-
     TreeNode buildTree(Map<String, Map<dynamic, dynamic>> inputMap) {
       final rootNode = TreeNode(key: 'Root');
       for (var entry in inputMap.entries) {
@@ -126,14 +127,199 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
       return rootNode;
     }
 
+    Widget leafMainSection() {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(dateTimeToWords(widget.leafObj!.createdDate!),
+                  style: GoogleFonts.poppins(
+                    textStyle: Theme.of(context).textTheme.labelMedium,
+                    fontWeight: FontWeight.bold,
+                    color: isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400,
+                  )),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Container(
+                  height: 30,
+                  width: 80,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: isDarkTheme ? Colors.grey.shade800 : Colors.grey.shade100),
+                      color: widget.leafObj!.leafType == "public"
+                          ? isDarkTheme
+                          ? Colors.grey.shade900
+                          : Colors.grey.shade200
+                          : Colors.greenAccent),
+                  child: Center(
+                    child: Text(
+                      widget.leafObj!.leafType.toString().toUpperCase(),
+                      style: GoogleFonts.poppins(
+                        textStyle: Theme.of(context).textTheme.labelSmall,
+                        fontWeight: FontWeight.bold,
+                        color: widget.leafObj!.leafType == "public" ? (isDarkTheme? Colors.white: Colors.grey.shade500) : Colors.black,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Container(
+            margin: const EdgeInsets.only(left: 20, right: 20),
+            child: RichText(
+              text: TextSpan(children: [
+                TextSpan(
+                    text: "@" + widget.userObj!.userName!,
+                    style: GoogleFonts.inter(
+                      textStyle: Theme.of(context).textTheme.labelLarge,
+                      fontWeight: FontWeight.bold,
+                      color: isDarkTheme ? Colors.grey.shade400 : Colors.grey.shade700,
+                    )),
+              ]),
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+            child: Text(widget.leafObj!.textContent!,
+                style: GoogleFonts.sourceSansPro(
+                  letterSpacing: -0.5,
+                  color: isDarkTheme ? Colors.white : Colors.black,
+                  fontSize: 22,
+                  textStyle: Theme.of(context).textTheme.bodyLarge,
+                )),
+          ),
+          Divider(color: CupertinoColors.systemYellow),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                      onPressed: () async {},
+                      icon: Icon(
+                        Iconsax.heart,
+                        size: 28,
+                        color: !widget.map['like'] ? (isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400) : Colors.redAccent,
+                      )),
+                  Text(numToEng(widget.leafObj!.likesCount!),
+                      style: GoogleFonts.poppins(
+                        textStyle: Theme.of(context).textTheme.labelMedium,
+                        fontWeight: FontWeight.bold,
+                        color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,
+                      ))
+                ],
+              ),
+              Row(
+                children: [
+                  IconButton(
+                      onPressed: () async {
+                        var status = await leafEngineObj.checkDisLike(widget!.leafObj!);
+                      },
+                      icon: Icon(
+                        Iconsax.heart_remove,
+                        size: 28,
+                        color: !widget.map['dislike'] ? (isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400) : Colors.blue.shade800,
+                      )),
+                  Text(numToEng(widget.leafObj!.dislikesCount!),
+                      style: GoogleFonts.poppins(
+                        textStyle: Theme.of(context).textTheme.labelMedium,
+                        fontWeight: FontWeight.bold,
+                        color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,
+                      ))
+                ],
+              ),
+              Row(
+                children: [
+                  IconButton(
+                      onPressed: () {},
+                      icon: const Icon(
+                        Iconsax.huobi_token_ht,
+                        size: 28,
+                        color: CupertinoColors.activeOrange,
+                      )),
+                  Text(numToEngDouble(double.parse(widget.leafObj!.experienceRating!)),
+                      style: GoogleFonts.poppins(
+                        textStyle: Theme.of(context).textTheme.labelMedium,
+                        fontWeight: FontWeight.bold,
+                        color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,
+                      ))
+                ],
+              ),
+              Row(
+                children: [
+                  IconButton(
+                      onPressed: () {},
+                      icon: const Icon(
+                        Iconsax.activity,
+                        size: 28,
+                        color: CupertinoColors.systemYellow,
+                      )),
+                  Text(numToEng(widget.leafObj!.viewCount!),
+                      style: GoogleFonts.poppins(
+                        textStyle: Theme.of(context).textTheme.labelMedium,
+                        fontWeight: FontWeight.bold,
+                        color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,
+                      ))
+                ],
+              ),
+            ],
+          ),
+        ],
+      );
+    }
 
+    Widget commentCard(LeafComments comment) {
+      return Container(
+        width: double.infinity,
+        margin: EdgeInsets.only(bottom: 10),
+        padding: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+          //border: Border.all(color: isDarkTheme ? Colors.grey.shade900 : Colors.grey.shade300, width: 1.5),
+          //color: isDarkTheme ? Colors.grey.shade900.withOpacity(0.3) : Colors.grey.shade50,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(comment.commentedById!,
+                style: GoogleFonts.inter(
+                  textStyle: Theme.of(context).textTheme.labelSmall,
+                  color: isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400,
+                )),
+            Text(dateTimeToWords(comment.createdDate!),
+                style: GoogleFonts.inter(
+                  textStyle: Theme.of(context).textTheme.labelSmall,
+                  color: isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400,
+                )),
+            Text(comment.comment!,
+                style: GoogleFonts.sourceSansPro(
+                  letterSpacing: -0.5,
+                  fontSize: 18,
+                  color: isDarkTheme ? Colors.white : Colors.black,
+                  textStyle: Theme.of(context).textTheme.titleMedium,
+                )),
+            Container(
+                margin: EdgeInsets.only(top: 5),
+                child: Divider(
+                  color: isDarkTheme ? Colors.grey.shade900 : Colors.grey.shade200,
+                )),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [Container(width: 24, height: 24, margin: EdgeInsets.only(left: 10, right: 10, bottom: 5), child: IconButton(onPressed: () {}, icon: const Icon(Iconsax.message_add_1, size: 18, color: Colors.grey)))],
+            ),
+          ],
+        ),
+      );
+    }
 
     return Scaffold(
         backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
           backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
-          centerTitle: true,
           title: Text(
             "Thread",
             style: GoogleFonts.poppins(
@@ -148,180 +334,61 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
             leafFullScreenBloc.add(LeafFullScreenViewEvent(widget.leafObj, widget.userObj, widget.map));
           },
           child: BlocConsumer<LeafBloc, LeafState>(
-            bloc: leafFullScreenBloc,
-            listener: (context, state) {
-              // TODO: implement listener
-            },
-            builder: (context, state) {
-              if (state is LeafFullScreenState) {
-                return Container(
-                  margin: EdgeInsets.only(left: 10, right: 10),
-                  child: Column(
+              bloc: leafFullScreenBloc,
+              listener: (context, state) {
+                // TODO: implement listener
+              },
+              builder: (context, state) {
+                if(state is LeafSendingComment) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Expanded(
-                        child: Container(
-                          child: CustomScrollView(
-                            slivers: [
-                              SliverList(
-                                  delegate: SliverChildListDelegate([
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(dateTimeToWords(widget.leafObj!.createdDate!),
-                                        style: GoogleFonts.poppins(
-                                          textStyle: Theme.of(context).textTheme.labelMedium,
-                                          fontWeight: FontWeight.bold,
-                                          color: isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400,
-                                        )),
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Container(
-                                        height: 40,
-                                        width: 100,
-                                        decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(10),
-                                            border: Border.all(color: isDarkTheme ? Colors.grey.shade800 : Colors.grey.shade100),
-                                            color: widget.leafObj!.leafType == "public"
-                                                ? isDarkTheme
-                                                    ? Colors.grey.shade900
-                                                    : Colors.grey.shade800
-                                                : Colors.greenAccent),
-                                        child: Center(
-                                          child: Text(
-                                            widget.leafObj!.leafType.toString().toUpperCase(),
-                                            style: GoogleFonts.poppins(
-                                              textStyle: Theme.of(context).textTheme.labelSmall,
-                                              fontWeight: FontWeight.bold,
-                                              color: widget.leafObj!.leafType == "public" ? Colors.white : Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.only(left: 20, right: 20),
-                                  child: RichText(
-                                    text: TextSpan(children: [
-                                      TextSpan(
-                                          text: "@" + widget.userObj!.userName!,
-                                          style: GoogleFonts.inter(
-                                            textStyle: Theme.of(context).textTheme.bodyLarge,
-                                            fontWeight: FontWeight.bold,
-                                            color: isDarkTheme ? Colors.grey.shade200 : Colors.grey.shade900,
-                                          )),
-                                    ]),
-                                  ),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.only(left: 20, right: 20,bottom: 20),
-                                  child: Text(widget.leafObj!.textContent!,
-                                      style: GoogleFonts.sourceSansPro(
-                                        letterSpacing: -0.5,
-                                        color: isDarkTheme ? Colors.white : Colors.black,
-                                        textStyle: Theme.of(context).textTheme.bodyLarge,
-                                      )),
-                                ),
-                                Divider(color: isDarkTheme ? Colors.grey.shade800 : Colors.grey.shade300),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        IconButton(
-                                            onPressed: () async {},
-                                            icon: Icon(
-                                              Iconsax.heart,
-                                              size: 28,
-                                              color: !widget.map['like'] ? (isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400) : Colors.redAccent,
-                                            )),
-                                        Text(numToEng(widget.leafObj!.likesCount!),
-                                            style: GoogleFonts.poppins(
-                                              textStyle: Theme.of(context).textTheme.labelMedium,
-                                              fontWeight: FontWeight.bold,
-                                              color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,
-                                            ))
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        IconButton(
-                                            onPressed: () async {
-                                              var status = await leafEngineObj.checkDisLike(widget!.leafObj!);
-                                            },
-                                            icon: Icon(
-                                              Iconsax.heart_remove,
-                                              size: 28,
-                                              color: !widget.map['dislike'] ? (isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400) : Colors.blue.shade800,
-                                            )),
-                                        Text(numToEng(widget.leafObj!.dislikesCount!),
-                                            style: GoogleFonts.poppins(
-                                              textStyle: Theme.of(context).textTheme.labelMedium,
-                                              fontWeight: FontWeight.bold,
-                                              color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,
-                                            ))
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        IconButton(
-                                            onPressed: () {},
-                                            icon: const Icon(
-                                              Iconsax.huobi_token_ht,
-                                              size: 28,
-                                              color: CupertinoColors.activeOrange,
-                                            )),
-                                        Text(numToEngDouble(double.parse(widget.leafObj!.experienceRating!)),
-                                            style: GoogleFonts.poppins(
-                                              textStyle: Theme.of(context).textTheme.labelMedium,
-                                              fontWeight: FontWeight.bold,
-                                              color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,
-                                            ))
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        IconButton(
-                                            onPressed: () {},
-                                            icon: const Icon(
-                                              Iconsax.activity,
-                                              size: 28,
-                                              color: CupertinoColors.systemYellow,
-                                            )),
-                                        Text(numToEng(widget.leafObj!.viewCount!),
-                                            style: GoogleFonts.poppins(
-                                              textStyle: Theme.of(context).textTheme.labelMedium,
-                                              fontWeight: FontWeight.bold,
-                                              color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,
-                                            ))
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                    textField(),
+                      const CircularProgressIndicator(),
+                      Text("Saving your comment..",
+                          style: GoogleFonts.poppins(
+                            textStyle: Theme.of(context).textTheme.labelMedium,
+                            fontWeight: FontWeight.bold,
+                            color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,
+                          ))
+                    ],
+                  );
+                }
+                if (state is LeafFullScreenState) {
+                  return Container(
+                    margin: EdgeInsets.only(left: 10, right: 10),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            child: CustomScrollView(
+                              slivers: [
+                                SliverList(
+                                    delegate: SliverChildListDelegate([
+                                      leafMainSection(),
+                                  textField(),
+                                      Container(
+                                          margin: EdgeInsets.only(top: 5,bottom: 10),
+                                          child: HazelFieldHeading(text: "Replies")),
+                                ])),
 
-                              ])),
-                              SliverTreeView.simple(
-                                tree: buildTree(state.commentData.commentsTree),
-                                showRootNode: false,
-                                indentation: const Indentation(style: IndentStyle.roundJoint,color: Colors.yellowAccent,thickness: 1.5,width: 30),
-                                builder: (context, node) {
-
-                                  return Text(state.commentData.commentsMap[node.key].comment, style: TextStyle(color: Colors.white));
-                                },
-                              ),
-                            ],
+                                SliverTreeView.simple(
+                                  tree: buildTree(state.commentData.commentsTree),
+                                  showRootNode: false,
+                                  indentation: const Indentation(style: IndentStyle.roundJoint, color: Colors.yellowAccent, thickness: 1.5, width: 30),
+                                  builder: (context, node) {
+                                    return commentCard(state.commentData.commentsMap[node.key]);
+                                  },
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              }
-              return Container();
-            }
-          ),
+                      ],
+                    ),
+                  );
+                }
+                return Container();
+              }),
         ));
   }
 }

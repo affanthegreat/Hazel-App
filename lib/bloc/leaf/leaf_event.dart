@@ -50,6 +50,4 @@ class LeafSendComment extends LeafEvent{
   final Map<String, dynamic> map;
 
   LeafSendComment(this.commentString, this.obj, this.currentUser, this.map);
-
-
 }

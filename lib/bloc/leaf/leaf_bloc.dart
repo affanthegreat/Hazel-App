@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:hazel_client/logics/LeafModel.dart';
 import 'package:hazel_client/logics/UserProfileModel.dart';
-import 'package:hazel_client/logics/leaf_engine.dart';
 import 'package:hazel_client/logics/wrappers.dart';
 import 'package:hazel_client/main.dart';
 import 'package:meta/meta.dart';
@@ -122,10 +121,9 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
   }
 
   FutureOr<void> sendComment(LeafSendComment event, Emitter<LeafState> emit) async {
-    emit(LeafLoadingState());
+    emit(LeafSendingComment());
     try{
-      var comment_data = await leafEngineObj.sendComment(event.commentString, event.obj!);
-      emit(LeafFullScreenState(event.map, event.obj, event.currentUser, comment_data));
+      await leafEngineObj.sendComment(event.commentString, event.obj!);
     } catch(e){
       throw(e);
     }

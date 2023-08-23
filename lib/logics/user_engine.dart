@@ -353,8 +353,10 @@ class UserEngine {
         'user_id':user_obj.userId
       };
       final response = await dio.post(url+ endPoint, data: data);
+      print(response);
       return response.data;
     } catch (e) {
+      throw(e);
       return false;
     }
   }

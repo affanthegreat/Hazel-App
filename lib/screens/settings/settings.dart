@@ -113,6 +113,7 @@ class _SettingsState extends State<Settings> {
         child: ListView(
           children: [
             const HazelFieldHeading(text: 'Hazel Pro'),
+            const HazelFieldLabel(text: "Ultimate additions for your content."),
             settingsButton(
                 "Available Flares",
                 Icon(
@@ -161,6 +162,19 @@ class _SettingsState extends State<Settings> {
                     color: isDarkTheme ? Colors.redAccent : Colors.redAccent,
                   )),
             ),
+            InkWell(
+              onTap: (){
+               setState(() {
+                 isDarkTheme = !isDarkTheme;
+               });
+              },
+              child: settingsButton(
+                  "Switch theme",
+                  Icon(
+                    Iconsax.user,
+                    color: isDarkTheme ? Colors.redAccent : Colors.redAccent,
+                  )),
+            ),
             settingsButton(
                 "Privacy settings",
                 Icon(
@@ -199,10 +213,10 @@ class _SettingsState extends State<Settings> {
                   )),
             ),
             Container(
-              margin: EdgeInsets.only(top: 20),
+              margin: EdgeInsets.only(top: 20,bottom: 10),
               alignment: Alignment.center,
               child: Text(
-                "Thanks for using hazel.gg, We ensure you that new features will be added every month and rest assure, with your help we can influence social media in a good way.",
+                "This is still beta version of Hazel. We promise to add new features frequently and make Hazel more fun than ever.",
                 textAlign: TextAlign.center,
                 style: GoogleFonts.inter(
                   textStyle: Theme.of(context).textTheme.labelSmall,

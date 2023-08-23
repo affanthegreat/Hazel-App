@@ -24,3 +24,7 @@ class LeafFullScreenState extends LeafState{
 
   LeafFullScreenState(this.map, this.leaf, this.currentUser, this.commentData);
 }
+
+class LeafErrorState extends LeafState{}
+
+class LeafSendingComment extends LeafState{}
