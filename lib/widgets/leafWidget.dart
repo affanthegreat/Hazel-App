@@ -123,7 +123,10 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
           );
         }
         if(state is LeafFullScreenState){
-          return HazelLeafFullScreenView();
+          print(state.map);
+          print(state.currentUser);
+          print(state.leaf);
+          return HazelLeafFullScreenView(leafObj: state.leaf, userObj: state.currentUser, map: state.map);
         }
         if (state is LeafSuccessfulLoadState) {
           bool like_status = state.map['like']!;
@@ -183,7 +186,7 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                     text: TextSpan(children: [
                       TextSpan(
                           text: "@" + widget.user_obj!.userName!,
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.inter(
                             textStyle: Theme.of(context).textTheme.bodyLarge,
                             fontWeight: FontWeight.bold,
                             color: isDarkTheme ? Colors.grey.shade400 : Colors.grey.shade900,
@@ -277,10 +280,10 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                       children: [
                         IconButton(
                             onPressed: () {},
-                            icon: Icon(
+                            icon:const Icon(
                               Iconsax.huobi_token_ht,
                               size: 28,
-                              color: !isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
+                              color: CupertinoColors.activeOrange,
                             )),
                         Text(numToEngDouble(double.parse(widget.leaf_obj!.experienceRating!)),
                             style: GoogleFonts.poppins(
@@ -316,9 +319,9 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                     onPressed: (){
                       PersistentNavBarNavigator.pushNewScreen(
                         context,
-                        screen: HazelLeafFullScreenView(),
+                        screen:HazelLeafFullScreenView(leafObj: widget.leaf_obj, userObj: widget.user_obj!, map: state.map),
                         withNavBar: true, // OPTIONAL VALUE. True by default.
-                        pageTransitionAnimation: PageTransitionAnimation.fade,
+                        pageTransitionAnimation: PageTransitionAnimation.sizeUp,
                       );
                     },
                     icon: Icon(Icons.fullscreen_rounded,color: (isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400),),

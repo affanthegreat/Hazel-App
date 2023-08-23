@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:hazel_client/logics/LeafModel.dart';
 import 'package:hazel_client/logics/UserProfileModel.dart';
 import 'package:hazel_client/logics/leaf_engine.dart';
+import 'package:hazel_client/logics/wrappers.dart';
 import 'package:hazel_client/main.dart';
 import 'package:meta/meta.dart';
 
@@ -11,6 +12,10 @@ part 'leaf_event.dart';
 part 'leaf_state.dart';
 
 class LeafBloc extends Bloc<LeafEvent, LeafState> {
+
+  int commentsPage = 1;
+
+
   LeafBloc() : super(LeafInitial()) {
     on<LeafLoadedEvent>(loadLeaf);
     on<LeafLikeEvent>(likeLeaf);
@@ -18,6 +23,7 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
     on<LeafDislikeEvent>(dislikeLeaf);
     on<LeafDislikeRemoveEvent>(removeDislike);
     on<LeafFullScreenViewEvent>(fullScreenView);
+    on<LeafSendComment>(sendComment);
   }
 
   FutureOr<void> likeLeaf(LeafLikeEvent event, Emitter<LeafState> emit) async{
@@ -109,8 +115,24 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
 
   }
 
-  FutureOr<void> fullScreenView(LeafFullScreenViewEvent event, Emitter<LeafState> emit) {
+  FutureOr<void> fullScreenView(LeafFullScreenViewEvent event, Emitter<LeafState> emit) async{
     emit(LeafLoadingState());
-    emit(LeafFullScreenState(event.map, event.obj, event.currentUser));
+
+      var comment_data = await leafEngineObj.getAllComments(event.obj!, commentsPage);
+      print("COMMENT DATA");
+      print(comment_data);
+
+    emit(LeafFullScreenState(event.map, event.obj, event.currentUser, comment_data));
+  }
+
+  FutureOr<void> sendComment(LeafSendComment event, Emitter<LeafState> emit) async {
+    emit(LeafLoadingState());
+    try{
+      var comment_data = await leafEngineObj.sendComment(event.commentString, event.obj!);
+      emit(LeafFullScreenState(event.map, event.obj, event.currentUser, comment_data));
+    } catch(e){
+      throw(e);
+    }
+
   }
 }

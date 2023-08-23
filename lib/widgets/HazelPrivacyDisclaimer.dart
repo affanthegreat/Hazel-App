@@ -12,7 +12,7 @@ class HazelPrivacyDisclaimer extends StatelessWidget {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
-        margin: EdgeInsets.only(bottom: 7.5),
+        margin: const EdgeInsets.only(bottom: 7.5),
         child: RichText(
           textAlign: TextAlign.center,
           text: TextSpan(

@@ -17,9 +17,10 @@ class LeafSuccessfulLoadState extends LeafState{
 
 
 class LeafFullScreenState extends LeafState{
-  final Map<String, bool> map;
+  final Map<String, dynamic> map;
   final LeafModel? leaf;
   final UserProfileModel currentUser;
+  final CommentsRepo commentData;
 
-  LeafFullScreenState(this.map, this.leaf, this.currentUser);
+  LeafFullScreenState(this.map, this.leaf, this.currentUser, this.commentData);
 }
