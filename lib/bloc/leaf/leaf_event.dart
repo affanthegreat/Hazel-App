@@ -8,30 +8,60 @@ class LeafLoadedEvent extends LeafEvent{
   final UserProfileModel? user_obj;
   LeafLoadedEvent(this.obj, this.user_obj);
 }
-
+//LIKE
 class LeafLikeEvent extends LeafEvent{
   final LeafModel? obj;
 
   LeafLikeEvent(this.obj);
 }
 
+class LeafFullScreenLikeEvent extends LeafEvent{
+  final LeafModel? obj;
+
+  LeafFullScreenLikeEvent(this.obj);
+}
+
+//LIKE REMOVE
 class LeafLikeRemoveEvent extends LeafEvent{
   final LeafModel? obj;
 
   LeafLikeRemoveEvent(this.obj);
 }
 
+class LeafFullScreenLikeRemoveEvent extends LeafEvent{
+  final LeafModel? obj;
+
+  LeafFullScreenLikeRemoveEvent(this.obj);
+}
+
+// DISLIKE
 class LeafDislikeEvent extends LeafEvent{
   final LeafModel? obj;
 
   LeafDislikeEvent(this.obj);
 }
 
+
+class LeafFullScreenDislikeEvent extends LeafEvent{
+  final LeafModel? obj;
+
+  LeafFullScreenDislikeEvent(this.obj);
+}
+
+// DISLIKE REMOVE
 class LeafDislikeRemoveEvent extends LeafEvent{
   final LeafModel? obj;
 
   LeafDislikeRemoveEvent(this.obj);
 }
+
+
+class LeafFullScreenRemoveDislikeEvent extends LeafEvent{
+  final LeafModel? obj;
+
+  LeafFullScreenRemoveDislikeEvent(this.obj);
+}
+
 
 
 class LeafFullScreenViewEvent extends LeafEvent{

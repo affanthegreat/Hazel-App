@@ -66,9 +66,17 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
     super.initState();
   }
 
+  var userObj;
+  var leafObj;
+  var map;
+  var commentData;
+  var like_status;
+  var dislike_status;
+
   @override
   Widget build(BuildContext context) {
     TextEditingController replyController = TextEditingController();
+
     Widget textField() {
       return Container(
         margin: const EdgeInsets.only(top: 10, bottom: 10),
@@ -143,7 +151,7 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(dateTimeToWords(widget.leafObj!.createdDate!),
+                Text(dateTimeToWords(leafObj!.createdDate!),
                     style: GoogleFonts.poppins(
                       textStyle: Theme.of(context).textTheme.labelMedium,
                       fontWeight: FontWeight.bold,
@@ -157,14 +165,14 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(color: isDarkTheme ? Colors.grey.shade800 : Colors.grey.shade100),
-                        color: widget.leafObj!.leafType == "public"
+                        color: leafObj!.leafType == "public"
                             ? isDarkTheme
                                 ? Colors.grey.shade900
                                 : Colors.grey.shade200
                             : Colors.greenAccent),
                     child: Center(
                       child: Text(
-                        widget.leafObj!.leafType.toString().toUpperCase(),
+                        leafObj!.leafType.toString().toUpperCase(),
                         style: GoogleFonts.poppins(
                           textStyle: Theme.of(context).textTheme.labelSmall,
                           fontWeight: FontWeight.bold,
@@ -181,7 +189,7 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
               child: RichText(
                 text: TextSpan(children: [
                   TextSpan(
-                      text: "@" + widget.userObj!.userName!,
+                      text: "@" + userObj!.userName!,
                       style: GoogleFonts.inter(
                         textStyle: Theme.of(context).textTheme.labelLarge,
                         fontWeight: FontWeight.bold,
@@ -192,7 +200,7 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
             ),
             Container(
               margin: const EdgeInsets.only(left: 10, right: 10, bottom: 20),
-              child: Text(widget.leafObj!.textContent!,
+              child: Text(leafObj!.textContent!,
                   style: GoogleFonts.sourceSansPro(
                     letterSpacing: -0.4,
                     color: isDarkTheme ? Colors.white : Colors.black,
@@ -207,13 +215,34 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
                 Row(
                   children: [
                     IconButton(
-                        onPressed: () async {},
+                        onPressed: () async {
+                          var status = await leafEngineObj.checkLike(leafObj!);
+                          print("LIKE STATUS");
+                          print(status);
+                          print(dislike_status);
+                          if (dislike_status) {
+                            var dislike_removal_status = await leafEngineObj.removeDisLikeLeaf(leafObj!);
+                            leafObj!.dislikesCount =  leafObj!.dislikesCount! - 1;
+
+                            if (status && dislike_removal_status == -100) {
+                              leafFullScreenBloc.add(LeafLikeRemoveEvent( leafObj!));
+                            } else {
+                              leafFullScreenBloc.add(LeafLikeEvent( leafObj!));
+                            }
+                          } else {
+                            if (status) {
+                              leafFullScreenBloc.add(LeafLikeRemoveEvent( leafObj!));
+                            } else {
+                              leafFullScreenBloc.add(LeafLikeEvent( leafObj!));
+                            }
+                          }
+                        },
                         icon: Icon(
                           Iconsax.heart,
                           size: 28,
-                          color: !widget.map['like'] ? (isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400) : Colors.redAccent,
+                          color:! map['like'] ? (isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400) : Colors.redAccent,
                         )),
-                    Text(numToEng(widget.leafObj!.likesCount!),
+                    Text(numToEng(leafObj!.likesCount!),
                         style: GoogleFonts.poppins(
                           textStyle: Theme.of(context).textTheme.labelMedium,
                           fontWeight: FontWeight.bold,
@@ -225,14 +254,33 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
                   children: [
                     IconButton(
                         onPressed: () async {
-                          var status = await leafEngineObj.checkDisLike(widget!.leafObj!);
+                          var status = await leafEngineObj.checkDisLike( widget.leafObj!);
+                          print("DISLIKE STATUS");
+                          print(status);
+                          print(like_status);
+                          if (like_status) {
+                            var like_removal_status = await leafEngineObj.removeLikeLeaf( leafObj!);
+                            leafObj!.likesCount = leafObj!.likesCount! - 1;
+                            if (status && like_removal_status == -100) {
+                              leafFullScreenBloc.add(LeafDislikeRemoveEvent(leafObj!));
+                            } else {
+                              leafFullScreenBloc.add(LeafDislikeEvent(leafObj!));
+                            }
+                          } else {
+                            if (status) {
+                              leafFullScreenBloc.add(LeafDislikeRemoveEvent(leafObj!));
+                            } else {
+                              leafFullScreenBloc.add(LeafDislikeEvent(leafObj!));
+                            }
+                          }
+
                         },
                         icon: Icon(
                           Iconsax.heart_remove,
                           size: 28,
-                          color: !widget.map['dislike'] ? (isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400) : Colors.blue.shade800,
+                          color: !map['dislike'] ? (isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400) : Colors.blue.shade800,
                         )),
-                    Text(numToEng(widget.leafObj!.dislikesCount!),
+                    Text(numToEng(leafObj!.dislikesCount!),
                         style: GoogleFonts.poppins(
                           textStyle: Theme.of(context).textTheme.labelMedium,
                           fontWeight: FontWeight.bold,
@@ -249,7 +297,7 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
                           size: 28,
                           color: CupertinoColors.activeOrange,
                         )),
-                    Text(numToEngDouble(double.parse(widget.leafObj!.experienceRating!)),
+                    Text(numToEngDouble(double.parse(leafObj!.experienceRating!)),
                         style: GoogleFonts.poppins(
                           textStyle: Theme.of(context).textTheme.labelMedium,
                           fontWeight: FontWeight.bold,
@@ -266,7 +314,7 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
                           size: 28,
                           color: CupertinoColors.systemYellow,
                         )),
-                    Text(numToEng(widget.leafObj!.viewCount!),
+                    Text(numToEng(leafObj!.viewCount!),
                         style: GoogleFonts.poppins(
                           textStyle: Theme.of(context).textTheme.labelMedium,
                           fontWeight: FontWeight.bold,
@@ -355,7 +403,9 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
           child: BlocConsumer<LeafBloc, LeafState>(
               bloc: leafFullScreenBloc,
               listener: (context, state) {
-                // TODO: implement listener
+                if(state is LeafSuccessfulLoadState){
+                  leafFullScreenBloc.add(LeafFullScreenViewEvent(widget.leafObj, widget.userObj, state.map));
+                }
               },
               builder: (context, state) {
                 if (state is LeafSendingComment) {
@@ -374,6 +424,12 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
                   );
                 }
                 if (state is LeafFullScreenState) {
+                  leafObj = state.leaf;
+                  userObj = state.currentUser;
+                  map = state.map;
+                  commentData = state.commentData;
+                  like_status = state.map['like']!;
+                  dislike_status = state.map['dislike']!;
                   return CustomScrollView(
                     controller: _scrollController,
                     slivers: [

@@ -306,11 +306,14 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                         IconButton(
                             onPressed: () async {
                               var status = await leafEngineObj.checkLike(widget!.leaf_obj!);
+                              print("LIKE STATUS");
+                              print(status);
+                              print(dislike_status);
                               if (dislike_status) {
                                 var dislike_removal_status = await leafEngineObj.removeDisLikeLeaf(widget!.leaf_obj!);
                                 widget!.leaf_obj!.dislikesCount = widget!.leaf_obj!.dislikesCount! - 1;
 
-                                if (status && dislike_removal_status) {
+                                if (status && dislike_removal_status == -100) {
                                   leafBloc.add(LeafLikeRemoveEvent(widget.leaf_obj));
                                 } else {
                                   leafBloc.add(LeafLikeEvent(widget.leaf_obj));
@@ -319,6 +322,7 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                                 if (status) {
                                   leafBloc.add(LeafLikeRemoveEvent(widget.leaf_obj));
                                 } else {
+                                  print("it should be here");
                                   leafBloc.add(LeafLikeEvent(widget.leaf_obj));
                                 }
                               }
@@ -341,10 +345,13 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                         IconButton(
                             onPressed: () async {
                               var status = await leafEngineObj.checkDisLike(widget!.leaf_obj!);
+                              print("DISLIKE STATUS");
+                              print(status);
+                              print(like_status);
                               if (like_status) {
                                 var like_removal_status = await leafEngineObj.removeLikeLeaf(widget!.leaf_obj!);
                                 widget!.leaf_obj!.likesCount = widget!.leaf_obj!.likesCount! - 1;
-                                if (status && like_removal_status) {
+                                if (status && like_removal_status == -100) {
                                   leafBloc.add(LeafDislikeRemoveEvent(widget.leaf_obj));
                                 } else {
                                   leafBloc.add(LeafDislikeEvent(widget.leaf_obj));

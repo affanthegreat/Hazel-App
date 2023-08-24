@@ -82,7 +82,7 @@ class LeafEngine {
     return true;
   }
 
-  Future<bool> likeLeaf(LeafModel leaf_obj) async {
+  Future<int> likeLeaf(LeafModel leaf_obj) async {
     try {
       var apiEndpoint = 'leaf_engine/like_leaf';
       var data = {};
@@ -92,15 +92,15 @@ class LeafEngine {
 
       final response = await dio.post(url + apiEndpoint, data: data);
       final result = json.decode(response.data);
-      return result == -100;
+      return result;
     } catch (E) {
       throw (E);
-      return false;
+      return -111;
     }
   }
 
-  Future<bool> dislikeLeaf(LeafModel leaf_obj) async {
-    try {
+  Future<int> dislikeLeaf(LeafModel leaf_obj) async {
+
       var apiEndpoint = 'leaf_engine/dislike_leaf';
       var data = {};
       data['auth_token'] = sessionData!['auth_token'];
@@ -108,13 +108,11 @@ class LeafEngine {
       data['leaf_id'] = leaf_obj.leafId;
       final response = await dio.post(url + apiEndpoint, data: data);
       final result = json.decode(response.data);
-      return result == -100;
-    } catch (e) {
-      return false;
-    }
+      return result;
+
   }
 
-  Future<bool> removeLikeLeaf(LeafModel leaf_obj) async {
+  Future<int> removeLikeLeaf(LeafModel leaf_obj) async {
     try {
       var apiEndpoint = 'leaf_engine/remove_like';
       var data = {};
@@ -124,13 +122,14 @@ class LeafEngine {
 
       final response = await dio.post(url + apiEndpoint, data: data);
       final result = json.decode(response.data);
-      return result == -100;
+      return result;
     } catch (e) {
-      return false;
+      throw (e);
+      return -112;
     }
   }
 
-  Future<bool> removeDisLikeLeaf(LeafModel leaf_obj) async {
+  Future<int> removeDisLikeLeaf(LeafModel leaf_obj) async {
     try {
       var apiEndpoint = 'leaf_engine/remove_dislike';
       var data = {};
@@ -140,9 +139,9 @@ class LeafEngine {
 
       final response = await dio.post(url + apiEndpoint, data: data);
       final result = json.decode(response.data);
-      return result == -100;
+      return result;
     } catch (e) {
-      return false;
+      return -111;
     }
   }
 
@@ -157,7 +156,7 @@ class LeafEngine {
 
       final response = await dio.post(url + apiEndpoint, data: data);
       var result = json.decode(response.data);
-      return result['message'];
+      return result;
     } catch (e) {
       return false;
     }
@@ -173,8 +172,7 @@ class LeafEngine {
       data['leaf_id'] = leaf_obj.leafId;
       final response = await dio.post(url + apiEndpoint, data: data);
       var result = json.decode(response.data);
-      print(response);
-      return result['message'];
+      return result;
     } catch (e) {
       return false;
     }

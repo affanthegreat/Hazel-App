@@ -537,6 +537,7 @@ class _SignUpState extends State<SignUp> {
             'password': userPassword2Controller.text
           };
           var status = await UserEngine().login(data);
+          Timer(Duration(seconds: 5),(){});
           if(status== "true"){
             var snackBar = SnackBar(
               backgroundColor: CupertinoColors.activeGreen,

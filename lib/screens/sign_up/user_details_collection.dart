@@ -47,8 +47,16 @@ class _HazelUserDetailsCollectionState extends State<HazelUserDetailsCollection>
 
   }
 
+  var user_obj;
+  load_user_obj() async {
+    var box = await Hive.openBox('logged-in-user');
+    user_obj = box.get('user_obj');
+    print(user_obj.userId);
+    print(user_obj.userName);
+  }
   @override
   void initState() {
+    load_user_obj();
     if(widget.update){
       updateData();
     }
@@ -284,8 +292,8 @@ class _HazelUserDetailsCollectionState extends State<HazelUserDetailsCollection>
                           return;
                         }
                         Map locationData = await UserEngine().fetchUserLocation();
-                        var box = await Hive.openBox('logged-in-user');
-                        var user_obj = box.get('user_obj');
+
+
                         var data = {
                           'user_id': user_obj.userId,
                           'user_full_name': userFullName.text,
@@ -299,6 +307,7 @@ class _HazelUserDetailsCollectionState extends State<HazelUserDetailsCollection>
                           'user_age': age.text,
                         };
                         var update_status = json.decode(await UserEngine().updateUserDetails(data));
+                        print(update_status);
                         if(!widget.update && update_status['message'] == 100){
                           Navigator.pushReplacementNamed(context, '/home');
                         } else if(update_status['message'] == 100){
