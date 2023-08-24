@@ -7,7 +7,7 @@ class LeafComments {
   String? commentSentiment;
   String? commentEmotion;
   String? rootCommentId;
-  Null? parentCommentId;
+  String? parentCommentId;
   String? createdDate;
 
   LeafComments(

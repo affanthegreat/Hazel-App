@@ -346,12 +346,12 @@ class UserEngine {
 
   Future<dynamic> getUserDetails() async {
     try {
-      var box = await Hive.openBox('logged-in-user');
-      var user_obj = box.get('user_obj');
+      UserProfileModel? user_obj = await fetchUserInfo(true);
       var endPoint = "user_engine/get_user_details";
       var data = {
-        'user_id':user_obj.userId
+        'user_id':user_obj!.userId
       };
+      print(data);
       final response = await dio.post(url+ endPoint, data: data);
       print(response);
       return response.data;

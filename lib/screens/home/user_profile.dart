@@ -40,6 +40,7 @@ class _UserProfileState extends State<UserProfile> {
   }
   var userData;
   updateData() async {
+     await UserEngine().fetchUserInfo(true);
      userData =json.decode(await UserEngine().getUserDetails());
      print(userData);
   }
@@ -348,7 +349,29 @@ class _UserProfileState extends State<UserProfile> {
                   ]),
                 ),
 
-                SliverList(
+                (isPublicSelected && state.publicLeafSet.isEmpty) ? SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: 100,
+                    child: Center(
+                      child: Text("No public leaves found.", style: GoogleFonts.poppins(
+                        textStyle: Theme.of(context).textTheme.labelMedium,
+                        color: Colors.grey,
+                      )),
+                    ),
+                  ),
+                ): (!isPublicSelected && state.privateLeafSet.isEmpty)?SliverToBoxAdapter(
+                  child: SliverToBoxAdapter(
+                    child: SizedBox(
+                      height: 100,
+                      child: Center(
+                        child: Text("No private leaves found.", style: GoogleFonts.poppins(
+                          textStyle: Theme.of(context).textTheme.labelMedium,
+                          color: Colors.grey,
+                        )),
+                      ),
+                    ),
+                  )
+                ): SliverList(
                   delegate: SliverChildBuilderDelegate((context, index) {
                     return isPublicSelected ? HazelLeafWidget(leaf_obj: state.publicLeafSet!.elementAt(index), user_obj: state.obj) : HazelLeafWidget(leaf_obj: state.privateLeafSet!.elementAt(index), user_obj: state.obj);
                   }, childCount: isPublicSelected ? state.publicLeafSet.length : state.privateLeafSet.length),

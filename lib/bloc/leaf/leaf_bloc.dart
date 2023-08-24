@@ -13,7 +13,7 @@ part 'leaf_state.dart';
 class LeafBloc extends Bloc<LeafEvent, LeafState> {
 
   int commentsPage = 1;
-
+  CommentsRepo commentData = CommentsRepo();
 
   LeafBloc() : super(LeafInitial()) {
     on<LeafLoadedEvent>(loadLeaf);
@@ -122,14 +122,22 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
   }
 
   FutureOr<void> fullScreenView(LeafFullScreenViewEvent event, Emitter<LeafState> emit) async{
-    emit(LeafLoadingState());
-    try{
+
+    var prev_comment_data = commentData;
+
+
       var comment_data = await leafEngineObj.getAllComments(event.obj!, commentsPage);
-      emit(LeafFullScreenState(event.map, event.obj, event.currentUser, comment_data));
-    }
-    catch(e){
-      emit(LeafErrorState());
-    }
+      if(commentsPage == 1){
+        commentData = comment_data;
+      } else{
+        commentData.merge(comment_data);
+      }
+      commentsPage++;
+      emit(LeafFullScreenState(event.map, event.obj, event.currentUser, commentData));
+      if(commentData != prev_comment_data){
+        emit(LeafFullScreenState(event.map, event.obj, event.currentUser, commentData));
+      }
+
   }
 
   FutureOr<void> sendComment(LeafSendComment event, Emitter<LeafState> emit) async {

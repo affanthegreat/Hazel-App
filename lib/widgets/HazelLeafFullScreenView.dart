@@ -9,8 +9,10 @@ import 'package:hazel_client/constants/colors.dart';
 import 'package:hazel_client/logics/CommentModels.dart';
 import 'package:hazel_client/logics/LeafModel.dart';
 import 'package:hazel_client/logics/UserProfileModel.dart';
+import 'package:hazel_client/logics/wrappers.dart';
 import 'package:hazel_client/main.dart';
 import 'package:hazel_client/widgets/HazelFieldHeading.dart';
+import 'package:hazel_client/widgets/HazelLeafComment.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:intl/intl.dart';
 
@@ -57,12 +59,6 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
   @override
   void initState() {
     leafFullScreenBloc.add(LeafFullScreenViewEvent(widget.leafObj, widget.userObj, widget.map));
-    _scrollController.addListener(() {
-    if (_scrollController.offset ==
-    _scrollController.position.maxScrollExtent) {
-    print("Hello world");
-    }
-    });
     super.initState();
   }
 
@@ -144,7 +140,7 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
 
     Widget leafMainSection() {
       return Container(
-        margin: EdgeInsets.only(left: 10,right: 10),
+        margin: EdgeInsets.only(left: 10, right: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -208,7 +204,7 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
                     textStyle: Theme.of(context).textTheme.bodyLarge,
                   )),
             ),
-            Divider(color: isDarkTheme? Colors.grey.shade800:Colors.grey.shade400),
+            Divider(color: isDarkTheme ? Colors.grey.shade800 : Colors.grey.shade400),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -222,25 +218,25 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
                           print(dislike_status);
                           if (dislike_status) {
                             var dislike_removal_status = await leafEngineObj.removeDisLikeLeaf(leafObj!);
-                            leafObj!.dislikesCount =  leafObj!.dislikesCount! - 1;
+                            leafObj!.dislikesCount = leafObj!.dislikesCount! - 1;
 
                             if (status && dislike_removal_status == -100) {
-                              leafFullScreenBloc.add(LeafLikeRemoveEvent( leafObj!));
+                              leafFullScreenBloc.add(LeafLikeRemoveEvent(leafObj!));
                             } else {
-                              leafFullScreenBloc.add(LeafLikeEvent( leafObj!));
+                              leafFullScreenBloc.add(LeafLikeEvent(leafObj!));
                             }
                           } else {
                             if (status) {
-                              leafFullScreenBloc.add(LeafLikeRemoveEvent( leafObj!));
+                              leafFullScreenBloc.add(LeafLikeRemoveEvent(leafObj!));
                             } else {
-                              leafFullScreenBloc.add(LeafLikeEvent( leafObj!));
+                              leafFullScreenBloc.add(LeafLikeEvent(leafObj!));
                             }
                           }
                         },
                         icon: Icon(
                           Iconsax.heart,
                           size: 28,
-                          color:! map['like'] ? (isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400) : Colors.redAccent,
+                          color: !map['like'] ? (isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400) : Colors.redAccent,
                         )),
                     Text(numToEng(leafObj!.likesCount!),
                         style: GoogleFonts.poppins(
@@ -254,12 +250,10 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
                   children: [
                     IconButton(
                         onPressed: () async {
-                          var status = await leafEngineObj.checkDisLike( widget.leafObj!);
-                          print("DISLIKE STATUS");
-                          print(status);
-                          print(like_status);
+                          var status = await leafEngineObj.checkDisLike(widget.leafObj!);
+
                           if (like_status) {
-                            var like_removal_status = await leafEngineObj.removeLikeLeaf( leafObj!);
+                            var like_removal_status = await leafEngineObj.removeLikeLeaf(leafObj!);
                             leafObj!.likesCount = leafObj!.likesCount! - 1;
                             if (status && like_removal_status == -100) {
                               leafFullScreenBloc.add(LeafDislikeRemoveEvent(leafObj!));
@@ -273,7 +267,6 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
                               leafFullScreenBloc.add(LeafDislikeEvent(leafObj!));
                             }
                           }
-
                         },
                         icon: Icon(
                           Iconsax.heart_remove,
@@ -330,58 +323,6 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
       );
     }
 
-    Widget commentCard(LeafComments comment) {
-      return Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: Colors.grey.shade900, width: 1.5)),
-          //color: isDarkTheme ? Colors.grey.shade900.withOpacity(0.3) : Colors.grey.shade50,
-        ),
-        child: Column(
-          children: [
-            Container(
-              padding: EdgeInsets.only(left: 10,right: 10),
-              width: double.infinity,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("@" + comment.commentedById!,
-                      style: GoogleFonts.inter(
-                        textStyle: Theme.of(context).textTheme.labelSmall,
-                        color: isDarkTheme ? Colors.grey.shade300 : Colors.grey.shade400,
-                      )),
-                  Text(dateTimeToWords(comment.createdDate!),
-                      style: GoogleFonts.inter(
-                        textStyle: Theme.of(context).textTheme.labelMedium,
-                        color: isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400,
-                      )),
-                  Text(comment.comment!,
-                      style: GoogleFonts.sourceSansPro(
-                        letterSpacing: -0.3,
-                        fontSize: 18,
-                        color: isDarkTheme ? Colors.white : Colors.black,
-                        textStyle: Theme.of(context).textTheme.titleMedium,
-                      )),
-
-                ],
-              ),
-            ),
-            Container(
-                margin: EdgeInsets.only(top: 5),
-                child: Divider(
-                  color: isDarkTheme ? Colors.grey.shade800 : Colors.grey.shade400,
-                  thickness: 0.5,
-                )),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [Container(width: 24, height: 24, margin: EdgeInsets.only(left: 10, right: 10, bottom: 5), child: IconButton(onPressed: () {}, icon: const Icon(Iconsax.message_add_1, size: 18, color: Colors.grey)))],
-            ),
-          ],
-        ),
-      );
-    }
-
     return Scaffold(
         backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
         resizeToAvoidBottomInset: false,
@@ -398,16 +339,20 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
         ),
         body: RefreshIndicator(
           onRefresh: () async {
+            leafFullScreenBloc.commentsPage = 1;
+            leafFullScreenBloc.commentData = CommentsRepo();
             leafFullScreenBloc.add(LeafFullScreenViewEvent(widget.leafObj, widget.userObj, widget.map));
           },
           child: BlocConsumer<LeafBloc, LeafState>(
               bloc: leafFullScreenBloc,
               listener: (context, state) {
-                if(state is LeafSuccessfulLoadState){
+                if (state is LeafSuccessfulLoadState) {
                   leafFullScreenBloc.add(LeafFullScreenViewEvent(widget.leafObj, widget.userObj, state.map));
                 }
               },
               builder: (context, state) {
+                print("---------------");
+                print(state.runtimeType);
                 if (state is LeafSendingComment) {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -431,12 +376,18 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
                   like_status = state.map['like']!;
                   dislike_status = state.map['dislike']!;
                   return CustomScrollView(
-                    controller: _scrollController,
+                    controller: _scrollController..addListener(() {
+                      if (_scrollController.offset == _scrollController.position.maxScrollExtent) {
+                        leafFullScreenBloc.add(LeafFullScreenViewEvent(widget.leafObj, widget.userObj, widget.map));
+                      }
+                    }),
                     slivers: [
                       SliverList(
                           delegate: SliverChildListDelegate([
                         leafMainSection(),
-                        Divider(color: isDarkTheme? Colors.grey.shade900:Colors.grey.shade200,),
+                        Divider(
+                          color: isDarkTheme ? Colors.grey.shade900 : Colors.grey.shade200,
+                        ),
                         Container(margin: EdgeInsets.only(top: 5, bottom: 10, left: 10, right: 10), child: HazelFieldHeading(text: "Replies")),
                       ])),
                       state.commentData.commentsTree.isEmpty
@@ -455,9 +406,9 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
                           : SliverTreeView.simple(
                               tree: buildTree(state.commentData.commentsTree),
                               showRootNode: false,
-                              indentation: const Indentation(style: IndentStyle.roundJoint, color: Colors.yellowAccent, thickness: 1.5, width: 30),
+                              indentation: const Indentation(style: IndentStyle.scopingLine, color: Colors.yellowAccent, thickness: 1.5, width: 30),
                               builder: (context, node) {
-                                return commentCard(state.commentData.commentsMap[node.key]);
+                                return HazelLeafComment(comment:state.commentData.commentsMap[node.key]);
                               },
                             ),
                     ],

@@ -194,13 +194,16 @@ class LeafEngine {
         comments.add(obj.toJson());
         comment_set[obj.commentId!]  = obj;
       }
-
+      print(comment_set);
       final commentTree = constructCommentTree(comments);
+      print(commentTree);
       final tree = convertTreeToMap(commentTree);
       CommentsRepo commentsRepo = CommentsRepo();
       commentsRepo.commentsTree = tree;
       commentsRepo.commentsMap = comment_set;
       commentsRepo.sortRootComments();
+      print("-------------");
+      print(commentsRepo.commentsTree);
       return commentsRepo;
   }
 
@@ -235,6 +238,24 @@ class LeafEngine {
     }
   }
 
+
+  Future<dynamic> sendSubComment(dynamic data ) async {
+    try {
+      var apiEndpoint = 'leaf_engine/add_sub_comment';
+      data['auth_token'] = sessionData!['auth_token'];
+      data['token']  = sessionData!['token'];
+      final response = await dio.post(url + apiEndpoint, data: data);
+      print(response);
+      if(response.data == -100){
+        return true;
+      } else{
+        return false;
+      }
+    } catch (e) {
+      throw(e);
+      return false;
+    }
+  }
 }
 
 
