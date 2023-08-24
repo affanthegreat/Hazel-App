@@ -38,7 +38,7 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
         emit(LeafSuccessfulLoadState(interaction));
       }
     } catch(e){
-      throw(e);
+      emit(LeafErrorState());
     }
 
   }
@@ -56,7 +56,7 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
         emit(LeafSuccessfulLoadState(interaction));
       }
     } catch(e){
-      throw(e);
+      emit(LeafErrorState());
     }
 
   }
@@ -74,7 +74,7 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
         emit(LeafSuccessfulLoadState(interaction));
       }
     } catch(e){
-      throw(e);
+      emit(LeafErrorState());
     }
 
   }
@@ -92,7 +92,7 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
         emit(LeafSuccessfulLoadState(interaction));
       }
     } catch(e){
-      throw(e);
+      emit(LeafErrorState());
     }
 
   }
@@ -109,23 +109,30 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
       };
       emit(LeafSuccessfulLoadState(interaction));
     } catch(e){
-      throw(e);
+      emit(LeafErrorState());
     }
 
   }
 
   FutureOr<void> fullScreenView(LeafFullScreenViewEvent event, Emitter<LeafState> emit) async{
     emit(LeafLoadingState());
-    var comment_data = await leafEngineObj.getAllComments(event.obj!, commentsPage);
-    emit(LeafFullScreenState(event.map, event.obj, event.currentUser, comment_data));
+    try{
+      var comment_data = await leafEngineObj.getAllComments(event.obj!, commentsPage);
+      emit(LeafFullScreenState(event.map, event.obj, event.currentUser, comment_data));
+    }
+    catch(e){
+      emit(LeafErrorState());
+    }
   }
 
   FutureOr<void> sendComment(LeafSendComment event, Emitter<LeafState> emit) async {
     emit(LeafSendingComment());
     try{
       await leafEngineObj.sendComment(event.commentString, event.obj!);
+      var comment_data = await leafEngineObj.getAllComments(event.obj!, commentsPage);
+      emit(LeafFullScreenState(event.map, event.obj, event.currentUser, comment_data));
     } catch(e){
-      throw(e);
+      emit(LeafErrorState());
     }
 
   }

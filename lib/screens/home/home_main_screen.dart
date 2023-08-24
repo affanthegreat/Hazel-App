@@ -183,13 +183,13 @@ class _HazelMainScreenState extends State<HazelMainScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Center(
-                    child: CircularProgressIndicator(strokeWidth: 5,color: Colors.yellowAccent,),
+                    child: CircularProgressIndicator(strokeWidth: 5,color: CupertinoColors.systemYellow,),
                   ),
                   Container(
                     margin: const EdgeInsets.only(top:10),
                     child: Text("This may take a few moments..", style: GoogleFonts.inter(
                       textStyle: Theme.of(context).textTheme.bodyMedium,
-                      color: Colors.grey,
+                      color: isDarkTheme? Colors.grey: Colors.grey.shade700,
                     ),),
                   )
                 ],

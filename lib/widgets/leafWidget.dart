@@ -107,6 +107,78 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
       );
     }
 
+
+
+    List<String> getAllHashtags(String text) {
+      final regexp = RegExp(r'\#[a-zA-Z0-9]+\b()');
+
+      List<String> hashtags = [];
+
+      regexp.allMatches(text).forEach((element) {
+        if (element.group(0) != null) {
+          hashtags.add(element.group(0).toString());
+        }
+      });
+
+      return hashtags;
+    }
+
+    List<String> getAllMentions(String text) {
+      final regexp = RegExp(r'\@[a-zA-Z0-9]+\b()');
+
+      List<String> mentions = [];
+
+      regexp.allMatches(text).forEach((element) {
+        if (element.group(0) != null) {
+          mentions.add(element.group(0).toString());
+        }
+      });
+
+      return mentions;
+    }
+
+
+    RichText buildHighlightedText(String text) {
+
+
+      List<String> hashtags = getAllHashtags(text);
+      List<String> mentions = getAllMentions(text);
+
+      List<TextSpan> textSpans = [];
+
+      text.split(" ").forEach((value) {
+        if (hashtags.contains(value)) {
+          textSpans.add(TextSpan(
+            text: '$value ',
+            style: GoogleFonts.sourceSansPro(
+            letterSpacing: -0.5,
+            fontSize: 21,
+            color: CupertinoColors.activeBlue,
+            textStyle: Theme.of(context).textTheme.bodyLarge,
+          ),
+          ));
+        } else if (mentions.contains(value)) {
+          textSpans.add(TextSpan(
+            text: '$value ',
+              style: GoogleFonts.sourceSansPro(
+                letterSpacing: -0.5,
+                fontSize: 21,
+                color: CupertinoColors.systemYellow,
+                textStyle: Theme.of(context).textTheme.bodyLarge,
+              )
+          ));
+        } else {
+          textSpans.add(TextSpan(text: '$value ' , style: GoogleFonts.sourceSansPro(
+            letterSpacing: -0.5,
+            fontSize: 21,
+            color: isDarkTheme ? Colors.white : Colors.black,
+            textStyle: Theme.of(context).textTheme.bodyLarge,
+          )));
+        }
+      });
+
+      return RichText(text: TextSpan(children: textSpans));
+    }
     return BlocConsumer<LeafBloc, LeafState>(
       bloc: leafBloc,
       listener: (context, state) {
@@ -133,12 +205,19 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
           bool dislike_status = state.map['dislike']!;
           return Container(
             width: double.infinity,
-            //margin: const EdgeInsets.only(top: 10),
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              //border: Border.all(color: isDarkTheme? Colors.grey.shade900: Colors.grey.shade300),
-              //borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: isDarkTheme ? Colors.grey.shade900 : Colors.grey.shade300, width: 1.5),
+              border: Border(
+                top: BorderSide(
+                  color: isDarkTheme ? Colors.grey.shade900 : Colors.grey.shade300,
+                  width: 1.5
+                ),
+                  bottom: BorderSide(
+                      color: isDarkTheme ? Colors.grey.shade900 : Colors.grey.shade300,
+                      width: 1.5
+                  )
+              )
+              //border: Border.all(color: isDarkTheme ? Colors.grey.shade900 : Colors.grey.shade300, width: 1.5),
               //color: isDarkTheme ? Colors.grey.shade900.withOpacity(0.5) : Colors.grey.shade50,
             ),
             child: Column(
@@ -216,13 +295,7 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                 ),
                 Container(
                   margin: const EdgeInsets.only(left: 20, right: 20),
-                  child: Text(widget.leaf_obj!.textContent!,
-                      style: GoogleFonts.sourceSansPro(
-                        letterSpacing: -0.5,
-                        fontSize: 21,
-                        color: isDarkTheme ? Colors.white : Colors.black,
-                        textStyle: Theme.of(context).textTheme.bodyLarge,
-                      )),
+                  child: buildHighlightedText(widget.leaf_obj!.textContent!),
                 ),
                 Divider(color: isDarkTheme ? Colors.grey.shade900 : Colors.grey.shade300),
                 Row(

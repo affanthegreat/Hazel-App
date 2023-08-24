@@ -91,7 +91,7 @@ class _UserProfileState extends State<UserProfile> {
                   IconButton(
                     icon: Icon(
                       Icons.search,
-                      color: isDarkTheme ? Colors.white : Colors.black,
+                      color: isDarkTheme ? Colors.pinkAccent: Colors.pinkAccent.shade700,
                       size: 24,
                     ),
                     onPressed: () {
@@ -180,20 +180,6 @@ class _UserProfileState extends State<UserProfile> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            margin: EdgeInsets.only(top: 10,bottom: 10),
-                            child: RichText(
-                              text: TextSpan(children: [
-                                TextSpan(
-                                    text: "@" + state.obj!.userName!,
-                                    style: GoogleFonts.poppins(
-                                      textStyle: Theme.of(context).textTheme.bodyLarge,
-                                      fontWeight: FontWeight.bold,
-                                      color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,
-                                    )),
-                              ]),
-                            ),
-                          ),
-                          Container(
                             margin: EdgeInsets.only(top: 5),
                             child: Row(
                               children: [
@@ -280,23 +266,18 @@ class _UserProfileState extends State<UserProfile> {
                         ],
                       ),
                     ),
-                    Divider(
-                      color: isDarkTheme ? Colors.grey.shade900 : Colors.grey.shade200,
-                      thickness: 5,
-                    ),
+
                     Container(
+                      margin: EdgeInsets.only(top: 20,bottom: 10),
                       decoration: BoxDecoration(color: isDarkTheme ? Colors.grey.shade900.withOpacity(0.6) : Colors.grey.shade100),
                       child: Row(
                         children: [
                           Expanded(
                             child: Container(
                               height: 40,
-                              decoration: BoxDecoration(color: isDarkTheme?Colors.grey.shade900: Colors.grey.shade50,
-                                border: Border(
-                                  bottom: BorderSide( //                   <--- right side
-                                    color: isPublicSelected ? CupertinoColors.activeBlue: (isDarkTheme?Colors.grey.shade900: Colors.grey.shade200),
-                                    width: 3.0,
-                                  )),
+                              margin: const EdgeInsets.only(bottom: 4,top: 4,left: 10,right: 10),
+                              decoration: BoxDecoration(color: isPublicSelected ?Colors.blueAccent: Colors.transparent,
+                                borderRadius: BorderRadius.circular(10),
                               ),
                               child: InkWell(
                                 onTap: () {
@@ -307,7 +288,7 @@ class _UserProfileState extends State<UserProfile> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(Icons.public,   color: isPublicSelected?  CupertinoColors.activeBlue: Colors.grey,size: 21,),
+                                      Icon(Icons.public,   color: isPublicSelected?  Colors.white: Colors.grey,size: 21,),
                                       Container(
                                         margin: const EdgeInsets.only(left: 3),
                                         child: Text(
@@ -315,7 +296,7 @@ class _UserProfileState extends State<UserProfile> {
                                           style: GoogleFonts.inter(
                                             textStyle: Theme.of(context).textTheme.labelLarge,
                                             fontWeight: FontWeight.bold,
-                                            color: isPublicSelected?  CupertinoColors.activeBlue: Colors.grey,
+                                            color: isPublicSelected?  CupertinoColors.white: Colors.grey,
                                           ),
                                         ),
                                       ),
@@ -328,13 +309,9 @@ class _UserProfileState extends State<UserProfile> {
                           Expanded(
                             child: Container(
                               height: 40,
-                              decoration: BoxDecoration(color: isDarkTheme?Colors.grey.shade900: Colors.grey.shade50,
-                                  border: Border(
-                                  bottom: BorderSide( //                   <--- right side
-                                  color: !isPublicSelected ? Colors.greenAccent: (isDarkTheme?Colors.grey.shade900: Colors.grey.shade200),
-                              width: 3.0,
-                            )),
-
+                              margin: const EdgeInsets.only(bottom: 4,top: 4,left: 10,right: 10),
+                              decoration: BoxDecoration(color:!isPublicSelected? Colors.greenAccent:Colors.transparent,
+                                borderRadius: BorderRadius.circular(10)
                               ),
                               child: InkWell(
                                 onTap: () {
@@ -345,7 +322,7 @@ class _UserProfileState extends State<UserProfile> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(Icons.security,   color: !isPublicSelected?  Colors.greenAccent: Colors.grey,size: 21,),
+                                      Icon(Icons.security,   color: !isPublicSelected?  Colors.black: Colors.grey,size: 21,),
                                       Container(
                                         margin: const EdgeInsets.only(left: 3),
                                         child: Text(
@@ -353,7 +330,7 @@ class _UserProfileState extends State<UserProfile> {
                                           style: GoogleFonts.inter(
                                             textStyle: Theme.of(context).textTheme.labelLarge,
                                             fontWeight: FontWeight.bold,
-                                            color: !isPublicSelected? Colors.greenAccent:Colors.grey,
+                                            color: !isPublicSelected? Colors.black: Colors.grey,
                                           ),
                                         ),
                                       ),

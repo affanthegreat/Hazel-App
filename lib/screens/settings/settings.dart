@@ -162,19 +162,6 @@ class _SettingsState extends State<Settings> {
                     color: isDarkTheme ? Colors.redAccent : Colors.redAccent,
                   )),
             ),
-            InkWell(
-              onTap: (){
-               setState(() {
-                 isDarkTheme = !isDarkTheme;
-               });
-              },
-              child: settingsButton(
-                  "Switch theme",
-                  Icon(
-                    Iconsax.user,
-                    color: isDarkTheme ? Colors.redAccent : Colors.redAccent,
-                  )),
-            ),
             settingsButton(
                 "Privacy settings",
                 Icon(
