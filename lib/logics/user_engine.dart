@@ -2,11 +2,12 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:hazel_client/logics/UserDetails.dart';
 import 'package:hazel_client/logics/UserProfileModel.dart';
 import 'package:hazel_client/main.dart';
 import 'package:hive/hive.dart';
 
-final storage = FlutterSecureStorage();
+final storage = const FlutterSecureStorage();
 
 class UserEngine {
   final dio = Dio();
@@ -92,7 +93,7 @@ class UserEngine {
 
   Future<UserProfileModel?> fetchUserInfo(bool refresh) async {
 
-      try {
+
         var apiEndpoint = 'user_engine/get_user_info';
         var getCurrentUser = 'user_engine/current_user';
         var userTokens = {
@@ -101,16 +102,12 @@ class UserEngine {
         };
         final response = await dio.post(url + getCurrentUser, data: userTokens);
         final userName = json.decode(response.data)['user_name'];
-        final userDetailsResponse =
-        await dio.post(url + apiEndpoint, data: {'user_name': userName});
-        final userProfileObj =
-        UserProfileModel.fromJson(json.decode(userDetailsResponse.data));
+        final userDetailsResponse = await dio.post(url + apiEndpoint, data: {'user_name': userName});
+        final userProfileObj = UserProfileModel.fromJson(json.decode(userDetailsResponse.data));
         var box = await Hive.openBox('logged-in-user');
         box.put('user_obj',userProfileObj);
         return userProfileObj;
-      } catch(e){
-        return null;
-      }
+
     }
 
   Future<Set<UserProfileModel?>> searchUserInfo(dynamic data) async {
@@ -217,7 +214,6 @@ class UserEngine {
       final response = await dio.post(
           url + apiEndpoint, data: userTokens);
       data = json.decode(response.data);
-      print(data);
       return data;
     } catch (e) {
       return false;
@@ -225,7 +221,7 @@ class UserEngine {
   }
 
   Future<dynamic> removeFollowRequest(dynamic data) async {
-    try {
+
       var apiEndpoint = 'user_engine/remove_follow_request_view';
       var userTokens = {
         'requested_to': data['requested_to'],
@@ -234,12 +230,27 @@ class UserEngine {
       };
       final response = await dio.post(
           url + apiEndpoint, data: userTokens);
+      print(response);
       data = json.decode(response.data);
-      print(data);
       return data;
-    } catch (e) {
-      return false;
-    }
+
+  }
+
+  Future<dynamic> denyFollowRequest(dynamic data) async {
+
+    var apiEndpoint = 'user_engine/deny_follow_request_view';
+    var userTokens = {
+      'requested_to': data['requested_to'],
+      'requester': data['requester'],
+      'auth_token': sessionData!['auth_token'],
+      'token': sessionData!['token']
+    };
+    final response = await dio.post(
+        url + apiEndpoint, data: userTokens);
+    print(response);
+    data = json.decode(response.data);
+    return data;
+
   }
 
   Future<Set<UserProfileModel?>> getFollowRequests(dynamic data) async {
@@ -257,7 +268,6 @@ class UserEngine {
       Set<UserProfileModel?> userProfilesList = {};
       for (int i = 0; i < json_data.length; i++) {
         var userProfileObj = UserProfileModel.fromJson(json_data[i]);
-        print(userProfileObj.userName);
         userProfilesList.add(userProfileObj);
       }
       return userProfilesList;
@@ -290,8 +300,11 @@ class UserEngine {
       final response = await dio.post(
           url + apiEndpoint, data: data);
       data = json.decode(response.data);
+      print("||||||||");
+      print(data);
       return data;
     } catch (e) {
+      throw(e);
       return false;
     }
   }
@@ -344,20 +357,20 @@ class UserEngine {
     }
   }
 
-  Future<dynamic> getUserDetails() async {
-    try {
+  Future<UserDetails> getUserDetails(String userId) async {
+    try{
       UserProfileModel? user_obj = await fetchUserInfo(true);
       var endPoint = "user_engine/get_user_details";
       var data = {
-        'user_id':user_obj!.userId
+        'user_id':userId
       };
-      print(data);
       final response = await dio.post(url+ endPoint, data: data);
-      print(response);
-      return response.data;
-    } catch (e) {
-      throw(e);
-      return false;
+      UserDetails? obj = UserDetails.fromJson(json.decode(response.data));
+      print("|||||||||||||");
+      print(obj.userFullName);
+      return obj;
+    } catch(e){
+      return UserDetails();
     }
   }
 

@@ -33,8 +33,6 @@ class HazelPrivacyDisclaimer extends StatelessWidget {
                     )),
                 TextSpan(
                     text: "analytics.hazel.gg",
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () => print('Tap Here onTap'),
                     style: GoogleFonts.inter(
                       height: 1.3,
                       textStyle: Theme.of(context).textTheme.labelSmall,

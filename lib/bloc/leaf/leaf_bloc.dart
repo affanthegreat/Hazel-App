@@ -33,11 +33,9 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
   FutureOr<void> likeLeaf(LeafLikeEvent event, Emitter<LeafState> emit) async{
     try{
       var status= await leafEngineObj.likeLeaf(event.obj!);
-      print("======IN LIKE LEAF BLOC=====");
-      print(status);
       if(status == -100){
         event.obj!.likesCount = event.obj!.likesCount! + 1;
-        bool dislike_status=  await leafEngineObj.checkDisLike(event!.obj!);
+        bool dislike_status=  await leafEngineObj.checkDisLike(event.obj!);
         var interaction = {
           'like': true,
           'dislike': dislike_status
@@ -54,10 +52,9 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
   FutureOr<void> dislikeLeaf(LeafDislikeEvent event, Emitter<LeafState> emit) async {
 
       var status = await leafEngineObj.dislikeLeaf(event.obj!);
-      print(status);
       if(status == -100){
         event.obj!.dislikesCount = event.obj!.dislikesCount! + 1;
-        bool like_status=  await leafEngineObj.checkLike(event!.obj!);
+        bool like_status=  await leafEngineObj.checkLike(event.obj!);
         var interaction = {
           'like': like_status,
           'dislike': true
@@ -73,7 +70,7 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
       var status = await leafEngineObj.removeLikeLeaf(event.obj!);
       if(status == -100){
         event.obj!.likesCount = event.obj!.likesCount! - 1;
-        bool dislike_status=  await leafEngineObj.checkDisLike(event!.obj!);
+        bool dislike_status=  await leafEngineObj.checkDisLike(event.obj!);
         var interaction = {
           'like': false,
           'dislike': dislike_status
@@ -91,7 +88,7 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
       var status = await leafEngineObj.removeDisLikeLeaf(event.obj!);
       if(status == -100){
         event.obj!.dislikesCount = event.obj!.dislikesCount! - 1;
-        bool like_status=  await leafEngineObj.checkLike(event!.obj!);
+        bool like_status=  await leafEngineObj.checkLike(event.obj!);
         var interaction = {
           'like': like_status,
           'dislike': false
@@ -108,8 +105,8 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
     emit(LeafLoadingState());
     try{
       await leafEngineObj.addView(event.obj!);
-      bool dislike_status=  await leafEngineObj.checkDisLike(event!.obj!);
-      bool like_status=  await leafEngineObj.checkLike(event!.obj!);
+      bool dislike_status=  await leafEngineObj.checkDisLike(event.obj!);
+      bool like_status=  await leafEngineObj.checkLike(event.obj!);
       var interaction = {
         'like': like_status,
         'dislike': dislike_status
@@ -125,7 +122,7 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
 
     var prev_comment_data = commentData;
 
-
+    try{
       var comment_data = await leafEngineObj.getAllComments(event.obj!, commentsPage);
       if(commentsPage == 1){
         commentData = comment_data;
@@ -137,7 +134,9 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
       if(commentData != prev_comment_data){
         emit(LeafFullScreenState(event.map, event.obj, event.currentUser, commentData));
       }
-
+    } catch(e){
+      emit(LeafFullScreenState(event.map, event.obj, event.currentUser, commentData));
+    }
   }
 
   FutureOr<void> sendComment(LeafSendComment event, Emitter<LeafState> emit) async {

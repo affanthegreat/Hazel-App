@@ -9,7 +9,8 @@ class UserProfileSuccessfulLoading extends UserProfileState{
   final UserProfileModel? obj;
   final Set<LeafModel?> privateLeafSet;
   final Set<LeafModel?> publicLeafSet;
-  UserProfileSuccessfulLoading(this.obj, this.publicLeafSet, this.privateLeafSet);
+
+  UserProfileSuccessfulLoading(this.obj,this.publicLeafSet, this.privateLeafSet);
 }
 
 class UserProfileErrorLoading extends UserProfileState{}
@@ -27,8 +28,8 @@ class UserProfileSearchFailure extends UserProfileState{}
 class UserProfileVisit extends UserProfileState{
   final UserProfileModel? obj;
   final dynamic follow_map;
-
-  UserProfileVisit(this.obj, this.follow_map);
+  final Set<LeafModel?> leaves;
+  UserProfileVisit(this.obj, this.follow_map, this.leaves);
 }
 
 class UserProfileVisitError extends UserProfileState{

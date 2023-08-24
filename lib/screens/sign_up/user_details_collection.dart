@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hazel_client/constants/colors.dart';
+import 'package:hazel_client/logics/UserDetails.dart';
 import 'package:hazel_client/logics/user_engine.dart';
 import 'package:hazel_client/main.dart';
 import 'package:hazel_client/widgets/HazelFieldHeading.dart';
@@ -30,19 +31,22 @@ class _HazelUserDetailsCollectionState extends State<HazelUserDetailsCollection>
   final TextEditingController phoneNumber = TextEditingController();
 
   final TextEditingController address = TextEditingController();
+  final TextEditingController bio = TextEditingController();
 
   String gender = "male";
 
 
   updateData() async {
-
-    var data =json.decode(await UserEngine().getUserDetails());
+    var box = await Hive.openBox('logged-in-user');
+    var user_obj = box.get('user_obj');
+    UserDetails data =await UserEngine().getUserDetails(user_obj.userId);
     setState(() {
-      userFullName.text = data['user_full_name'];
-      age.text = data['user_age'].toString();
-      phoneNumber.text = data['user_phone_number'].toString();
-      address.text = data['user_address'];
-      gender = data['user_gender'];
+      userFullName.text = data.userFullName!;
+      age.text = data.userAge.toString()!;
+      phoneNumber.text = data.userPhoneNumber.toString();
+      address.text = data.userAddress!;
+      gender = data.userGender!;
+      bio.text = data.userBio!;
     });
 
   }
@@ -51,8 +55,6 @@ class _HazelUserDetailsCollectionState extends State<HazelUserDetailsCollection>
   load_user_obj() async {
     var box = await Hive.openBox('logged-in-user');
     user_obj = box.get('user_obj');
-    print(user_obj.userId);
-    print(user_obj.userName);
   }
   @override
   void initState() {
@@ -100,9 +102,10 @@ class _HazelUserDetailsCollectionState extends State<HazelUserDetailsCollection>
           backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
         ),
         body: Container(
-          margin: EdgeInsets.all(10),
+          margin: const EdgeInsets.all(10),
           child: ListView(
             children: [
+
               Container(
                 margin: const EdgeInsets.only(top: 10, bottom: 5),
                 alignment: Alignment.topLeft,
@@ -112,12 +115,13 @@ class _HazelUserDetailsCollectionState extends State<HazelUserDetailsCollection>
                 alignment: Alignment.topLeft,
                 child: HazelFieldLabel(text: widget.update ? "It's always a good thing to update." : "we need little bit of your information for some of our features to work."),
               ),
+              textField("Bio", bio,TextInputType.text),
               Row(
                 children: [
                   Expanded(child: textField("Your full name", userFullName, TextInputType.text)),
                   Container(
                       width: 80,
-                      margin: EdgeInsets.only(left: 5),
+                      margin: const EdgeInsets.only(left: 5),
                       child: textField("Age", age, TextInputType.number)),
                 ],
               ),
@@ -131,9 +135,9 @@ class _HazelUserDetailsCollectionState extends State<HazelUserDetailsCollection>
               Row(
                 children: [
                   Container(
-                    margin: EdgeInsets.only(right: 5,top: 5),
+                    margin: const EdgeInsets.only(right: 5,top: 5),
                     child: ChoiceChip(
-                      label: Text('Male'),
+                      label: const Text('Male'),
                       selectedColor: Colors.yellowAccent,
                       labelStyle: GoogleFonts.inter(
                         textStyle: Theme.of(context).textTheme.bodyMedium,
@@ -150,9 +154,9 @@ class _HazelUserDetailsCollectionState extends State<HazelUserDetailsCollection>
                     ),
                   ),
                   Container(
-                    margin: EdgeInsets.only(right: 5,top: 5),
+                    margin: const EdgeInsets.only(right: 5,top: 5),
                     child: ChoiceChip(
-                      label: Text('Female'),
+                      label: const Text('Female'),
                       selectedColor: Colors.yellowAccent,
                       labelStyle: GoogleFonts.inter(
                         textStyle: Theme.of(context).textTheme.bodyMedium,
@@ -169,9 +173,9 @@ class _HazelUserDetailsCollectionState extends State<HazelUserDetailsCollection>
                     ),
                   ),
                   Container(
-                    margin: EdgeInsets.only(right: 5,top: 5),
+                    margin: const EdgeInsets.only(right: 5,top: 5),
                     child: ChoiceChip(
-                      label: Text('Other'),
+                      label: const Text('Other'),
                       selectedColor: Colors.yellowAccent,
                       labelStyle: GoogleFonts.inter(
                         textStyle: Theme.of(context).textTheme.bodyMedium,
@@ -190,9 +194,25 @@ class _HazelUserDetailsCollectionState extends State<HazelUserDetailsCollection>
                 ],
               ),
               Container(
-                  margin: EdgeInsets.only(top: 10),
+                  margin: const EdgeInsets.only(top: 10),
                   child: InkWell(
                       onTap: ()async {
+
+                        if(bio.text.isEmpty){
+                          var snackBar = SnackBar(
+                            backgroundColor: CupertinoColors.systemRed,
+                            content: Text(
+                              "Your bio can't be empty.",
+                              style: GoogleFonts.inter(
+                                textStyle: Theme.of(context).textTheme.bodyMedium,
+                                color: Colors.white,
+                              ),
+                            ),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          return;
+                        }
+
                         if (userFullName.text.isEmpty) {
                           var snackBar = SnackBar(
                             backgroundColor: CupertinoColors.systemRed,
@@ -295,6 +315,7 @@ class _HazelUserDetailsCollectionState extends State<HazelUserDetailsCollection>
 
 
                         var data = {
+                          'user_bio': bio.text,
                           'user_id': user_obj.userId,
                           'user_full_name': userFullName.text,
                           'user_phone_number': countryCode.text + phoneNumber.text,
@@ -316,7 +337,7 @@ class _HazelUserDetailsCollectionState extends State<HazelUserDetailsCollection>
                       },
                       child: const HazelFocusedButton(text: "Save"))),
               Container(
-                margin: EdgeInsets.only(top: 20),
+                margin: const EdgeInsets.only(top: 20),
                 alignment: Alignment.center,
                 child: Text(
                   "We collect location data of your device such as the city, state and country you're in for leaderboards and regional trending pages while you use hazel.gg. We believe transparency between you and us is the key for our success.",

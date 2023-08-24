@@ -5,4 +5,4 @@ const lightScaffoldColor = Colors.white;
 
 const hazelLogoColorLight = Colors.white;
 const hazelLogoColor = Colors.black;
-var hazelLogoDotColor = Color(0xffABA2A2);
+var hazelLogoDotColor = const Color(0xffABA2A2);

@@ -31,13 +31,24 @@ class UserProfileModelAdapter extends TypeAdapter<UserProfileModel> {
       userUniversalComments: fields[11] as int?,
       createdAt: fields[12] as String?,
       userId: fields[13] as String?,
+      userFullName: fields[14] as String?,
+      userPhoneNumber: fields[15] as String?,
+      userAddress: fields[16] as String?,
+      userPhoneId: fields[17] as String?,
+      userCity: fields[18] as String?,
+      userState: fields[19] as String?,
+      userCountry: fields[20] as String?,
+      userRegion: fields[21] as String?,
+      userGender: fields[22] as String?,
+      userAge: fields[23] as int?,
+      userBio: fields[24] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProfileModel obj) {
     writer
-      ..writeByte(14)
+      ..writeByte(25)
       ..writeByte(0)
       ..write(obj.userEmail)
       ..writeByte(1)
@@ -65,7 +76,29 @@ class UserProfileModelAdapter extends TypeAdapter<UserProfileModel> {
       ..writeByte(12)
       ..write(obj.createdAt)
       ..writeByte(13)
-      ..write(obj.userId);
+      ..write(obj.userId)
+      ..writeByte(14)
+      ..write(obj.userFullName)
+      ..writeByte(15)
+      ..write(obj.userPhoneNumber)
+      ..writeByte(16)
+      ..write(obj.userAddress)
+      ..writeByte(17)
+      ..write(obj.userPhoneId)
+      ..writeByte(18)
+      ..write(obj.userCity)
+      ..writeByte(19)
+      ..write(obj.userState)
+      ..writeByte(20)
+      ..write(obj.userCountry)
+      ..writeByte(21)
+      ..write(obj.userRegion)
+      ..writeByte(22)
+      ..write(obj.userGender)
+      ..writeByte(23)
+      ..write(obj.userAge)
+      ..writeByte(24)
+      ..write(obj.userBio);
   }
 
   @override

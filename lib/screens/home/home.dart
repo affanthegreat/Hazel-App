@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:hazel_client/constants/colors.dart';
-import 'package:hazel_client/main.dart';
 import 'package:hazel_client/screens/home/home_main_screen.dart';
 import 'package:hazel_client/screens/home/user_profile.dart';
 import 'package:hazel_client/screens/leaderboards/leaderboard.dart';

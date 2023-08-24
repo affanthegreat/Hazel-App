@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:animated_tree_view/tree_view/tree_node.dart';
 import 'package:dio/dio.dart';
 import 'package:hazel_client/logics/CommentModels.dart';
 import 'package:hazel_client/logics/wrappers.dart';
@@ -71,6 +70,30 @@ class LeafEngine {
     }
   }
 
+  Future<Set<LeafModel>> getLeaves(String userId, int page_number) async {
+    var apiEndpoint = 'leaf_engine/get_leaves';
+
+    var data = {};
+    data['auth_token'] = sessionData!['auth_token'];
+    data['token'] = sessionData!['token'];
+    data['page_number'] = page_number;
+    data['user_id'] = userId;
+    final response = await dio.post(url + apiEndpoint, data: data);
+    print(response.data);
+    List<dynamic?> result = response.data['data'];
+    if (result.isNotEmpty) {
+      Set<LeafModel> leaf_qs = {};
+      for (int i = 0; i < result.length; i++) {
+        var leaf_obj = LeafModel.fromJson(result.elementAt(i));
+        leaf_qs.add(leaf_obj);
+      }
+      return leaf_qs;
+    } else {
+      return {};
+    }
+  }
+
+
   Future<bool> addView(LeafModel leaf_obj) async {
     var apiEndpoint = 'leaf_engine/add_view';
     var data = {};
@@ -78,7 +101,6 @@ class LeafEngine {
     data['token'] = sessionData!['token'];
     data['leaf_id'] = leaf_obj.leafId;
     final response = await dio.post(url + apiEndpoint, data: data);
-    print(response);
     return true;
   }
 
@@ -94,7 +116,6 @@ class LeafEngine {
       final result = json.decode(response.data);
       return result;
     } catch (E) {
-      throw (E);
       return -111;
     }
   }
@@ -124,7 +145,6 @@ class LeafEngine {
       final result = json.decode(response.data);
       return result;
     } catch (e) {
-      throw (e);
       return -112;
     }
   }
@@ -178,33 +198,31 @@ class LeafEngine {
     }
   }
 
-  Future<dynamic> getAllComments(LeafModel leaf_obj, int page_number) async {
-
-      var apiEndpoint = 'leaf_engine/get_all_comments';
-      var data = {};
-      data['page_number'] = page_number;
-      data['leaf_id'] = leaf_obj.leafId;
-      final response = await dio.post(url + apiEndpoint, data: data);
-      List<dynamic> result = response.data['data'];
-
-      Map<String, dynamic> comment_set = {};
-      List<Map<String, dynamic>> comments = [];
-      for(int i= 0; i< result!.length; i++){
-        var obj = LeafComments.fromJson(result[i]);
-        comments.add(obj.toJson());
-        comment_set[obj.commentId!]  = obj;
+  Future<CommentsRepo> getAllComments(LeafModel leaf_obj, int page_number) async {
+      try{
+        var apiEndpoint = 'leaf_engine/get_all_comments';
+        var data = {};
+        data['page_number'] = page_number;
+        data['leaf_id'] = leaf_obj.leafId;
+        final response = await dio.post(url + apiEndpoint, data: data);
+        List<dynamic> result = response.data['data'];
+        Map<String, dynamic> comment_set = {};
+        List<Map<String, dynamic>> comments = [];
+        for(int i= 0; i< result.length; i++){
+          var obj = LeafComments.fromJson(result[i]);
+          comments.add(obj.toJson());
+          comment_set[obj.commentId!]  = obj;
+        }
+        final commentTree = constructCommentTree(comments);
+        final tree = convertTreeToMap(commentTree);
+        CommentsRepo commentsRepo = CommentsRepo();
+        commentsRepo.commentsTree = tree;
+        commentsRepo.commentsMap = comment_set;
+        commentsRepo.sortRootComments();
+        return commentsRepo;
+      } catch(e) {
+        return CommentsRepo();
       }
-      print(comment_set);
-      final commentTree = constructCommentTree(comments);
-      print(commentTree);
-      final tree = convertTreeToMap(commentTree);
-      CommentsRepo commentsRepo = CommentsRepo();
-      commentsRepo.commentsTree = tree;
-      commentsRepo.commentsMap = comment_set;
-      commentsRepo.sortRootComments();
-      print("-------------");
-      print(commentsRepo.commentsTree);
-      return commentsRepo;
   }
 
   Map<String, Map> convertTreeToMap(List<CommentNode> nodes, {int depth = 0}) {
@@ -245,14 +263,12 @@ class LeafEngine {
       data['auth_token'] = sessionData!['auth_token'];
       data['token']  = sessionData!['token'];
       final response = await dio.post(url + apiEndpoint, data: data);
-      print(response);
       if(response.data == -100){
         return true;
       } else{
         return false;
       }
     } catch (e) {
-      throw(e);
       return false;
     }
   }

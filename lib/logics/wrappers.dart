@@ -60,3 +60,18 @@ List<CommentNode> constructCommentTree(List<Map<String, dynamic>> sortedComments
   return commentTree.values.where((node) => node.comment['comment_depth'] == 1).toList();
 }
 
+class RelationshipStatus {
+  final bool followRequestStatus;
+  final bool followingStatus;
+  final bool followerStatus;
+  final bool blockStatus;
+  final bool blockedByStatus;
+
+  RelationshipStatus({
+    required this.followRequestStatus,
+    required this.followingStatus,
+    required this.followerStatus,
+    required this.blockStatus,
+    required this.blockedByStatus,
+  });
+}

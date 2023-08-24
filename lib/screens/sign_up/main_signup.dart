@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -75,6 +73,7 @@ class _SignUpState extends State<SignUp> {
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 250),
       child: Scaffold(
+        key: const ValueKey<int>(0),
         backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
         appBar: AppBar(
           backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
@@ -179,6 +178,7 @@ class _SignUpState extends State<SignUp> {
 
   Widget signUpEmailAdded() {
     return Scaffold(
+      key: const ValueKey<int>(1),
       appBar: AppBar(
         backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
         leading: IconButton(
@@ -240,7 +240,7 @@ class _SignUpState extends State<SignUp> {
                     ),
                   ),
                 ),
-                Container(
+                SizedBox(
                   height: 50,
                   child: InkWell(
                     onTap: () async {
@@ -306,6 +306,7 @@ class _SignUpState extends State<SignUp> {
 
   Widget signUpUserNameAdded() {
     return Scaffold(
+      key: const ValueKey<int>(2),
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
@@ -370,7 +371,7 @@ class _SignUpState extends State<SignUp> {
                     ),
                   ),
                 ),
-                Container(
+                SizedBox(
                   height: 50,
                   child: InkWell(
                     onTap: () async {
@@ -419,6 +420,7 @@ class _SignUpState extends State<SignUp> {
 
   Widget signUpPasswordCheckAgain() {
     return Scaffold(
+      key: const ValueKey<int>(3),
       appBar: AppBar(
         backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
         leading: IconButton(
@@ -480,7 +482,7 @@ class _SignUpState extends State<SignUp> {
                     ),
                   ),
                 ),
-                Container(
+                SizedBox(
                   height: 50,
                   child: InkWell(
                     onTap: () {
@@ -556,10 +558,6 @@ class _SignUpState extends State<SignUp> {
 
       },
       builder: (context, state) {
-        print("+++++++++");
-        print(state.runtimeType);
-
-
         return AnimatedSwitcher(
             duration: const Duration(milliseconds: 250),
             child: (state is SignUpStartSuccess)
@@ -572,6 +570,7 @@ class _SignUpState extends State<SignUp> {
                             ? signUpPasswordCheckAgain()
                             : (state is SignupAccountCreationLoading ||  state is SignupAccountCreationSuccessful || state is SignUpPasswordErrorState)
                                 ? Scaffold(
+              key: const ValueKey<int>(4),
                                     backgroundColor: isDarkTheme
                                         ? darkScaffoldColor
                                         : lightScaffoldColor,

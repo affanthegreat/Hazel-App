@@ -76,15 +76,15 @@ class _SettingsState extends State<Settings> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Expanded(child: HazelMetricWidget(label: "Followers", value: obj!.userFollowers.toString(), color: CupertinoColors.activeBlue)),
-                    Expanded(child: HazelMetricWidget(label: "Level", value: obj!.userLevel.toString(), color: CupertinoColors.activeBlue)),
-                    Expanded(child: HazelMetricWidget(label: "Exp points", value: obj!.userExperiencePoints.toString(), color: CupertinoColors.activeBlue))
+                    Expanded(child: HazelMetricWidget(label: "Followers", value: obj.userFollowers.toString(), color: CupertinoColors.activeBlue)),
+                    Expanded(child: HazelMetricWidget(label: "Level", value: obj.userLevel.toString(), color: CupertinoColors.activeBlue)),
+                    Expanded(child: HazelMetricWidget(label: "Exp points", value: obj.userExperiencePoints.toString(), color: CupertinoColors.activeBlue))
                   ],
                 ),
               ),
               Container(
                 height: 40,
-                margin: EdgeInsets.all(10),
+                margin: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: isDarkTheme? Colors.grey.shade900: Colors.grey.shade200,
                   borderRadius: BorderRadius.circular(10)
@@ -200,7 +200,7 @@ class _SettingsState extends State<Settings> {
                   )),
             ),
             Container(
-              margin: EdgeInsets.only(top: 20,bottom: 10),
+              margin: const EdgeInsets.only(top: 20,bottom: 10),
               alignment: Alignment.center,
               child: Text(
                 "This is still beta version of Hazel. We promise to add new features frequently and make Hazel more fun than ever.",
@@ -223,8 +223,6 @@ class _SettingsState extends State<Settings> {
 
         },
         builder: (context, state) {
-          print(state.runtimeType);
-
           if(state is LoadUserBlockedAccounts && state.listOfUsers.isEmpty) {
               return Center(
                 child: Text("You haven't blocked anybody.",style: GoogleFonts.inter(
@@ -239,7 +237,7 @@ class _SettingsState extends State<Settings> {
                 appBar: AppBar(
                   backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
                     leading: IconButton(
-                      icon: Icon(Icons.arrow_back),
+                      icon: const Icon(Icons.arrow_back),
                       onPressed: (){
                         settingsBloc.add(SettingsPageInitialLoad());
                       },
@@ -249,7 +247,7 @@ class _SettingsState extends State<Settings> {
                     color: isDarkTheme ? Colors.white : Colors.black,
                   ))),
               body: Container(
-                margin: EdgeInsets.all(10),
+                margin: const EdgeInsets.all(10),
                 child: ListView.builder(
                     itemCount: state.listOfUsers.length,
                     itemBuilder: (context,index){
