@@ -431,18 +431,23 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
               },
               builder: (context, state) {
                 if (state is LeafSendingComment) {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const CircularProgressIndicator(),
-                      Text("Saving your comment..",
-                          style: GoogleFonts.poppins(
-                            textStyle: Theme.of(context).textTheme.labelMedium,
-                            fontWeight: FontWeight.bold,
-                            color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,
-                          ))
-                    ],
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const CircularProgressIndicator(),
+                        Container(
+                          margin: EdgeInsets.only(top: 10),
+                          child: Text("Saving your comment..",
+                              style: GoogleFonts.poppins(
+                                textStyle: Theme.of(context).textTheme.labelMedium,
+                                fontWeight: FontWeight.bold,
+                                color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,
+                              )),
+                        )
+                      ],
+                    ),
                   );
                 }
                 if (state is LeafFullScreenState) {
