@@ -110,6 +110,17 @@ class UserEngine {
 
     }
 
+
+  Future<UserProfileModel?> fetchUserInfoId(String userId) async {
+
+
+    var apiEndpoint = 'user_engine/get_user_info_id';
+    final userDetailsResponse = await dio.post(url + apiEndpoint, data: {'user_id': userId});
+    print(userDetailsResponse);
+    final userProfileObj = UserProfileModel.fromJson(json.decode(userDetailsResponse.data));
+    return userProfileObj;
+  }
+
   Future<Set<UserProfileModel?>> searchUserInfo(dynamic data) async {
 
     try {

@@ -2,13 +2,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hazel_client/logics/CommentModels.dart';
+import 'package:hazel_client/logics/UserProfileModel.dart';
 import 'package:hazel_client/main.dart';
+import 'package:hazel_client/widgets/HazelFieldHeading.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:intl/intl.dart';
 
 class HazelLeafComment extends StatefulWidget {
   final LeafComments comment;
-  const HazelLeafComment({super.key, required this.comment});
+  final UserProfileModel? obj;
+  const HazelLeafComment({super.key, required this.comment, required this.obj});
 
   @override
   State<HazelLeafComment> createState() => _HazelLeafCommentState();
@@ -74,8 +77,6 @@ class _HazelLeafCommentState extends State<HazelLeafComment> {
     }
 
     RichText buildHighlightedText(String text) {
-
-
       List<String> hashtags = getAllHashtags(text);
       List<String> mentions = getAllMentions(text);
 
@@ -98,19 +99,40 @@ class _HazelLeafCommentState extends State<HazelLeafComment> {
                 letterSpacing: 0,
                 color: CupertinoColors.systemYellow,
                 textStyle: Theme.of(context).textTheme.bodyLarge,
-              )
-          ));
+              )));
         } else {
-          textSpans.add(TextSpan(text: '$value ' , style: GoogleFonts.poppins(
-            letterSpacing: 0,
-            color: isDarkTheme ? Colors.white : Colors.black,
-            textStyle: Theme.of(context).textTheme.bodyLarge,
-          )));
+          textSpans.add(TextSpan(
+              text: '$value ',
+              style: GoogleFonts.inter(
+                letterSpacing: 0,
+                color: isDarkTheme ? Colors.white : Colors.black,
+                textStyle: Theme.of(context).textTheme.bodyLarge,
+              )));
         }
       });
 
       return RichText(text: TextSpan(children: textSpans));
     }
+
+    RichText buildHighlightedUserText(String userFullName, String userName) {
+      return RichText(
+          text: TextSpan(children: [
+        TextSpan(
+            text: userFullName,
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.bold,
+              color: isDarkTheme ? Colors.white : Colors.black,
+              textStyle: Theme.of(context).textTheme.titleMedium,
+            )),
+        TextSpan(
+            text: " @" + userName,
+            style: GoogleFonts.inter(
+              color: isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade600,
+              textStyle: Theme.of(context).textTheme.labelLarge,
+            )),
+      ]));
+    }
+
     Widget textField() {
       return Container(
         margin: const EdgeInsets.only(top: 10, bottom: 10),
@@ -168,7 +190,7 @@ class _HazelLeafCommentState extends State<HazelLeafComment> {
       width: double.infinity,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.grey.shade900.withOpacity(0.75), width: 2)),
+        border: Border(bottom: BorderSide(color: isDarkTheme ? Colors.grey.shade900.withOpacity(0.75) : Colors.grey.shade300, width: 2)),
         //color: isDarkTheme ? Colors.grey.shade900.withOpacity(0.3) : Colors.grey.shade50,
       ),
       child: Column(
@@ -179,11 +201,7 @@ class _HazelLeafCommentState extends State<HazelLeafComment> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("@" + widget.comment.commentedById!,
-                    style: GoogleFonts.inter(
-                      textStyle: Theme.of(context).textTheme.labelSmall,
-                      color: isDarkTheme ? Colors.grey.shade300 : Colors.grey.shade400,
-                    )),
+                buildHighlightedUserText(widget.obj!.userFullName!, widget.obj!.userName!),
                 Container(
                   margin: EdgeInsets.only(bottom: 5),
                   child: Text(dateTimeToWords(widget.comment.createdDate!),
@@ -196,54 +214,57 @@ class _HazelLeafCommentState extends State<HazelLeafComment> {
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.all(5),
-            decoration: BoxDecoration(color: isDarkTheme ? Colors.grey.shade900.withOpacity(0.35) : Colors.grey.shade300, borderRadius: BorderRadius.circular(10)),
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 150),
-              child: textFieldVisible
-                  ? Row(
-                      key: const ValueKey<int>(0),
-                      children: [
-                        Expanded(child: textField()),
-                        IconButton(
-                            onPressed: () {
-                              setState(() {
-                                textFieldVisible = !textFieldVisible;
-                              });
-                            },
-                            icon: const Icon(Iconsax.message_minus, size: 18, color: Colors.grey))
-                      ],
-                    )
-                  : Row(
-                      key: const ValueKey<int>(1),
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Row(
-                              children: [
-                                IconButton(onPressed: () {}, icon: const Icon(Iconsax.like_1, color: Colors.grey)),
-                              ],
-                            ),
-                            IconButton(onPressed: () {}, icon: const Icon(Iconsax.dislike, color: Colors.grey,)),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    textFieldVisible = !textFieldVisible;
-                                  });
-                                },
-                                icon: const Icon(Iconsax.message_add_1, size: 18, color: Colors.grey))
-                          ],
-                        ),
-                      ],
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 150),
+            child: textFieldVisible
+                ? Row(
+                    key: const ValueKey<int>(0),
+                    children: [
+                      Expanded(child: textField()),
+                      IconButton(
+                          onPressed: () {
+                            setState(() {
+                              textFieldVisible = !textFieldVisible;
+                            });
+                          },
+                          icon: const Icon(Iconsax.message_minus, size: 18, color: Colors.grey))
+                    ],
+                  )
+                : Align(
+                  alignment: Alignment.centerRight,
+                  child: Container(
+                      width: 160,
+                      height: 40,
+                      padding: const EdgeInsets.all(5),
+                     child: Row(
+                        key: const ValueKey<int>(1),
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          IconButton(
+                              padding: EdgeInsets.zero,
+                              constraints: BoxConstraints(),
+                              onPressed: () {
+
+                              },
+                              icon: const Icon(Iconsax.arrow_up, size: 24, color: Colors.grey,)),
+                          IconButton(
+                              padding: EdgeInsets.zero,
+                              constraints: BoxConstraints(),
+                              onPressed: () {
+
+                              },
+                              icon: const Icon(Iconsax.arrow_down_2, size: 24, color: Colors.grey,)),
+                          IconButton(
+                              padding: EdgeInsets.zero,
+                              constraints: BoxConstraints(),
+                              onPressed: () {
+
+                              },
+                              icon: const Icon(Iconsax.message_add_1, size: 24, color: Colors.grey)),
+                        ],
+                      ),
                     ),
-            ),
+                ),
           )
         ],
       ),

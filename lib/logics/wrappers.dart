@@ -3,8 +3,9 @@
 import 'CommentModels.dart';
 
 class CommentsRepo{
-  late Map<String, Map<dynamic, dynamic>> commentsTree;
-  late Map<String, dynamic> commentsMap;
+  late Map<String, Map<dynamic, dynamic>> commentsTree = {};
+  late Map<String, dynamic> commentsMap = {};
+  late Map<String, dynamic> commentUsers = {};
 
 
   LeafComments getCommentObj(String comment_id){
@@ -25,6 +26,7 @@ class CommentsRepo{
   void merge(CommentsRepo otherRepo) {
     commentsTree.addAll(otherRepo.commentsTree);
     commentsMap.addAll(otherRepo.commentsMap);
+    commentUsers.addAll(otherRepo.commentUsers);
     sortRootComments();
   }
 }

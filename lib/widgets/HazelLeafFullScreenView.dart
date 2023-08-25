@@ -8,6 +8,7 @@ import 'package:hazel_client/bloc/leaf/leaf_bloc.dart';
 import 'package:hazel_client/constants/colors.dart';
 import 'package:hazel_client/logics/LeafModel.dart';
 import 'package:hazel_client/logics/UserProfileModel.dart';
+import 'package:hazel_client/logics/user_engine.dart';
 import 'package:hazel_client/logics/wrappers.dart';
 import 'package:hazel_client/main.dart';
 import 'package:hazel_client/widgets/HazelFieldHeading.dart';
@@ -55,6 +56,7 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
     return formatter.format(dateTime.toLocal());
   }
 
+  double _savedScrollOffset = 0.0;
   @override
   void initState() {
     leafFullScreenBloc.add(LeafFullScreenViewEvent(widget.leafObj, widget.userObj, widget.map));
@@ -199,7 +201,7 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
               )
           ));
         } else {
-          textSpans.add(TextSpan(text: '$value ' , style: GoogleFonts.poppins(
+          textSpans.add(TextSpan(text: '$value ' , style: GoogleFonts.inter(
             letterSpacing: 0,
             color: isDarkTheme ? Colors.white : Colors.black,
             textStyle: Theme.of(context).textTheme.bodyLarge,
@@ -209,8 +211,31 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
 
       return RichText(text: TextSpan(children: textSpans));
     }
-    
-    
+
+    RichText buildHighlightedUserText(String userFullName, String userName) {
+      return RichText(
+          text: TextSpan(children: [
+            TextSpan(
+                text: userFullName,
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.bold,
+                  color: isDarkTheme ? Colors.white : Colors.black,
+                  textStyle: Theme
+                      .of(context)
+                      .textTheme
+                      .titleMedium,
+                )),
+            TextSpan(
+                text: "\n@" + userName,
+                style: GoogleFonts.inter(
+                  color: isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade600,
+                  textStyle: Theme
+                      .of(context)
+                      .textTheme
+                      .labelLarge,
+                )),
+          ]));
+    }
     Widget leafMainSection() {
       return Container(
         margin: const EdgeInsets.only(left: 10, right: 10),
@@ -255,17 +280,7 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
             ),
             Container(
               margin: const EdgeInsets.only(left: 10, right: 10),
-              child: RichText(
-                text: TextSpan(children: [
-                  TextSpan(
-                      text: "@" + userObj!.userName!,
-                      style: GoogleFonts.inter(
-                        textStyle: Theme.of(context).textTheme.labelLarge,
-                        fontWeight: FontWeight.bold,
-                        color: isDarkTheme ? Colors.grey.shade400 : Colors.grey.shade700,
-                      )),
-                ]),
-              ),
+              child: buildHighlightedUserText(widget.userObj!.userFullName!, widget.userObj!.userName!)
             ),
             Container(
               margin: const EdgeInsets.only(left: 10, right: 10, bottom: 20,),
@@ -274,7 +289,8 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
             Container(
               padding: const EdgeInsets.all(5),
               decoration: BoxDecoration(
-                  color: isDarkTheme ? Colors.grey.shade900.withOpacity(0.5): Colors.grey.shade300,
+                  color: isDarkTheme ? Colors.grey.shade900.withOpacity(0.5): Colors.grey.shade100,
+                  border: Border.all(color: isDarkTheme ? Colors.grey.shade800: Colors.grey.shade300),
                   borderRadius: BorderRadius.circular(10)
               ),
               child: Column(
@@ -425,11 +441,19 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
           child: BlocConsumer<LeafBloc, LeafState>(
               bloc: leafFullScreenBloc,
               listener: (context, state) {
+
+
                 if (state is LeafSuccessfulLoadState) {
                   leafFullScreenBloc.add(LeafFullScreenViewEvent(widget.leafObj, widget.userObj, state.map));
                 }
               },
               builder: (context, state) {
+                print(state.runtimeType);
+                if(state is LeafLoadingState){
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
                 if (state is LeafSendingComment) {
                   return Center(
                     child: Column(
@@ -451,20 +475,25 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
                   );
                 }
                 if (state is LeafFullScreenState) {
+
                   leafObj = state.leaf;
                   userObj = state.currentUser;
                   map = state.map;
                   commentData = state.commentData;
                   like_status = state.map['like']!;
                   dislike_status = state.map['dislike']!;
-
                   var tree = buildTree(state.commentData.commentsTree);
                   return CustomScrollView(
                     shrinkWrap: true,
                     controller: _scrollController
                       ..addListener(() {
+                        _savedScrollOffset = _scrollController.offset;
                         if (_scrollController.offset == _scrollController.position.maxScrollExtent) {
+                          leafFullScreenBloc.commentsPage++;
                           leafFullScreenBloc.add(LeafFullScreenViewEvent(widget.leafObj, widget.userObj, widget.map));
+                          WidgetsBinding.instance!.addPostFrameCallback((_) {
+                            _scrollController.jumpTo(_savedScrollOffset);
+                          });
                         }
                       }),
                     physics: const ClampingScrollPhysics(),
@@ -495,17 +524,21 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
                               tree: tree,
                               showRootNode: false,
                               scrollController: _scrollController,
-                              expansionBehavior: ExpansionBehavior.collapseOthersAndSnapToTop,
                               expansionIndicatorBuilder: (context, node) => ChevronIndicator.rightDown(
                                 tree: node,
-                                color: Colors.yellowAccent,
+                                color: CupertinoColors.systemYellow,
                                 padding: const EdgeInsets.all(8),
                               ),
-                              indentation: const Indentation(style: IndentStyle.scopingLine, color: Colors.yellowAccent, thickness: 2, width: 30),
+                              indentation: const Indentation(style: IndentStyle.scopingLine,   color: CupertinoColors.systemYellow, thickness: 2, width: 30),
                               builder: (context, node) {
-                                return HazelLeafComment(comment: state.commentData.commentsMap[node.key]);
+                                return HazelLeafComment(comment: state.commentData.commentsMap[node.key],obj:  state.commentData.commentUsers[node.key]!);
                               },
                             ),
+                      const SliverToBoxAdapter(
+                        child: SizedBox(
+                          height: 50,
+                        ),
+                      )
                     ],
                   );
                 }

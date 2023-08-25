@@ -1,3 +1,5 @@
+import 'package:hazel_client/logics/wrappers.dart';
+
 class LeafModel {
   String? createdDate;
   String? ownerId;
@@ -21,6 +23,7 @@ class LeafModel {
   bool? isAdvertisement;
   String? topicRelevenacyPercentage;
   String? categoryRelevancyPercentage;
+  CommentsRepo? topComments;
 
   LeafModel(
       {this.createdDate,

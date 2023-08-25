@@ -13,7 +13,7 @@ part 'leaf_state.dart';
 class LeafBloc extends Bloc<LeafEvent, LeafState> {
 
   int commentsPage = 1;
-  CommentsRepo commentData = CommentsRepo();
+  CommentsRepo? commentData;
 
   LeafBloc() : super(LeafInitial()) {
     on<LeafLoadedEvent>(loadLeaf);
@@ -118,32 +118,36 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
 
   }
 
-  FutureOr<void> fullScreenView(LeafFullScreenViewEvent event, Emitter<LeafState> emit) async{
-
-    var prev_comment_data = commentData;
-
-    try{
+  FutureOr<void> fullScreenView(LeafFullScreenViewEvent event, Emitter<LeafState> emit) async {
+    if(commentData == null){
+      emit(LeafLoadingState());
+    }
+    try {
       var comment_data = await leafEngineObj.getAllComments(event.obj!, commentsPage);
-      if(commentsPage == 1){
-        commentData = comment_data;
-      } else{
-        commentData.merge(comment_data);
+
+      if (commentData == null || comment_data.commentsTree != commentData!.commentsTree) {
+        if (commentsPage == 1) {
+          print("Saving into comment data");
+          commentData = comment_data;
+        } else {
+          print("Merging data");
+          commentData!.merge(comment_data);
+        }
       }
-      commentsPage++;
-      emit(LeafFullScreenState(event.map, event.obj, event.currentUser, commentData));
-      if(commentData != prev_comment_data){
-        emit(LeafFullScreenState(event.map, event.obj, event.currentUser, commentData));
-      }
-    } catch(e){
-      emit(LeafFullScreenState(event.map, event.obj, event.currentUser, commentData));
+
+      emit(LeafFullScreenState(event.map, event.obj, event.currentUser, commentData!));
+    } catch (e) {
+      // Handle error
+      print("Error fetching comment data: $e");
     }
   }
+
 
   FutureOr<void> sendComment(LeafSendComment event, Emitter<LeafState> emit) async {
     emit(LeafSendingComment());
     try{
       await leafEngineObj.sendComment(event.commentString, event.obj!);
-      var comment_data = await leafEngineObj.getAllComments(event.obj!, commentsPage);
+      var comment_data = await leafEngineObj.getAllComments(event.obj!, 1);
       emit(LeafFullScreenState(event.map, event.obj, event.currentUser, comment_data));
     } catch(e){
       emit(LeafErrorState());

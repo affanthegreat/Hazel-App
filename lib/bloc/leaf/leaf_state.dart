@@ -5,9 +5,7 @@ abstract class LeafState {}
 
 class LeafInitial extends LeafState {}
 
-class LeafLoadingState extends LeafState{
-
-}
+class LeafLoadingState extends LeafState{}
 
 class LeafSuccessfulLoadState extends LeafState{
   final Map<String, bool> map;
@@ -28,3 +26,4 @@ class LeafFullScreenState extends LeafState{
 class LeafErrorState extends LeafState{}
 
 class LeafSendingComment extends LeafState{}
+

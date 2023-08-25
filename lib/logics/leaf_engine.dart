@@ -28,6 +28,42 @@ class LeafEngine {
     }
   }
 
+
+  Future<CommentsRepo> getTopComments(LeafModel leaf_obj) async {
+    try{
+      var apiEndpoint = 'leaf_engine/get_top_comments';
+      var data = {};
+      data['leaf_id'] = leaf_obj.leafId;
+      final response = await dio.post(url + apiEndpoint, data: data);
+      print(response.data);
+      List<dynamic> result = response.data['data'];
+      Map<String, dynamic> comment_set = {};
+      List<Map<String, dynamic>> comments = [];
+      Map<String, dynamic> comment_users = {};
+
+
+      for(int i= 0; i< result.length; i++){
+        var obj = LeafComments.fromJson(result[i]);
+        comments.add(obj.toJson());
+        comment_set[obj.commentId!]  = obj;
+        var user_obj_ = await userEngineObj.fetchUserInfoId(obj.commentedById!);
+        comment_users[obj.commentId!] = user_obj_;
+      }
+      final commentTree = constructCommentTree(comments);
+      final tree = convertTreeToMap(commentTree);
+
+      CommentsRepo commentsRepo = CommentsRepo();
+      commentsRepo.commentsTree = tree;
+      commentsRepo.commentsMap = comment_set;
+      commentsRepo.commentUsers = comment_users;
+      commentsRepo.sortRootComments();
+      return commentsRepo;
+    } catch(e) {
+      throw(e);
+      return CommentsRepo();
+    }
+  }
+
   Future<Set<LeafModel>> getAllPublicLeaf(int page_number) async {
     var apiEndpoint = 'leaf_engine/get_user_public_leaves';
 
@@ -41,6 +77,7 @@ class LeafEngine {
       Set<LeafModel> leaf_qs = {};
       for (int i = 0; i < result.length; i++) {
         var leaf_obj = LeafModel.fromJson(result.elementAt(i));
+        leaf_obj.topComments = await getTopComments(leaf_obj);
         leaf_qs.add(leaf_obj);
       }
       return leaf_qs;
@@ -62,6 +99,7 @@ class LeafEngine {
       Set<LeafModel> leaf_qs = {};
       for (int i = 0; i < result.length; i++) {
         var leaf_obj = LeafModel.fromJson(result.elementAt(i));
+        leaf_obj.topComments = await getTopComments(leaf_obj);
         leaf_qs.add(leaf_obj);
       }
       return leaf_qs;
@@ -85,6 +123,7 @@ class LeafEngine {
       Set<LeafModel> leaf_qs = {};
       for (int i = 0; i < result.length; i++) {
         var leaf_obj = LeafModel.fromJson(result.elementAt(i));
+        leaf_obj.topComments = await getTopComments(leaf_obj);
         leaf_qs.add(leaf_obj);
       }
       return leaf_qs;
@@ -208,16 +247,23 @@ class LeafEngine {
         List<dynamic> result = response.data['data'];
         Map<String, dynamic> comment_set = {};
         List<Map<String, dynamic>> comments = [];
+        Map<String, dynamic> comment_users = {};
+
+
         for(int i= 0; i< result.length; i++){
           var obj = LeafComments.fromJson(result[i]);
           comments.add(obj.toJson());
           comment_set[obj.commentId!]  = obj;
+          var user_obj_ = await userEngineObj.fetchUserInfoId(obj.commentedById!);
+          comment_users[obj.commentId!] = user_obj_;
         }
         final commentTree = constructCommentTree(comments);
         final tree = convertTreeToMap(commentTree);
+
         CommentsRepo commentsRepo = CommentsRepo();
         commentsRepo.commentsTree = tree;
         commentsRepo.commentsMap = comment_set;
+        commentsRepo.commentUsers = comment_users;
         commentsRepo.sortRootComments();
         return commentsRepo;
       } catch(e) {

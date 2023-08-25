@@ -188,7 +188,6 @@ class _UserProfileState extends State<UserProfile> {
                 decoration: BoxDecoration(color: !isPublicSelected ? Colors.greenAccent : Colors.transparent, borderRadius: BorderRadius.circular(5)),
                 child: InkWell(
                   onTap: () {
-
                     isPublicSelected = false;
                     userProfileBloc.add(UserProfileOnBeginEvent(true));
                   },
@@ -238,8 +237,8 @@ class _UserProfileState extends State<UserProfile> {
               textAlign: TextAlign.left,
               style: GoogleFonts.inter(
                 height: 1.3,
-                letterSpacing: 0.5,
-                color: isDarkTheme ? Colors.grey.shade200 : Colors.grey.shade600,
+                letterSpacing:-0.1,
+                color: isDarkTheme ? Colors.grey.shade200 : Colors.grey.shade900,
                 textStyle: Theme.of(context).textTheme.bodyLarge,
               )),
           Container(
