@@ -81,3 +81,21 @@ class LeafSendComment extends LeafEvent{
 
   LeafSendComment(this.commentString, this.obj, this.currentUser, this.map);
 }
+
+class LeafSubComment extends LeafEvent{
+  final Map data;
+  LeafSubComment(this.data);
+}
+
+
+class LeafDelete extends LeafEvent{
+  final String leaf_id;
+
+  LeafDelete(this.leaf_id);
+}
+
+class LeafDeleteComments extends LeafEvent{
+  final String commentId;
+
+  LeafDeleteComments(this.commentId);
+}

@@ -394,7 +394,7 @@ class _UserProfileState extends State<UserProfile> {
         margin: const EdgeInsets.only(top: 10, bottom: 10),
         child: LinearPercentIndicator(
           lineHeight: 40.0,
-          percent: obj!.userExperiencePoints! / obj!.experienceNeededForLevelUp(obj!.userExperiencePoints!),
+          percent: obj!.userExperiencePoints! / obj!.experienceNeededForLevelUp(obj!.userExperiencePoints!) ,
           backgroundColor: isDarkTheme ? Colors.grey.shade900.withOpacity(0.5) : Colors.grey.shade200,
           animation: true,
           barRadius: const Radius.circular(8),
@@ -418,8 +418,9 @@ class _UserProfileState extends State<UserProfile> {
           padding: const EdgeInsets.only(right: 10, left: 2),
           linearGradient: const LinearGradient(
             colors: [
-              CupertinoColors.activeBlue,
-              CupertinoColors.systemYellow,
+
+              CupertinoColors.systemGreen,
+              CupertinoColors.systemGreen
             ],
           ),
         ),
@@ -450,6 +451,10 @@ class _UserProfileState extends State<UserProfile> {
         body: RefreshIndicator(
           backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
           onRefresh: () async {
+            userProfileBloc.privateLeafPage = 1;
+            userProfileBloc.publicLeafPage = 1;
+            userProfileBloc.publicLeavesPost = {};
+            userProfileBloc.privateLeafPost = {};
             userProfileBloc.add(UserProfileOnBeginEvent(true));
           },
           child: CustomScrollView(

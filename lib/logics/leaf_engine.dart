@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:hazel_client/logics/CommentModels.dart';
+import 'package:hazel_client/logics/user_engine.dart';
 import 'package:hazel_client/logics/wrappers.dart';
 import 'package:hazel_client/main.dart';
 import 'package:hive/hive.dart';
@@ -27,12 +28,16 @@ class LeafEngine {
   }
 
 
-  checkValidMentions(String txt){
+  Future<bool> checkValidMentions(String txt) async {
     var mentions = getAllMentions(txt);
     for(var i in mentions){
-
+        print(i.substring(1,i.length));
+        var status = await UserEngine().checkUserExists({'user_name': i.substring(1,i.length)});
+        if(status){
+          return false;
+        }
     }
-    return false;
+    return true;
   }
   Future<bool> createLeaf(dynamic data) async {
     var apiEndpoint = 'leaf_engine/create_leaf';
@@ -275,6 +280,10 @@ class LeafEngine {
           var obj = LeafComments.fromJson(result[i]);
           comments.add(obj.toJson());
           comment_set[obj.commentId!]  = obj;
+          print('-------');
+          print(obj.comment);
+          print(obj.commentDepth);
+          print('-------');
           var user_obj_ = await userEngineObj.fetchUserInfoId(obj.commentedById!);
           comment_users[obj.commentId!] = user_obj_;
         }
@@ -330,7 +339,43 @@ class LeafEngine {
       data['auth_token'] = sessionData!['auth_token'];
       data['token']  = sessionData!['token'];
       final response = await dio.post(url + apiEndpoint, data: data);
+      print(response.data);
       if(response.data == -100){
+        return true;
+      } else{
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+  Future<bool> deleteLeaf(String leaf_id) async {
+    try {
+      var apiEndpoint = 'leaf_engine/delete_leaf';
+      var data = {};
+      data['leaf_id'] = leaf_id;
+      data['auth_token'] = sessionData!['auth_token'];
+      data['token']  = sessionData!['token'];
+      final response = await dio.post(url + apiEndpoint, data: data);
+      final result = json.decode(response.data);
+      if(result['message'] == -100){
+        return true;
+      } else{
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> deleteLeafComment(String comment_id) async {
+    try {
+      var apiEndpoint = 'leaf_engine/delete_comment_by_id';
+      var data = {};
+      data['comment_id'] = comment_id;
+      final response = await dio.post(url + apiEndpoint, data: data);
+      final result = json.decode(response.data);
+      if(result['message'] == -100){
         return true;
       } else{
         return false;

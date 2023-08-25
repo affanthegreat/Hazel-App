@@ -3,6 +3,7 @@ import 'package:animated_tree_view/tree_view/tree_view.dart';
 import 'package:animated_tree_view/tree_view/widgets/expansion_indicator.dart';
 import 'package:animated_tree_view/tree_view/widgets/indent.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,6 +16,7 @@ import 'package:hazel_client/main.dart';
 import 'package:hazel_client/screens/home/user_profile.dart';
 import 'package:hazel_client/widgets/HazelLeafComment.dart';
 import 'package:hazel_client/widgets/HazelLeafFullScreenView.dart';
+import 'package:hive/hive.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
@@ -56,12 +58,20 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
     var formatter = DateFormat('MMMM d, y h:mm a');
     return formatter.format(dateTime.toLocal());
   }
+  var logged_in_user;
 
+  load_user_object() async{
+    var box = await Hive.openBox('logged-in-user');
+    logged_in_user = box.get('user_obj');
+  }
   LeafBloc leafBloc = LeafBloc();
+
+
 
   @override
   void initState() {
     // TODO: implement initState
+    load_user_object();
     leafBloc.add(LeafLoadedEvent(widget.leaf_obj, widget.user_obj));
     super.initState();
   }
@@ -151,6 +161,9 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
       text.split(" ").forEach((value) {
         if (hashtags.contains(value)) {
           textSpans.add(TextSpan(
+            recognizer: TapGestureRecognizer()..onTap= (){
+              print(value);
+            },
             text: '$value ',
             style: GoogleFonts.inter(
               letterSpacing: 0,
@@ -161,6 +174,9 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
         } else if (mentions.contains(value)) {
           textSpans.add(TextSpan(
               text: '$value ',
+              recognizer: TapGestureRecognizer()..onTap= (){
+                print(value);
+              },
               style: GoogleFonts.inter(
                 letterSpacing: 0,
                 color: CupertinoColors.systemYellow,
@@ -228,7 +244,35 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
     return BlocConsumer<LeafBloc, LeafState>(
       bloc: leafBloc,
       listener: (context, state) {
-        // TODO: implement listener
+        if(state is LeafSuccessfulDelete){
+          var snackBar = SnackBar(
+            backgroundColor: CupertinoColors.activeGreen,
+            content: Text(
+              'Leaf successfully deleted.',
+              style: GoogleFonts.inter(
+                textStyle: Theme.of(context).textTheme.bodyMedium,
+                color: Colors.white,
+              ),
+            ),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          userProfileBloc.privateLeafPage = 1;
+          userProfileBloc.publicLeafPage = 1;
+          userProfileBloc.add(UserProfileOnBeginEvent(true));
+        }
+        if(state is LeafDeleteError ){
+          var snackBar = SnackBar(
+            backgroundColor: CupertinoColors.systemRed,
+            content: Text(
+              "Leaf wasn't deleted for some reason. Try again",
+              style: GoogleFonts.inter(
+                textStyle: Theme.of(context).textTheme.bodyMedium,
+                color: Colors.white,
+              ),
+            ),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
       },
       builder: (context, state) {
         if (state is LeafLoadingState) {
@@ -292,6 +336,20 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                             ),
                           ),
                         ),
+                        logged_in_user.userId == widget.user_obj!.userId? Container(
+                          width: 28,
+                          height: 28,
+                          margin: const EdgeInsets.only(left: 5, right: 5, bottom: 10),
+                          child: IconButton(
+                            onPressed: () {
+                              leafBloc.add(LeafDelete(widget!.leaf_obj!.leafId!));
+                            },
+                            icon: Icon(
+                              Icons.delete_rounded,
+                              color: (isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400),
+                            ),
+                          ),
+                        ): Container(),
                         Container(
                           width: 28,
                           height: 28,

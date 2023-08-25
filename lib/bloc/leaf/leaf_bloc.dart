@@ -28,6 +28,9 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
    // on<LeafFullScreenRemoveDislikeEvent>(removeDislikeFullScreen);
     on<LeafFullScreenViewEvent>(fullScreenView);
     on<LeafSendComment>(sendComment);
+    on<LeafDelete>(deleteLeaf);
+    on<LeafDeleteComments>(deleteLeafComment);
+    on<LeafSubComment>(sendSubComment);
   }
 
   FutureOr<void> likeLeaf(LeafLikeEvent event, Emitter<LeafState> emit) async{
@@ -117,7 +120,10 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
     }
 
   }
-
+  var map;
+  var obj;
+  var currentUser;
+  var commentDataF;
   FutureOr<void> fullScreenView(LeafFullScreenViewEvent event, Emitter<LeafState> emit) async {
     if(commentData == null){
       emit(LeafLoadingState());
@@ -134,11 +140,14 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
           commentData!.merge(comment_data);
         }
       }
-
+      map = event.map;
+      obj = event.obj;
+      currentUser = event.currentUser;
+      commentDataF = commentData!;
       emit(LeafFullScreenState(event.map, event.obj, event.currentUser, commentData!));
     } catch (e) {
       // Handle error
-      print("Error fetching comment data: $e");
+      emit(LeafErrorState());
     }
   }
 
@@ -152,6 +161,48 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
     } catch(e){
       emit(LeafErrorState());
     }
+  }
 
+  FutureOr<void> deleteLeaf(LeafDelete event, Emitter<LeafState> emit)  async{
+    emit(LeafLoadingState());
+    try{
+      var delete_status = await leafEngineObj.deleteLeaf(event.leaf_id);
+      print(delete_status);
+      if(delete_status){
+        emit(LeafSuccessfulDelete());
+      } else{
+        emit(LeafDeleteError());
+      }
+
+    } catch(E){
+      emit(LeafErrorState());
+    }
+  }
+
+  FutureOr<void> sendSubComment(LeafSubComment event, Emitter<LeafState> emit) async {
+    print("here");
+    emit(LeafSendingComment());
+    try{
+      await leafEngineObj.sendSubComment(event.data);
+      var comment_data = await leafEngineObj.getAllComments(obj!, 1);
+      emit(LeafFullScreenState(map, obj, currentUser, comment_data));
+    } catch(e){
+      emit(LeafErrorState());
+    }
+  }
+
+
+
+  FutureOr<void> deleteLeafComment(LeafDeleteComments event, Emitter<LeafState> emit) async{
+    emit(LeafCommentDeleting());
+    try{
+      await leafEngineObj.deleteLeafComment(event.commentId);
+      var comment_data = await leafEngineObj.getAllComments(obj!, 1);
+      emit(LeafSuccessfulDeleteComment());
+      emit(LeafFullScreenState(map, obj, currentUser, comment_data));
+
+    } catch(e){
+      emit(LeafCommentDeleteError());
+    }
   }
 }

@@ -16,8 +16,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   FutureOr<void> homeCreateLeafEvent(HomeCreateLeafEvent event, Emitter<HomeState> emit) async {
 
     emit(HomeLeafCreationLoading());
-    try{
-      var validMentions = LeafEngine().checkValidMentions(event.text_content);
+
+      var validMentions = await LeafEngine().checkValidMentions(event.text_content);
       if(validMentions){
         var response = await LeafEngine().createLeaf({
           'leaf_type': event.leaf_type,
@@ -33,9 +33,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       }
 
 
-    } catch(e){
-      emit(HomeLeafCreationFailureState());
-    }
   }
 
   FutureOr<void> homeSuccessEvent(HomeSuccessfullyLoadedEvent event, Emitter<HomeState> emit) {

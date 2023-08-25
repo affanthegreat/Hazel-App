@@ -27,3 +27,13 @@ class LeafErrorState extends LeafState{}
 
 class LeafSendingComment extends LeafState{}
 
+class LeafCommentDeleting extends LeafState{}
+
+class LeafSuccessfulDelete extends LeafState{}
+
+class LeafSuccessfulDeleteComment extends LeafState{}
+
+class LeafDeleteError extends LeafState{}
+
+class LeafCommentDeleteError extends LeafState{}
+

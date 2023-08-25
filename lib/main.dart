@@ -23,6 +23,9 @@ void main()  async {
   sessionData = await storage.readAll();
   Hive.registerAdapter(UserProfileModelAdapter());
   userEngineObj.fetchUserInfo(true);
+  print("here");
+  print(sessionData!['auth_token']);
+  print(sessionData!['token']);
   runApp(const MyApp());
 }
 

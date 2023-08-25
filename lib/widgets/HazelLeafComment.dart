@@ -1,18 +1,24 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hazel_client/bloc/leaf/leaf_bloc.dart';
 import 'package:hazel_client/logics/CommentModels.dart';
 import 'package:hazel_client/logics/UserProfileModel.dart';
 import 'package:hazel_client/main.dart';
 import 'package:hazel_client/screens/home/user_profile.dart';
 import 'package:hazel_client/widgets/HazelFieldHeading.dart';
+import 'package:hazel_client/widgets/HazelLeafFullScreenView.dart';
+import 'package:hive/hive.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:intl/intl.dart';
 
 class HazelLeafComment extends StatefulWidget {
   final LeafComments comment;
   final UserProfileModel? obj;
-  const HazelLeafComment({super.key, required this.comment, required this.obj});
+  final UserProfileModel? currentLoggedInUser;
+  const HazelLeafComment({super.key, required this.comment, required this.obj, required this.currentLoggedInUser});
 
   @override
   State<HazelLeafComment> createState() => _HazelLeafCommentState();
@@ -20,6 +26,13 @@ class HazelLeafComment extends StatefulWidget {
 
 class _HazelLeafCommentState extends State<HazelLeafComment> {
   final TextEditingController replyController = TextEditingController();
+
+
+
+  @override
+  void initState() {
+    super.initState();
+  }
   String numToEng(int num) {
     if (num >= 1000000) {
       return (num / 1000000).toStringAsFixed(1) + ' mil';
@@ -162,12 +175,16 @@ class _HazelLeafCommentState extends State<HazelLeafComment> {
                     color: Colors.blue,
                   ),
                   onPressed: () async {
-                    var leaf_id = widget.comment.leafId;
-                    var comment_string = replyController.text;
-                    var parent_comment_id = widget.comment.commentId;
-                    if (comment_string.isNotEmpty) {
-                      var data = {'leaf_id': leaf_id, 'comment_string': comment_string, 'parent_comment_id': parent_comment_id};
-                      var status = await leafEngineObj.sendSubComment(data);
+                    if(replyController.text.isNotEmpty){
+                      var data = {
+                        'leaf_id': widget.comment.leafId,
+                        'parent_comment_id': widget.comment.commentId!,
+                        'comment_string': replyController.text
+                      };
+
+                      print("=======");
+                      print(data);
+                      leafFullScreenBloc.add(LeafSubComment(data));
                     }
                   },
                 ),
@@ -240,17 +257,30 @@ class _HazelLeafCommentState extends State<HazelLeafComment> {
                 : Align(
                     alignment: Alignment.centerRight,
                     child: Container(
-                      width: 160,
+                      width: 210,
                       height: 40,
                       padding: const EdgeInsets.all(5),
                       child: Row(
                         key: const ValueKey<int>(1),
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
+                          (widget.currentLoggedInUser!.userId! == widget.comment.commentedById!) ?IconButton(
+                              padding: EdgeInsets.zero,
+                              constraints:const BoxConstraints(),
+                              onPressed: () {
+                                  leafFullScreenBloc.add(LeafDeleteComments(widget.comment.commentId!));
+                              },
+                              icon: const Icon(
+                                Icons.delete_rounded,
+                                size: 24,
+                                color: Colors.grey,
+                              )): Container(),
                           IconButton(
                               padding: EdgeInsets.zero,
                               constraints:const  BoxConstraints(),
-                              onPressed: () {},
+                              onPressed: () {
+
+                              },
                               icon: const Icon(
                                 Iconsax.arrow_up,
                                 size: 24,
@@ -265,7 +295,11 @@ class _HazelLeafCommentState extends State<HazelLeafComment> {
                                 size: 24,
                                 color: Colors.grey,
                               )),
-                          IconButton(padding: EdgeInsets.zero, constraints: BoxConstraints(), onPressed: () {}, icon: const Icon(Iconsax.message_add_1, size: 24, color: Colors.grey)),
+                          IconButton(padding: EdgeInsets.zero, constraints: BoxConstraints(), onPressed: () {
+                            setState(() {
+                              textFieldVisible = !textFieldVisible;
+                            });
+                          }, icon: const Icon(Iconsax.message_add_1, size: 24, color: Colors.grey)),
                         ],
                       ),
                     ),

@@ -15,8 +15,11 @@ import 'package:hazel_client/main.dart';
 import 'package:hazel_client/screens/home/user_profile.dart';
 import 'package:hazel_client/widgets/HazelFieldHeading.dart';
 import 'package:hazel_client/widgets/HazelLeafComment.dart';
+import 'package:hive/hive.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:intl/intl.dart';
+
+LeafBloc leafFullScreenBloc = LeafBloc();
 
 class HazelLeafFullScreenView extends StatefulWidget {
   final LeafModel? leafObj;
@@ -29,7 +32,7 @@ class HazelLeafFullScreenView extends StatefulWidget {
 }
 
 class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
-  LeafBloc leafFullScreenBloc = LeafBloc();
+
   AutoScrollController _scrollController = AutoScrollController();
 
   String numToEng(int num) {
@@ -59,8 +62,16 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
   }
 
   double _savedScrollOffset = 0.0;
+
+  var logged_in_user;
+
+  load_user_object() async{
+    var box = await Hive.openBox('logged-in-user');
+    logged_in_user = box.get('user_obj');
+  }
   @override
   void initState() {
+    load_user_object();
     leafFullScreenBloc.add(LeafFullScreenViewEvent(widget.leafObj, widget.userObj, widget.map));
     super.initState();
   }
@@ -450,8 +461,46 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
           child: BlocConsumer<LeafBloc, LeafState>(
               bloc: leafFullScreenBloc,
               listener: (context, state) {
+                if (state is LeafSuccessfulDeleteComment){
+                  var snackBar = SnackBar(
+                    backgroundColor: Colors.red,
+                    content: Text(
+                      'Comment removed.',
+                      style: GoogleFonts.inter(
+                        textStyle: Theme.of(context).textTheme.bodyMedium,
+                        color: Colors.white,
+                      ),
+                    ),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                }
+                if (state is LeafCommentDeleteError){
+                  var snackBar = SnackBar(
+                    backgroundColor: Colors.red,
+                    content: Text(
+                      'Comment could not be deleted for some reason.',
+                      style: GoogleFonts.inter(
+                        textStyle: Theme.of(context).textTheme.bodyMedium,
+                        color: Colors.white,
+                      ),
+                    ),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                }
 
-
+                if (state is LeafSuccessfulDeleteComment){
+                  var snackBar = SnackBar(
+                    backgroundColor: Colors.red,
+                    content: Text(
+                      'Comment removed.',
+                      style: GoogleFonts.inter(
+                        textStyle: Theme.of(context).textTheme.bodyMedium,
+                        color: Colors.white,
+                      ),
+                    ),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                }
                 if (state is LeafSuccessfulLoadState) {
                   leafFullScreenBloc.add(LeafFullScreenViewEvent(widget.leafObj, widget.userObj, state.map));
                 }
@@ -459,6 +508,11 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
               builder: (context, state) {
                 print(state.runtimeType);
                 if(state is LeafLoadingState){
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                if(state is LeafCommentDeleting){
                   return Center(
                     child: CircularProgressIndicator(),
                   );
@@ -539,7 +593,7 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
                               ),
                               indentation: const Indentation(style: IndentStyle.scopingLine,   color: CupertinoColors.systemYellow, thickness: 2, width: 30),
                               builder: (context, node) {
-                                return HazelLeafComment(comment: state.commentData.commentsMap[node.key],obj:  state.commentData.commentUsers[node.key]!);
+                                return HazelLeafComment(comment: state.commentData.commentsMap[node.key],obj:  state.commentData.commentUsers[node.key]!, currentLoggedInUser: logged_in_user,);
                               },
                             ),
                       const SliverToBoxAdapter(

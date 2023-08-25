@@ -23,7 +23,6 @@ class _HazelMainScreenState extends State<HazelMainScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     homeBloc.add(HomeSuccessfullyLoadedEvent());
     super.initState();
   }
@@ -179,8 +178,9 @@ class _HazelMainScreenState extends State<HazelMainScreen> {
                 ),
               );
               ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              homeBloc.add(HomeSuccessfullyLoadedEvent());
             }
-            homeBloc.add(HomeSuccessfullyLoadedEvent());
+
           },
           builder: (context, state) {
             if (state is HomeLeafCreationLoading) {

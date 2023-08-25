@@ -53,7 +53,6 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
     }
 
     try {
-      print(event.refresh);
         UserProfileModel? userObj = await UserEngine().fetchUserInfo(event.refresh);
         var public_leaf_set = await LeafEngine().getAllPublicLeaf(publicLeafPage);
         var private_leaf_set = await LeafEngine().getAllPrivateLeaf(privateLeafPage);
@@ -70,6 +69,7 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
           publicLeafPage++;
           privateLeafPage++;
       }
+        print("FRESH DATA FETCHED");
         emit(UserProfileSuccessfulLoading(userObj, publicLeavesPost, privateLeafPost));
     } catch (e) {
       // Handle error
