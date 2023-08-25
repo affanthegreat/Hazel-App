@@ -7,10 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hazel_client/bloc/leaf/leaf_bloc.dart';
+import 'package:hazel_client/bloc/user_profile/user_profile_bloc.dart';
 import 'package:hazel_client/constants/colors.dart';
 import 'package:hazel_client/logics/LeafModel.dart';
 import 'package:hazel_client/logics/UserProfileModel.dart';
 import 'package:hazel_client/main.dart';
+import 'package:hazel_client/screens/home/user_profile.dart';
 import 'package:hazel_client/widgets/HazelLeafComment.dart';
 import 'package:hazel_client/widgets/HazelLeafFullScreenView.dart';
 import 'package:icons_plus/icons_plus.dart';
@@ -313,9 +315,16 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                     )
                   ],
                 ),
-                Container(
-                    margin: const EdgeInsets.only(left: 10, right: 10),
-                    child: buildHighlightedUserText(widget.user_obj!.userFullName!, widget.user_obj!.userName!)),
+                InkWell(
+                  onTap: (){
+                    userProfileBloc.leavesPage = 1;
+                    userProfileBloc.leavesSet = {};
+                    userProfileBloc.add(UserProfileVisitEvent(widget.user_obj!));
+                  },
+                  child: Container(
+                      margin: const EdgeInsets.only(left: 10, right: 10),
+                      child: buildHighlightedUserText(widget.user_obj!.userFullName!, widget.user_obj!.userName!)),
+                ),
                 Container(
                   margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
                   child: buildHighlightedText(widget.leaf_obj!.textContent!),
@@ -469,8 +478,7 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                               // return any widget that you
                               return HazelTopComment(comment: widget.leaf_obj!.topComments!.commentsMap[node.key]!, obj: widget.leaf_obj!.topComments!.commentUsers[node.key]!);
                             }),
-                        Divider(thickness: 5,color: isDarkTheme? Colors.grey.shade800: Colors.grey.shade300,)
-                      ],
+                           ],
                     )
               ],
             ),

@@ -92,23 +92,24 @@ class UserEngine {
   }
 
   Future<UserProfileModel?> fetchUserInfo(bool refresh) async {
-
-
-        var apiEndpoint = 'user_engine/get_user_info';
-        var getCurrentUser = 'user_engine/current_user';
-        var userTokens = {
-          'auth_token': sessionData!['auth_token'],
-          'token': sessionData!['token']
-        };
-        final response = await dio.post(url + getCurrentUser, data: userTokens);
-        final userName = json.decode(response.data)['user_name'];
-        final userDetailsResponse = await dio.post(url + apiEndpoint, data: {'user_name': userName});
-        final userProfileObj = UserProfileModel.fromJson(json.decode(userDetailsResponse.data));
-        var box = await Hive.openBox('logged-in-user');
-        box.put('user_obj',userProfileObj);
-        return userProfileObj;
-
+    try {
+      var apiEndpoint = 'user_engine/get_user_info';
+      var getCurrentUser = 'user_engine/current_user';
+      var userTokens = {
+        'auth_token': sessionData!['auth_token'],
+        'token': sessionData!['token']
+      };
+      final response = await dio.post(url + getCurrentUser, data: userTokens);
+      final userName = json.decode(response.data)['user_name'];
+      final userDetailsResponse = await dio.post(url + apiEndpoint, data: {'user_name': userName});
+      final userProfileObj = UserProfileModel.fromJson(json.decode(userDetailsResponse.data));
+      var box = await Hive.openBox('logged-in-user');
+      box.put('user_obj', userProfileObj);
+      return userProfileObj;
+    } catch (e) {
+      return UserProfileModel();
     }
+  }
 
 
   Future<UserProfileModel?> fetchUserInfoId(String userId) async {
@@ -149,7 +150,7 @@ class UserEngine {
     }
   }
 
-  Future<Set<UserProfileModel?>> getUserFollowers(dynamic data) async {
+  Future<Set<UserProfileModel?>> getUserFollowers(dynamic data,  String userId) async {
 
     try {
       var apiEndpoint = 'user_engine/get_followers';
@@ -157,7 +158,7 @@ class UserEngine {
       var user_obj = box.get('user_obj');
       var userTokens = {
         'page_number': data['page_number'],
-        'user_id': user_obj.userId
+        'user_id': userId
       };
       final userDetailsResponse = await dio.post(url + apiEndpoint, data:userTokens);
       List<dynamic> json_data = json.decode(userDetailsResponse.data)['data'];
@@ -173,14 +174,13 @@ class UserEngine {
     }
   }
 
-  Future<Set<UserProfileModel?>> getUserFollowing(dynamic data) async {
+  Future<Set<UserProfileModel?>> getUserFollowing(dynamic data, String userId) async {
     try {
       var apiEndpoint = 'user_engine/get_following';
-      var box = await Hive.openBox('logged-in-user');
-      var user_obj = box.get('user_obj');
+
       var userTokens = {
         'page_number': data['page_number'],
-        'user_id': user_obj.userId
+        'user_id': userId
       };
       final userDetailsResponse = await dio.post(
           url + apiEndpoint, data: userTokens);

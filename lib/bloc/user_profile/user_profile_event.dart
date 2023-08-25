@@ -23,9 +23,18 @@ class UserProfileVisitEvent extends UserProfileEvent{
 
 }
 
-class UserProfileSeeFollowersEvent extends UserProfileEvent{}
+class UserProfileSeeFollowersEvent extends UserProfileEvent{
+  final String userId;
 
-class UserProfileSeeFollowingEvent extends UserProfileEvent{}
+  UserProfileSeeFollowersEvent(this.userId);
+}
+
+class UserProfileSeeFollowingEvent extends UserProfileEvent{
+  final String userId;
+
+  UserProfileSeeFollowingEvent(this.userId);
+
+}
 
 class UserProfileSendFollowRequestEvent extends UserProfileEvent{
   final UserProfileModel? obj;

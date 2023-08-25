@@ -8,7 +8,6 @@ import 'package:hazel_client/main.dart';
 import 'package:hazel_client/widgets/HazelLogoSmall.dart';
 import 'package:icons_plus/icons_plus.dart';
 
-
 class HazelMainScreen extends StatefulWidget {
   const HazelMainScreen({super.key});
 
@@ -18,7 +17,7 @@ class HazelMainScreen extends StatefulWidget {
 
 class _HazelMainScreenState extends State<HazelMainScreen> {
   final TextEditingController contentController = TextEditingController();
-  bool isPrivateLeafMode = false;
+  bool isPrivateLeafMode = true;
 
   HomeBloc homeBloc = HomeBloc();
 
@@ -28,17 +27,16 @@ class _HazelMainScreenState extends State<HazelMainScreen> {
     homeBloc.add(HomeSuccessfullyLoadedEvent());
     super.initState();
   }
+
   createLeaf(String leafType) {
     homeBloc.add(HomeCreateLeafEvent(contentController.text, leafType));
     contentController.clear();
   }
 
-
   @override
   Widget build(BuildContext context) {
-
-    Widget postCreationTextField(){
-      return    Container(
+    Widget postCreationTextField() {
+      return Container(
         margin: const EdgeInsets.only(top: 10, bottom: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(40),
@@ -98,26 +96,24 @@ class _HazelMainScreenState extends State<HazelMainScreen> {
                         duration: const Duration(milliseconds: 550),
                         child: isPrivateLeafMode
                             ? IconButton(
-                          icon: const Icon(
-                            Iconsax.send_2,
-                            color:
-                            CupertinoColors.systemYellow,
-                            size: 28,
-                          ),
-                          onPressed: () {
-                            createLeaf('public');
-                          },
-                        )
+                                icon: const Icon(
+                                  Iconsax.send_2,
+                                  color: CupertinoColors.systemYellow,
+                                  size: 28,
+                                ),
+                                onPressed: () {
+                                  createLeaf('public');
+                                },
+                              )
                             : IconButton(
-                            icon: const Icon(
-                              Iconsax.send_2,
-                              color:
-                              CupertinoColors.activeGreen,
-                              size: 28,
-                            ),
-                            onPressed: () {
-                              createLeaf('private');
-                            }),
+                                icon: const Icon(
+                                  Iconsax.send_2,
+                                  color: CupertinoColors.activeGreen,
+                                  size: 28,
+                                ),
+                                onPressed: () {
+                                  createLeaf('private');
+                                }),
                       ),
                     ),
                   ],
@@ -126,78 +122,93 @@ class _HazelMainScreenState extends State<HazelMainScreen> {
                 hintText: "What you're up to..",
                 hintStyle: GoogleFonts.poppins(
                   textStyle: Theme.of(context).textTheme.bodyMedium,
-                  color: isDarkTheme
-                      ? Colors.grey
-                      : Colors.grey.shade700,
+                  color: isDarkTheme ? Colors.grey : Colors.grey.shade700,
                 )),
           ),
         ),
       );
     }
 
-
-
-
     return Scaffold(
         appBar: AppBar(
           backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
           automaticallyImplyLeading: false,
-          title:const HazelLogoSmall(),
+          title: const HazelLogoSmall(),
         ),
         backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
         body: BlocConsumer<HomeBloc, HomeState>(
           bloc: homeBloc,
           listener: (context, state) {
-              if(state is HomeLeafCreationFailureState ){
-                var snackBar = SnackBar(
-                  backgroundColor: Colors.red,
-                  content: Text(
-                    'Leaf Creation Failed. Try again later.',
-                    style: GoogleFonts.inter(
-                      textStyle: Theme.of(context).textTheme.bodyMedium,
-                      color: Colors.white,
-                    ),
+            if (state is HomeLeafCreationFailureState) {
+              var snackBar = SnackBar(
+                backgroundColor: Colors.red,
+                content: Text(
+                  'Leaf Creation Failed. Try again later.',
+                  style: GoogleFonts.inter(
+                    textStyle: Theme.of(context).textTheme.bodyMedium,
+                    color: Colors.white,
                   ),
-                );
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                homeBloc.add(HomeSuccessfullyLoadedEvent());
-              }
+                ),
+              );
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              homeBloc.add(HomeSuccessfullyLoadedEvent());
+            }
 
-              if(state is HomeLeafCreationSuccessfulState){
-                var snackBar = SnackBar(
-                  backgroundColor: CupertinoColors.activeGreen,
-                  content: Text(
-                    'Leaf successfully created..',
-                    style: GoogleFonts.inter(
-                      textStyle: Theme.of(context).textTheme.bodyMedium,
-                      color: Colors.white,
-                    ),
+            if (state is HomeLeafCreationSuccessfulState) {
+              var snackBar = SnackBar(
+                backgroundColor: CupertinoColors.activeGreen,
+                content: Text(
+                  'Leaf successfully created..',
+                  style: GoogleFonts.inter(
+                    textStyle: Theme.of(context).textTheme.bodyMedium,
+                    color: Colors.white,
                   ),
-                );
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-              }
+                ),
+              );
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            }
+            if (state is HomeLeafInvalidMentions) {
+              var snackBar = SnackBar(
+                backgroundColor: CupertinoColors.systemRed,
+                content: Text(
+                  'User mentioned in the leaf does not exists.',
+                  style: GoogleFonts.inter(
+                    textStyle: Theme.of(context).textTheme.bodyMedium,
+                    color: Colors.white,
+                  ),
+                ),
+              );
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            }
+            homeBloc.add(HomeSuccessfullyLoadedEvent());
           },
           builder: (context, state) {
-            if(state is HomeLeafCreationLoading){
+            if (state is HomeLeafCreationLoading) {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Center(
-                    child: CircularProgressIndicator(strokeWidth: 5,color: CupertinoColors.systemYellow,),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 5,
+                      color: CupertinoColors.systemYellow,
+                    ),
                   ),
                   Container(
-                    margin: const EdgeInsets.only(top:10),
-                    child: Text("This may take a few moments..", style: GoogleFonts.inter(
-                      textStyle: Theme.of(context).textTheme.bodyMedium,
-                      color: isDarkTheme? Colors.grey: Colors.grey.shade700,
-                    ),),
+                    margin: const EdgeInsets.only(top: 10),
+                    child: Text(
+                      "This may take a few moments..",
+                      style: GoogleFonts.inter(
+                        textStyle: Theme.of(context).textTheme.bodyMedium,
+                        color: isDarkTheme ? Colors.grey : Colors.grey.shade700,
+                      ),
+                    ),
                   )
                 ],
               );
             }
-            if(state is HomeInitial || state is  HomeSuccessfullyLoaded || state is HomeLeafCreationSuccessfulState){
+            if (state is HomeInitial || state is HomeSuccessfullyLoaded || state is HomeLeafCreationSuccessfulState) {
               return Container(
-                margin: const EdgeInsets.only(left: 10,right: 10),
+                margin: const EdgeInsets.only(left: 10, right: 10),
                 child: ListView(
                   children: [
                     postCreationTextField(),

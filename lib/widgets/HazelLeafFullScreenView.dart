@@ -5,12 +5,14 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hazel_client/bloc/leaf/leaf_bloc.dart';
+import 'package:hazel_client/bloc/user_profile/user_profile_bloc.dart';
 import 'package:hazel_client/constants/colors.dart';
 import 'package:hazel_client/logics/LeafModel.dart';
 import 'package:hazel_client/logics/UserProfileModel.dart';
 import 'package:hazel_client/logics/user_engine.dart';
 import 'package:hazel_client/logics/wrappers.dart';
 import 'package:hazel_client/main.dart';
+import 'package:hazel_client/screens/home/user_profile.dart';
 import 'package:hazel_client/widgets/HazelFieldHeading.dart';
 import 'package:hazel_client/widgets/HazelLeafComment.dart';
 import 'package:icons_plus/icons_plus.dart';
@@ -278,9 +280,16 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
                 ),
               ],
             ),
-            Container(
-              margin: const EdgeInsets.only(left: 10, right: 10),
-              child: buildHighlightedUserText(widget.userObj!.userFullName!, widget.userObj!.userName!)
+            InkWell(
+              onTap: (){
+                userProfileBloc.leavesPage = 1;
+                userProfileBloc.leavesSet = {};
+                Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context) => UserProfile(profileVisit: true, userObj: widget.userObj)));
+              },
+              child: Container(
+                margin: const EdgeInsets.only(left: 10, right: 10),
+                child: buildHighlightedUserText(widget.userObj!.userFullName!, widget.userObj!.userName!)
+              ),
             ),
             Container(
               margin: const EdgeInsets.only(left: 10, right: 10, bottom: 20,),
@@ -496,7 +505,6 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
                           });
                         }
                       }),
-                    physics: const ClampingScrollPhysics(),
                     slivers: [
                       SliverList(
                           delegate: SliverChildListDelegate([

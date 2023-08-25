@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hazel_client/bloc/user_profile/user_profile_bloc.dart';
 import 'package:hazel_client/logics/CommentModels.dart';
 import 'package:hazel_client/logics/UserProfileModel.dart';
 import 'package:hazel_client/main.dart';
+import 'package:hazel_client/screens/home/user_profile.dart';
 import 'package:intl/intl.dart';
 
 class HazelTopComment extends StatelessWidget {
@@ -159,7 +161,13 @@ class HazelTopComment extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                buildHighlightedUserText(obj!.userFullName!, obj!.userName!),
+                InkWell(
+                    onTap:(){
+                      userProfileBloc.leavesPage = 1;
+                      userProfileBloc.leavesSet = {};
+                      userProfileBloc.add(UserProfileVisitEvent(obj!));
+                    },
+                    child: buildHighlightedUserText(obj!.userFullName!, obj!.userName!)),
                 Container(
                   margin: const EdgeInsets.only(bottom: 5),
                   child: Text(dateTimeToWords(comment.createdDate!),

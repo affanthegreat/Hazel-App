@@ -19,15 +19,21 @@ import 'package:intl/intl.dart';
 import '../../logics/LeafModel.dart';
 import '../../widgets/HazelFieldLabel.dart';
 
+
+
+UserProfileBloc userProfileBloc = UserProfileBloc();
+
 class UserProfile extends StatefulWidget {
-  const UserProfile({super.key});
+  late bool profileVisit;
+  UserProfileModel? userObj;
+  UserProfile({super.key, required this.profileVisit, this.userObj});
 
   @override
   State<UserProfile> createState() => _UserProfileState();
 }
 
 class _UserProfileState extends State<UserProfile> {
-  UserProfileBloc userProfileBloc = UserProfileBloc();
+
   final TextEditingController searchFieldController = TextEditingController();
 
   String getLatestString() {
@@ -39,9 +45,22 @@ class _UserProfileState extends State<UserProfile> {
     return searchFieldController.text;
   }
 
+  double savedUserPageScrollOffset = 0;
+  ScrollController followersScrollController = ScrollController();
+  ScrollController followRequestScrollController = ScrollController();
+  ScrollController followingScrollController = ScrollController();
+
   @override
   void initState() {
-    userProfileBloc.add(UserProfileOnBeginEvent(true));
+    print("------------------");
+    print(widget.profileVisit);
+    if(widget.profileVisit){
+      print("======================");
+      print("PROFILE VISIT EVENT");
+      userProfileBloc.add(UserProfileVisitEvent(widget.userObj!));
+    } else{
+      userProfileBloc.add(UserProfileOnBeginEvent(false));
+    }
     searchFieldController.addListener(getLatestString);
     super.initState();
   }
@@ -81,6 +100,8 @@ class _UserProfileState extends State<UserProfile> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints:const  BoxConstraints(),
                     icon: Icon(
                       Icons.search,
                       color: isDarkTheme ? Colors.pinkAccent : Colors.pinkAccent.shade700,
@@ -248,9 +269,17 @@ class _UserProfileState extends State<UserProfile> {
                 HazelMetricWidget(label: "Total Leaves", value: numToEng(obj.userPublicLeafCount! + obj.userPrivateLeafCount!).toString(), color: CupertinoColors.activeBlue),
                 Expanded(
                   child: InkWell(
-                    onTap: () {
-                      userProfileBloc.followingPage = 1;
-                      userProfileBloc.add(UserProfileSeeFollowingEvent());
+                    onTap: () async {
+                      var box = await Hive.openBox('logged-in-user');
+                      var user_obj = box.get('user_obj');
+                      if(obj.userId == user_obj.userId){
+                        userProfileBloc.followingPage = 1;
+                        userProfileBloc.add(UserProfileSeeFollowingEvent(user_obj.userId));
+                      } else{
+                        userProfileBloc.followingPage = 1;
+                        userProfileBloc.add(UserProfileSeeFollowingEvent(obj.userId!));
+                      }
+
                     },
                     child: HazelMetricWidget(
                       label: "Following",
@@ -261,9 +290,17 @@ class _UserProfileState extends State<UserProfile> {
                 ),
                 Expanded(
                   child: InkWell(
-                    onTap: () {
-                      userProfileBloc.followersPage = 1;
-                      userProfileBloc.add(UserProfileSeeFollowersEvent());
+                    onTap: () async {
+                      var box = await Hive.openBox('logged-in-user');
+                      var user_obj = box.get('user_obj');
+                      if(obj.userId == user_obj.userId){
+                        userProfileBloc.followersPage = 1;
+                        userProfileBloc.add(UserProfileSeeFollowersEvent(user_obj.userId));
+                      } else{
+                        userProfileBloc.followersPage = 1;
+                        userProfileBloc.add(UserProfileSeeFollowersEvent(obj.userId!));
+                      }
+
                     },
                     child: HazelMetricWidget(label: "Followers", value: numToEng(obj.userFollowers!).toString(), color: CupertinoColors.activeBlue),
                   ),
@@ -400,6 +437,8 @@ class _UserProfileState extends State<UserProfile> {
             Container(
               margin: const EdgeInsets.only(bottom: 10),
               child: IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints:const  BoxConstraints(),
                   onPressed: () {
                     userProfileBloc.followReqestsPage = 1;
                     userProfileBloc.add(UserProfileViewFollowRequestsEvent());
@@ -440,14 +479,21 @@ class _UserProfileState extends State<UserProfile> {
         appBar: AppBar(
           toolbarHeight: 80,
           leading: IconButton(
+            padding: EdgeInsets.zero,
+            constraints:const  BoxConstraints(),
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              searchFieldController.clear();
-              userProfileBloc.publicLeafPage = 1;
-              userProfileBloc.privateLeafPage = 1;
-              userProfileBloc.privateLeafPost = {};
-              userProfileBloc.publicLeavesPost = {};
-              userProfileBloc.add(UserProfileOnBeginEvent(true));
+              if(widget.profileVisit){
+                Navigator.pop(context);
+              } else{
+                searchFieldController.clear();
+                userProfileBloc.publicLeafPage = 1;
+                userProfileBloc.privateLeafPage = 1;
+                userProfileBloc.privateLeafPost = {};
+                userProfileBloc.publicLeavesPost = {};
+                userProfileBloc.add(UserProfileOnBeginEvent(true));
+              }
+
             },
           ),
           title: searchUserField(),
@@ -526,8 +572,6 @@ class _UserProfileState extends State<UserProfile> {
           decoration: BoxDecoration(color: isDarkTheme ? Colors.grey.shade900 : Colors.grey.shade900, borderRadius: BorderRadius.circular(10)),
           child: InkWell(
             onTap: () {
-              print("HEREEEEEE");
-              print(state.obj.userName);
               userProfileBloc.add(UserProfileRemoveFollowRequestEvent(state.obj, state.follow_map));
             },
             child: Center(
@@ -678,15 +722,21 @@ class _UserProfileState extends State<UserProfile> {
         appBar: AppBar(
           toolbarHeight: 80,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
             padding: EdgeInsets.zero,
+            constraints:const  BoxConstraints(),
+            icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              searchFieldController.clear();
-              userProfileBloc.publicLeafPage = 1;
-              userProfileBloc.privateLeafPage = 1;
-              userProfileBloc.privateLeafPost = {};
-              userProfileBloc.publicLeavesPost = {};
-              userProfileBloc.add(UserProfileOnBeginEvent(true));
+              if(widget.profileVisit){
+                Navigator.pop(context);
+              } else{
+                searchFieldController.clear();
+                userProfileBloc.publicLeafPage = 1;
+                userProfileBloc.privateLeafPage = 1;
+                userProfileBloc.privateLeafPost = {};
+                userProfileBloc.publicLeavesPost = {};
+                userProfileBloc.add(UserProfileOnBeginEvent(true));
+              }
+
             },
           ),
           title: Text(
@@ -719,13 +769,19 @@ class _UserProfileState extends State<UserProfile> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             padding: EdgeInsets.zero,
+            constraints:const  BoxConstraints(),
             onPressed: () {
-              searchFieldController.clear();
-              userProfileBloc.publicLeafPage = 1;
-              userProfileBloc.privateLeafPage = 1;
-              userProfileBloc.privateLeafPost = {};
-              userProfileBloc.publicLeavesPost = {};
-              userProfileBloc.add(UserProfileOnBeginEvent(true));
+              if(widget.profileVisit){
+                Navigator.pop(context);
+              } else{
+                searchFieldController.clear();
+                userProfileBloc.publicLeafPage = 1;
+                userProfileBloc.privateLeafPage = 1;
+                userProfileBloc.privateLeafPost = {};
+                userProfileBloc.publicLeavesPost = {};
+                userProfileBloc.add(UserProfileOnBeginEvent(true));
+              }
+
             },
           ),
           title: Text(
@@ -756,14 +812,21 @@ class _UserProfileState extends State<UserProfile> {
         appBar: AppBar(
           toolbarHeight: 80,
           leading: IconButton(
+            padding: EdgeInsets.zero,
+            constraints:const  BoxConstraints(),
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              searchFieldController.clear();
-              userProfileBloc.publicLeafPage = 1;
-              userProfileBloc.privateLeafPage = 1;
-              userProfileBloc.privateLeafPost = {};
-              userProfileBloc.publicLeavesPost = {};
-              userProfileBloc.add(UserProfileOnBeginEvent(true));
+              if(widget.profileVisit){
+                Navigator.pop(context);
+              } else{
+                searchFieldController.clear();
+                userProfileBloc.publicLeafPage = 1;
+                userProfileBloc.privateLeafPage = 1;
+                userProfileBloc.privateLeafPost = {};
+                userProfileBloc.publicLeavesPost = {};
+                userProfileBloc.add(UserProfileOnBeginEvent(true));
+              }
+
             },
           ),
           title: Text(
@@ -823,15 +886,17 @@ class _UserProfileState extends State<UserProfile> {
       return AppBar(
         toolbarHeight: 80,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
           padding: EdgeInsets.zero,
+          constraints:const  BoxConstraints(),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            searchFieldController.clear();
-            userProfileBloc.publicLeafPage = 1;
-            userProfileBloc.privateLeafPage = 1;
-            userProfileBloc.privateLeafPost = {};
-            userProfileBloc.publicLeavesPost = {};
-            userProfileBloc.add(UserProfileOnBeginEvent(true));
+            if(widget.profileVisit){
+              Navigator.pop(context);
+            } else{
+              searchFieldController.clear();
+              userProfileBloc.add(UserProfileOnBeginEvent(false));
+            }
+
           },
         ),
         title: Text(
@@ -849,46 +914,77 @@ class _UserProfileState extends State<UserProfile> {
     Widget scaffoldFollowing(state) {
       return Scaffold(
         backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
-        appBar: titleAppBar("Your following"),
-        body: CustomScrollView(
-          slivers: [
-            SliverList(
-                delegate: SliverChildBuilderDelegate((context, index) {
+        appBar: titleAppBar("Following"),
+        body: NotificationListener<ScrollNotification>(
+          onNotification: (notification) {
+            if (notification is ScrollEndNotification) {
+              if (followingScrollController.position.extentAfter == 0) {
+                userProfileBloc.add(UserProfileSeeFollowingEvent(state.userId));
+              }
+            }
+            return false;
+          },
+          child: ListView.builder(
+            itemCount: state.listOfUsers.length,
+            itemBuilder: (context, index) {
               return userCard(state.listOfUsers.elementAt(index));
-            }, childCount: state.listOfUsers.length))
-          ],
+            },
+            controller: followingScrollController,
+          ),
         ),
       );
     }
+
 
     Widget scaffoldFollowers(state) {
       return Scaffold(
         backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
-        appBar: titleAppBar("Your followers"),
-        body: CustomScrollView(
-          slivers: [
-            SliverList(
-                delegate: SliverChildBuilderDelegate((context, index) {
+        appBar: titleAppBar("Followers"),
+        body: NotificationListener<ScrollNotification>(
+          onNotification: (notification) {
+            if (notification is ScrollEndNotification) {
+              if (followersScrollController.position.extentAfter == 0) {
+                userProfileBloc.add(UserProfileSeeFollowersEvent(state.userId));
+              }
+            }
+            return false;
+          },
+          child: ListView.builder(
+            itemCount: state.listOfUsers.length,
+            itemBuilder: (context, index) {
               return userCard(state.listOfUsers.elementAt(index));
-            }, childCount: state.listOfUsers.length))
-          ],
+            },
+            controller: followersScrollController,
+          ),
         ),
       );
     }
 
+
     Widget scaffoldFollowRequests(state) {
       return Scaffold(
-          backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
-          appBar: titleAppBar("Follow Requests"),
-          body: CustomScrollView(
-            slivers: [
-              SliverList(
-                  delegate: SliverChildBuilderDelegate((context, index) {
-                return userFollowRequestCard(state, state.listOfUsers.elementAt(index));
-              }, childCount: state.listOfUsers.length))
-            ],
-          ));
+        backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
+        appBar: titleAppBar("Follow Requests"),
+        body: NotificationListener<ScrollNotification>(
+          onNotification: (notification) {
+            if (notification is ScrollEndNotification) {
+              if (followRequestScrollController.position.extentAfter == 0) {
+                userProfileBloc.add(UserProfileViewFollowRequestsEvent());
+              }
+            }
+            return false;
+          },
+          child: ListView.builder(
+            itemCount: state.listOfUsers.length,
+            itemBuilder: (context, index) {
+              return userFollowRequestCard(state, state.listOfUsers.elementAt(index));
+            },
+            controller: followRequestScrollController,
+          ),
+        ),
+      );
     }
+
 
     Widget scaffoldLoading(state) {
       return Scaffold(
@@ -901,6 +997,8 @@ class _UserProfileState extends State<UserProfile> {
             Container(
               margin: const EdgeInsets.only(bottom: 10),
               child: IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints:const  BoxConstraints(),
                   onPressed: () {
                     userProfileBloc.followReqestsPage = 1;
                     userProfileBloc.add(UserProfileViewFollowRequestsEvent());
@@ -933,7 +1031,6 @@ class _UserProfileState extends State<UserProfile> {
           }
         },
         builder: (context, state) {
-          print(state.runtimeType);
           if (state is UserProfileShowAllFollowRequests && state.listOfUsers.isEmpty) {
             return noFollowRequestsScaffold();
           }
@@ -969,14 +1066,19 @@ class _UserProfileState extends State<UserProfile> {
               appBar: AppBar(
                 toolbarHeight: 80,
                 leading: IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints:const  BoxConstraints(),
                   icon: const Icon(Icons.arrow_back),
                   onPressed: () {
-                    searchFieldController.clear();
-                    userProfileBloc.publicLeafPage = 1;
-                    userProfileBloc.privateLeafPage = 1;
-                    userProfileBloc.privateLeafPost = {};
-                    userProfileBloc.publicLeavesPost = {};
-                    userProfileBloc.add(UserProfileOnBeginEvent(true));
+                    if(widget.profileVisit){
+                      Navigator.pop(context);
+                    } else{
+                      searchFieldController.clear();
+                      userProfileBloc.publicLeafPage = 1;
+                      userProfileBloc.privateLeafPage = 1;
+                      userProfileBloc.add(UserProfileOnBeginEvent(false));
+                    }
+
                   },
                 ),
                 title: searchUserField(),
@@ -1019,6 +1121,8 @@ class _UserProfileState extends State<UserProfile> {
                   Container(
                     margin: const EdgeInsets.only(bottom: 10),
                     child: IconButton(
+                        padding: EdgeInsets.zero,
+                        constraints:const  BoxConstraints(),
                         onPressed: () {
                           userProfileBloc.followReqestsPage = 1;
                           userProfileBloc.add(UserProfileViewFollowRequestsEvent());
@@ -1050,6 +1154,15 @@ class _UserProfileState extends State<UserProfile> {
           }
 
           if (state is UserProfileVisit) {
+           check_user() async {
+             var box = await Hive.openBox('logged-in-user');
+             var user_obj = box.get('user_obj');
+             if(state.obj == user_obj.userId){
+               print("something something");
+               userProfileBloc.add(UserProfileOnBeginEvent(false));
+               }
+             }
+             check_user();
             print(state.leaves);
             print(state.follow_map);
             var isFollowRequestSent = state.follow_map['follow_request_status'];
@@ -1086,13 +1199,18 @@ class _UserProfileState extends State<UserProfile> {
                 leading: IconButton(
                   icon: const Icon(Icons.arrow_back),
                   onPressed: () {
-                    searchFieldController.clear();
-                    userProfileBloc.publicLeafPage = 1;
-                    userProfileBloc.privateLeafPage = 1;
-                    userProfileBloc.privateLeafPost = {};
-                    userProfileBloc.publicLeavesPost = {};
+                    if(widget.profileVisit){
+                      Navigator.pop(context);
+                    } else{
+                      searchFieldController.clear();
+                      userProfileBloc.publicLeafPage = 1;
+                      userProfileBloc.privateLeafPage = 1;
+                      userProfileBloc.privateLeafPost = {};
+                      userProfileBloc.publicLeavesPost = {};
 
-                    userProfileBloc.add(UserProfileOnBeginEvent(true));
+                      userProfileBloc.add(UserProfileOnBeginEvent(false));
+                    }
+
                   },
                 ),
                 actions: isUserBlockedBy

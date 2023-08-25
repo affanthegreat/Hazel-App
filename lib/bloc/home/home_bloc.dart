@@ -17,15 +17,22 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     emit(HomeLeafCreationLoading());
     try{
-      var response = await LeafEngine().createLeaf({
-        'leaf_type': event.leaf_type,
-        'text_content': event.text_content
-      });
-      if(response){
-        emit(HomeLeafCreationSuccessfulState());
-      } else {
-        emit(HomeLeafCreationFailureState());
+      var validMentions = LeafEngine().checkValidMentions(event.text_content);
+      if(validMentions){
+        var response = await LeafEngine().createLeaf({
+          'leaf_type': event.leaf_type,
+          'text_content': event.text_content
+        });
+        if(response){
+          emit(HomeLeafCreationSuccessfulState());
+        } else {
+          emit(HomeLeafCreationFailureState());
+        }
+      } else{
+        emit(HomeLeafInvalidMentions());
       }
+
+
     } catch(e){
       emit(HomeLeafCreationFailureState());
     }

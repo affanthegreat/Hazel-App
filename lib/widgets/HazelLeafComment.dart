@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hazel_client/logics/CommentModels.dart';
 import 'package:hazel_client/logics/UserProfileModel.dart';
 import 'package:hazel_client/main.dart';
+import 'package:hazel_client/screens/home/user_profile.dart';
 import 'package:hazel_client/widgets/HazelFieldHeading.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:intl/intl.dart';
@@ -201,7 +202,13 @@ class _HazelLeafCommentState extends State<HazelLeafComment> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                buildHighlightedUserText(widget.obj!.userFullName!, widget.obj!.userName!),
+                InkWell(
+                    onTap: () {
+                      userProfileBloc.leavesPage = 1;
+                      userProfileBloc.leavesSet = {};
+                      Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context) => UserProfile(profileVisit: true, userObj: widget.obj!)));
+                    },
+                    child: buildHighlightedUserText(widget.obj!.userFullName!, widget.obj!.userName!)),
                 Container(
                   margin: EdgeInsets.only(bottom: 5),
                   child: Text(dateTimeToWords(widget.comment.createdDate!),
@@ -231,40 +238,38 @@ class _HazelLeafCommentState extends State<HazelLeafComment> {
                     ],
                   )
                 : Align(
-                  alignment: Alignment.centerRight,
-                  child: Container(
+                    alignment: Alignment.centerRight,
+                    child: Container(
                       width: 160,
                       height: 40,
                       padding: const EdgeInsets.all(5),
-                     child: Row(
+                      child: Row(
                         key: const ValueKey<int>(1),
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           IconButton(
                               padding: EdgeInsets.zero,
-                              constraints: BoxConstraints(),
-                              onPressed: () {
-
-                              },
-                              icon: const Icon(Iconsax.arrow_up, size: 24, color: Colors.grey,)),
+                              constraints:const  BoxConstraints(),
+                              onPressed: () {},
+                              icon: const Icon(
+                                Iconsax.arrow_up,
+                                size: 24,
+                                color: Colors.grey,
+                              )),
                           IconButton(
                               padding: EdgeInsets.zero,
-                              constraints: BoxConstraints(),
-                              onPressed: () {
-
-                              },
-                              icon: const Icon(Iconsax.arrow_down_2, size: 24, color: Colors.grey,)),
-                          IconButton(
-                              padding: EdgeInsets.zero,
-                              constraints: BoxConstraints(),
-                              onPressed: () {
-
-                              },
-                              icon: const Icon(Iconsax.message_add_1, size: 24, color: Colors.grey)),
+                              constraints:const BoxConstraints(),
+                              onPressed: () {},
+                              icon: const Icon(
+                                Iconsax.arrow_down_2,
+                                size: 24,
+                                color: Colors.grey,
+                              )),
+                          IconButton(padding: EdgeInsets.zero, constraints: BoxConstraints(), onPressed: () {}, icon: const Icon(Iconsax.message_add_1, size: 24, color: Colors.grey)),
                         ],
                       ),
                     ),
-                ),
+                  ),
           )
         ],
       ),

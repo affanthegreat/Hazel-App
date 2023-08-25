@@ -14,3 +14,4 @@ class HomeLeafCreationFailureState extends HomeState{}
 
 class HomeLeafCreationLoading extends HomeState{}
 
+class HomeLeafInvalidMentions extends HomeState{}

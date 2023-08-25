@@ -6,6 +6,7 @@ import 'package:hazel_client/logics/UserDetails.dart';
 import 'package:hazel_client/logics/UserProfileModel.dart';
 import 'package:hazel_client/logics/leaf_engine.dart';
 import 'package:hazel_client/logics/user_engine.dart';
+import 'package:hive/hive.dart';
 import 'package:meta/meta.dart';
 
 part 'user_profile_event.dart';
@@ -41,25 +42,38 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
   }
 
   FutureOr<void> userProfileSync(UserProfileOnBeginEvent event, Emitter<UserProfileState> emit) async {
-    emit(UserProfileLoading());
-    privateLeafPage = 1;
-    publicLeafPage = 1;
-    UserProfileModel? userObj = await UserEngine().fetchUserInfo(event.refresh);
-    var public_leaf_set = await LeafEngine().getAllPublicLeaf(publicLeafPage);
-    var private_leaf_set = await LeafEngine().getAllPrivateLeaf(privateLeafPage);
-    if (userObj == null || userObj.userEmail == null) {
-      emit(UserProfileErrorLoading());
-    } else {
-      if (publicLeafPage == 1 && privateLeafPage == 1) {
-        publicLeavesPost = public_leaf_set;
-        privateLeafPost = private_leaf_set;
-      } else {
-        publicLeavesPost.addAll(public_leaf_set);
-        privateLeafPost.addAll(private_leaf_set);
+    var box = await Hive.openBox('logged-in-user');
+    var user_obj = box.get('user_obj');
+    if(!event.refresh){
+      emit(UserProfileSuccessfulLoading(user_obj, publicLeavesPost, privateLeafPost));
+    }
+
+    if (publicLeavesPost.isEmpty && privateLeafPost.isEmpty) {
+      emit(UserProfileLoading());
+    }
+
+    try {
+      print(event.refresh);
+        UserProfileModel? userObj = await UserEngine().fetchUserInfo(event.refresh);
+        var public_leaf_set = await LeafEngine().getAllPublicLeaf(publicLeafPage);
+        var private_leaf_set = await LeafEngine().getAllPrivateLeaf(privateLeafPage);
+        if (userObj == null || userObj.userEmail == null) {
+          emit(UserProfileErrorLoading());
+        } else {
+          if (publicLeafPage == 1 && privateLeafPage == 1) {
+            publicLeavesPost = public_leaf_set;
+            privateLeafPost = private_leaf_set;
+          } else {
+            publicLeavesPost.addAll(public_leaf_set);
+            privateLeafPost.addAll(private_leaf_set);
+          }
+          publicLeafPage++;
+          privateLeafPage++;
       }
-      publicLeafPage++;
-      privateLeafPage++;
-      emit(UserProfileSuccessfulLoading(userObj, publicLeavesPost, privateLeafPost));
+        emit(UserProfileSuccessfulLoading(userObj, publicLeavesPost, privateLeafPost));
+    } catch (e) {
+      // Handle error
+      emit(UserProfileSuccessfulLoading(user_obj, publicLeavesPost, privateLeafPost));
     }
   }
 
@@ -75,17 +89,22 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
 
   FutureOr<void> userProfileVisit(UserProfileVisitEvent event, Emitter<UserProfileState> emit) async {
     emit(UserProfileLoading());
-
-    var following_status = await UserEngine().getFollowingStatus({'search_profile_id': event.profile!.userId});
-    var leaf_set = await LeafEngine().getLeaves(event.profile!.userId!, 1);
-    leavesSet = leaf_set;
-    emit(UserProfileVisit(event.profile, following_status, leavesSet));
+    var box = await Hive.openBox('logged-in-user');
+    var user_obj = box.get('user_obj');
+    if(user_obj.userId ==event.profile!.userId ){
+      emit(UserProfileSuccessfulLoading(user_obj, publicLeavesPost, privateLeafPost));
+    } else{
+      var following_status = await UserEngine().getFollowingStatus({'search_profile_id': event.profile!.userId});
+      var leaf_set = await LeafEngine().getLeaves(event.profile!.userId!, 1);
+      leavesSet = leaf_set;
+      emit(UserProfileVisit(event.profile, following_status, leavesSet));
+    }
   }
 
   FutureOr<void> userProfileGetFollower(UserProfileSeeFollowersEvent event, Emitter<UserProfileState> emit) async {
     emit(UserProfileLoading());
     try {
-      var user_list = await UserEngine().getUserFollowers({'page_number': followersPage});
+      var user_list = await UserEngine().getUserFollowers({'page_number': followersPage}, event.userId);
 
       if (followersPage == 1) {
         followersList = user_list;
@@ -93,7 +112,7 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
         followersList.addAll(user_list);
       }
       followersPage++;
-      emit(UserProfileGetFollowersSuccesful(followersList));
+      emit(UserProfileGetFollowersSuccesful(followersList, event.userId));
     } catch (e) {
       emit(UserProfileGetFollowersError());
     }
@@ -102,14 +121,14 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
   FutureOr<void> userProfileGetFollowing(UserProfileSeeFollowingEvent event, Emitter<UserProfileState> emit) async {
     emit(UserProfileLoading());
     try {
-      var user_list = await UserEngine().getUserFollowing({'page_number': followingPage});
+      var user_list = await UserEngine().getUserFollowing({'page_number': followingPage}, event.userId);
       if (followingPage == 1) {
         followingList = user_list;
       } else {
         followingList.addAll(user_list);
       }
       followingPage++;
-      emit(UserProfileGetFollowingSuccesful(followingList));
+      emit(UserProfileGetFollowingSuccesful(followingList, event.userId));
     } catch (e) {
       emit(UserProfileGetFollowingError());
     }

@@ -37,8 +37,9 @@ class UserProfileVisitError extends UserProfileState{
 
 class UserProfileGetFollowersSuccesful extends UserProfileState{
   final Set<UserProfileModel?> listOfUsers;
+  final String userId;
 
-  UserProfileGetFollowersSuccesful(this.listOfUsers);
+  UserProfileGetFollowersSuccesful(this.listOfUsers, this.userId);
 }
 
 class UserProfileGetFollowersError extends UserProfileState{}
@@ -46,8 +47,9 @@ class UserProfileGetFollowersError extends UserProfileState{}
 
 class UserProfileGetFollowingSuccesful extends UserProfileState{
   final Set<UserProfileModel?> listOfUsers;
+  final String userId;
 
-  UserProfileGetFollowingSuccesful(this.listOfUsers);
+  UserProfileGetFollowingSuccesful(this.listOfUsers, this.userId);
 }
 
 class UserProfileGetFollowingError extends UserProfileState{}

@@ -27,7 +27,7 @@ class _HazelHomeState extends State<HazelHome> {
       const HazelMainScreen(),
       const HazelTrending(),
       const HazelLeaderboard(),
-      const UserProfile(),
+      UserProfile(profileVisit: false, userObj: null),
       const Settings()
 
     ];

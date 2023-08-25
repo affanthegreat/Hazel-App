@@ -11,6 +11,29 @@ class LeafEngine {
   final dio = Dio();
   final String url = "http://10.0.2.2:8000/";
 
+
+  List<String> getAllMentions(String text) {
+    final regexp = RegExp(r'\@[a-zA-Z0-9]+\b()');
+
+    List<String> mentions = [];
+
+    regexp.allMatches(text).forEach((element) {
+      if (element.group(0) != null) {
+        mentions.add(element.group(0).toString());
+      }
+    });
+
+    return mentions;
+  }
+
+
+  checkValidMentions(String txt){
+    var mentions = getAllMentions(txt);
+    for(var i in mentions){
+
+    }
+    return false;
+  }
   Future<bool> createLeaf(dynamic data) async {
     var apiEndpoint = 'leaf_engine/create_leaf';
     try {
@@ -35,7 +58,6 @@ class LeafEngine {
       var data = {};
       data['leaf_id'] = leaf_obj.leafId;
       final response = await dio.post(url + apiEndpoint, data: data);
-      print(response.data);
       List<dynamic> result = response.data['data'];
       Map<String, dynamic> comment_set = {};
       List<Map<String, dynamic>> comments = [];
@@ -59,7 +81,6 @@ class LeafEngine {
       commentsRepo.sortRootComments();
       return commentsRepo;
     } catch(e) {
-      throw(e);
       return CommentsRepo();
     }
   }
