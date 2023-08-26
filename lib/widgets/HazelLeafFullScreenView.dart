@@ -20,6 +20,7 @@ import 'package:icons_plus/icons_plus.dart';
 import 'package:intl/intl.dart';
 
 LeafBloc leafFullScreenBloc = LeafBloc();
+var logged_in_user;
 
 class HazelLeafFullScreenView extends StatefulWidget {
   final LeafModel? leafObj;
@@ -63,11 +64,11 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
 
   double _savedScrollOffset = 0.0;
 
-  var logged_in_user;
+
 
   load_user_object() async{
     var box = await Hive.openBox('logged-in-user');
-    logged_in_user = box.get('user_obj');
+    logged_in_user =await box.get('user_obj');
   }
   @override
   void initState() {
@@ -586,19 +587,25 @@ class _HazelLeafFullScreenViewState extends State<HazelLeafFullScreenView> {
                               tree: tree,
                               showRootNode: false,
                               scrollController: _scrollController,
-                              expansionIndicatorBuilder: (context, node) => ChevronIndicator.rightDown(
+                              padding: EdgeInsets.only(left: 0),
+                              expansionIndicatorBuilder: (context, node) => ChevronIndicator.upDown(
                                 tree: node,
                                 color: CupertinoColors.systemYellow,
-                                padding: const EdgeInsets.all(8),
+                                padding: EdgeInsets.only(top: 10),
                               ),
                               indentation: const Indentation(style: IndentStyle.scopingLine,   color: CupertinoColors.systemYellow, thickness: 2, width: 30),
                               builder: (context, node) {
+                                if(node.key == "Root"){
+                                  return Container();
+                                }
+                                print("++++++++++++++++");
+                                print(state.commentData.commentsMap[node.key].comment);
                                 return HazelLeafComment(comment: state.commentData.commentsMap[node.key],obj:  state.commentData.commentUsers[node.key]!, currentLoggedInUser: logged_in_user,);
                               },
                             ),
                       const SliverToBoxAdapter(
                         child: SizedBox(
-                          height: 50,
+                          height: 450,
                         ),
                       )
                     ],

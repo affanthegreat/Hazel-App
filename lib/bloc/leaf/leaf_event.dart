@@ -91,3 +91,19 @@ class LeafDeleteComments extends LeafEvent{
 
   LeafDeleteComments(this.commentId);
 }
+
+class LeafCommentVote extends LeafEvent{
+  final String voteAction;
+  final String commentId;
+  final LeafComments comment;
+
+  LeafCommentVote(this.voteAction, this.commentId, this.comment);
+}
+
+class LeafRemoveVote extends LeafEvent{
+  final String commentId;
+  final String voteAction;
+  final LeafComments comment;
+
+  LeafRemoveVote(this.commentId, this.comment, this.voteAction);
+}

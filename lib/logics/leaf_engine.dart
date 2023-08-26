@@ -64,6 +64,8 @@ class LeafEngine {
       data['leaf_id'] = leaf_obj.leafId;
       final response = await dio.post(url + apiEndpoint, data: data);
       List<dynamic> result = response.data['data'];
+      print("________________________");
+      print(result);
       Map<String, dynamic> comment_set = {};
       List<Map<String, dynamic>> comments = [];
       Map<String, dynamic> comment_users = {};
@@ -83,7 +85,6 @@ class LeafEngine {
       commentsRepo.commentsTree = tree;
       commentsRepo.commentsMap = comment_set;
       commentsRepo.commentUsers = comment_users;
-      commentsRepo.sortRootComments();
       return commentsRepo;
     } catch(e) {
       return CommentsRepo();
@@ -104,6 +105,7 @@ class LeafEngine {
       for (int i = 0; i < result.length; i++) {
         var leaf_obj = LeafModel.fromJson(result.elementAt(i));
         leaf_obj.topComments = await getTopComments(leaf_obj);
+        print(leaf_obj!.topComments!.commentsTree!);
         leaf_qs.add(leaf_obj);
       }
       return leaf_qs;
@@ -394,8 +396,50 @@ class LeafEngine {
       data['comment_id'] = comment_id;
       data['user_id'] = user_obj.userId;
       final response = await dio.post(url + apiEndpoint, data: data);
+      print(response.data);
       final result = json.decode(response.data);
       return result;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> voteComment(String comment_id, String vote_action) async{
+    try {
+      var apiEndpoint = 'leaf_engine/vote_comment';
+      var data = {};
+      data['comment_id'] = comment_id;
+      data['vote_action'] = vote_action;
+      data['auth_token'] = sessionData!['auth_token'];
+      data['token']  = sessionData!['token'];
+      final response = await dio.post(url + apiEndpoint, data: data);
+
+      final result = json.decode(response.data);
+      print(result);
+      if(result == 100){
+        return true;
+      } else{
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> removeVoteComment(String comment_id) async{
+    try {
+      var apiEndpoint = 'leaf_engine/remove_vote_comment';
+      var data = {};
+      data['comment_id'] = comment_id;
+      data['auth_token'] = sessionData!['auth_token'];
+      data['token']  = sessionData!['token'];
+      final response = await dio.post(url + apiEndpoint, data: data);
+      final result = json.decode(response.data);
+      if(result == 100){
+        return true;
+      } else{
+        return false;
+      }
     } catch (e) {
       return false;
     }

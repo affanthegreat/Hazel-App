@@ -41,8 +41,8 @@ class LeafCommentLoading extends LeafState{}
 
 class LeafCommentSuccess extends LeafState{
   final Map vote_status;
-
-  LeafCommentSuccess(this.vote_status);
+  final LeafComments comments;
+  LeafCommentSuccess(this.vote_status, this.comments);
 
 }
 

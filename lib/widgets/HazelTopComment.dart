@@ -148,7 +148,7 @@ class HazelTopComment extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.only(right: 10,top: 10,bottom: 10),
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: isDarkTheme? Colors.grey.shade900.withOpacity(0.75): Colors.grey.shade200, width: 2)),
         //color: isDarkTheme ? Colors.grey.shade900.withOpacity(0.3) : Colors.grey.shade50,

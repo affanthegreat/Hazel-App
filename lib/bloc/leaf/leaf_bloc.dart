@@ -28,6 +28,8 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
     on<LeafDeleteComments>(deleteLeafComment);
     on<LeafSubComment>(sendSubComment);
     on<LeafLoadComment>(loadComment);
+    on<LeafCommentVote>(vote);
+    on<LeafRemoveVote>(unvote);
   }
 
   FutureOr<void> likeLeaf(LeafLikeEvent event, Emitter<LeafState> emit) async{
@@ -204,13 +206,85 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
   }
 
   FutureOr<void> loadComment(LeafLoadComment event, Emitter<LeafState> emit) async{
+
     emit(LeafCommentLoading());
     try{
       var vote_status = await leafEngineObj.getVote(event.comment.commentId!);
-      emit(LeafCommentSuccess(vote_status));
+      if(vote_status == 111){
+        emit(LeafCommentSuccess({}, event.comment));
+      } else{
+        emit(LeafCommentSuccess(vote_status, event.comment));
+      }
     } catch(e){
       emit(LeafCommentLoadError());
     }
+  }
 
+
+
+  FutureOr<void> vote(LeafCommentVote event, Emitter<LeafState> emit) async{
+    try{
+      var vote_status = await leafEngineObj.voteComment(event.commentId, event.voteAction);
+      print("______________________");
+      print(vote_status);
+      if(vote_status){
+        print(event.voteAction);
+        if(event.voteAction == "upvote"){
+          event.comment.votes = event.comment.votes! +1;
+        } else{
+          event.comment.votes = event.comment.votes!  - 1;
+        }
+        print(event.comment.votes);
+        var status = await leafEngineObj.getVote(event.commentId!);
+        if(status == 111){
+          emit(LeafCommentSuccess({}, event.comment));
+        } else{
+          emit(LeafCommentSuccess(status, event.comment));
+        }
+      } else{
+        var status = await leafEngineObj.getVote(event.commentId!);
+        if(status == 111){
+          emit(LeafCommentSuccess({}, event.comment));
+        } else{
+          emit(LeafCommentSuccess(status, event.comment));
+        }
+      }
+    } catch(e){
+      throw(e);
+      emit(LeafCommentLoadError());
+    }
+  }
+
+
+
+  FutureOr<void> unvote(LeafRemoveVote event, Emitter<LeafState> emit) async{
+    try{
+      var vote_status = await leafEngineObj.removeVoteComment(event.commentId);
+
+      if(vote_status){
+        if(event.voteAction == "upvote"){
+          event.comment.votes = event.comment.votes! -1;
+        } else{
+          event.comment.votes = event.comment.votes!  + 1;
+        }
+
+        var status = await leafEngineObj.getVote(event.commentId!);
+        if(status == 111){
+          emit(LeafCommentSuccess({}, event.comment));
+        } else{
+          emit(LeafCommentSuccess(status, event.comment));
+        }
+      } else{
+        var status = await leafEngineObj.getVote(event.commentId!);
+        if(status == 111){
+          emit(LeafCommentSuccess({}, event.comment));
+        } else{
+          emit(LeafCommentSuccess(status, event.comment));
+        }
+      }
+    } catch(e){
+      throw(e);
+      emit(LeafCommentLoadError());
+    }
   }
 }

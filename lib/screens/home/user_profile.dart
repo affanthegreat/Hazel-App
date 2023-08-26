@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hazel_client/logics/wrappers.dart';
 import 'package:hazel_client/widgets/HazelFieldHeading.dart';
+import 'package:hazel_client/widgets/HazelLeafFullScreenView.dart';
 import 'package:hazel_client/widgets/leafWidget.dart';
 import 'package:hazel_client/bloc/user_profile/user_profile_bloc.dart';
 import 'package:hazel_client/constants/colors.dart';
@@ -50,13 +51,16 @@ class _UserProfileState extends State<UserProfile> {
   ScrollController followRequestScrollController = ScrollController();
   ScrollController followingScrollController = ScrollController();
 
+
+  load_user_object() async{
+    var box = await Hive.openBox('logged-in-user');
+    logged_in_user =await box.get('user_obj');
+  }
+
   @override
   void initState() {
-    print("------------------");
-    print(widget.profileVisit);
+    load_user_object();
     if(widget.profileVisit){
-      print("======================");
-      print("PROFILE VISIT EVENT");
       userProfileBloc.add(UserProfileVisitEvent(widget.userObj!));
     } else{
       userProfileBloc.add(UserProfileOnBeginEvent(false));

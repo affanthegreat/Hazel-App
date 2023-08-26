@@ -207,7 +207,7 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
     }
 
     TreeNode buildTree(Map<String, Map<dynamic, dynamic>> inputMap) {
-      final rootNode = TreeNode(key: 'Root');
+      final rootNode = TreeNode(key: 'Root', data: "Something");
       for (var entry in inputMap.entries) {
         _addNode(rootNode, entry.key, entry.value);
       }
@@ -289,6 +289,9 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
         if (state is LeafSuccessfulLoadState) {
           bool like_status = state.map['like']!;
           bool dislike_status = state.map['dislike']!;
+          print("_____________________________________");
+          print(widget.leaf_obj!.topComments!.commentsMap);
+          print(widget.leaf_obj!.topComments!.commentsTree);
           var tree = buildTree(widget.leaf_obj!.topComments!.commentsTree);
           return Container(
             width: double.infinity,
@@ -336,20 +339,7 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                             ),
                           ),
                         ),
-                        logged_in_user.userId == widget.user_obj!.userId? Container(
-                          width: 28,
-                          height: 28,
-                          margin: const EdgeInsets.only(left: 5, right: 5, bottom: 10),
-                          child: IconButton(
-                            onPressed: () {
-                              leafBloc.add(LeafDelete(widget!.leaf_obj!.leafId!));
-                            },
-                            icon: Icon(
-                              Icons.delete_rounded,
-                              color: (isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400),
-                            ),
-                          ),
-                        ): Container(),
+
                         Container(
                           width: 28,
                           height: 28,
@@ -369,6 +359,34 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                             ),
                           ),
                         ),
+                        (logged_in_user.userId == widget.user_obj!.userId!) ?PopupMenuButton<String>(
+                          color: Colors.grey.shade900,
+                          icon: const Icon(
+                            Icons.more_vert,
+                            color: Colors.grey,
+                          ), // Icon for the menu
+                          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                            PopupMenuItem<String>(
+                              value: 'Delete',
+                              onTap: () {
+                                leafBloc.add(LeafDelete(widget!.leaf_obj!.leafId!));
+                              },
+                              child: Row(
+                                children: [
+                                  Icon(Icons.delete_rounded,color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,),
+                                  Text(
+                                    "Delete",
+                                    style: GoogleFonts.poppins(
+                                      textStyle: Theme.of(context).textTheme.labelLarge,
+                                      fontWeight: FontWeight.bold,
+                                      color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ],
+                        ):Container(),
                       ],
                     )
                   ],
@@ -389,6 +407,7 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                 ),
                 Container(
                   padding: const EdgeInsets.all(5),
+                  margin: EdgeInsets.only(bottom: 10),
                   decoration:
                       BoxDecoration(color: isDarkTheme ? Colors.grey.shade900.withOpacity(0.5) : Colors.grey.shade100, border: Border.all(color: isDarkTheme ? Colors.grey.shade800 : Colors.grey.shade300), borderRadius: BorderRadius.circular(10)),
                   child: Row(
@@ -505,39 +524,29 @@ class _HazelLeafWidgetState extends State<HazelLeafWidget> {
                 ),
                 widget.leaf_obj!.topComments!.commentsTree.isEmpty
                     ? Container()
-                    : Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(top: 10),
-                          child: Text("Top comments",
-                              style: GoogleFonts.poppins(
-                                letterSpacing: -0.1,
-                                textStyle: Theme.of(context).textTheme.bodyLarge,
-                                color: isDarkTheme ? hazelLogoColorLight : hazelLogoColor,
-                              )),
-                        ),
-                        TreeView.simple(
-                            showRootNode: false,
-                            shrinkWrap: true,
-                            expansionBehavior: ExpansionBehavior.collapseOthersAndSnapToTop,
-                            indentation: const Indentation(style: IndentStyle.scopingLine,   color: CupertinoColors.systemYellow, thickness: 2, width: 30),
-                            expansionIndicatorBuilder: (context, node) => ChevronIndicator.rightDown(
-                                  tree: node,
-                                  color: CupertinoColors.systemYellow,
-                                  padding: const EdgeInsets.all(8),
-                                ),
-                            tree:tree ,
-                            onTreeReady: (controller) {
-                              controller.expandAllChildren(tree);
-                            },
-                            builder: (context, node) {
-                              // build your node item here
-                              // return any widget that you
-                              return HazelTopComment(comment: widget.leaf_obj!.topComments!.commentsMap[node.key]!, obj: widget.leaf_obj!.topComments!.commentUsers[node.key]!);
-                            }),
-                           ],
-                    )
+                    : TreeView.simple(
+                        showRootNode: true,
+                        shrinkWrap: true,
+                        padding: EdgeInsets.zero,
+                        expansionBehavior: ExpansionBehavior.collapseOthersAndSnapToTop,
+                        indentation: const Indentation(style: IndentStyle.scopingLine,   color: CupertinoColors.systemYellow, thickness: 2, width: 30),
+                        expansionIndicatorBuilder: (context, node) => ChevronIndicator.rightDown(
+                              tree: node,
+                              color: CupertinoColors.systemYellow,
+                              padding: const EdgeInsets.all(8),
+                            ),
+                        tree:tree ,
+                        onTreeReady: (controller) {
+                          controller.expandAllChildren(tree);
+                        },
+                        builder: (context, node) {
+                          // build your node item here
+                          // return any widget that you
+                          if(node.key == "Root"){
+                            return Container();
+                          }
+                          return HazelTopComment(comment: widget.leaf_obj!.topComments!.commentsMap[node.key]!, obj: widget.leaf_obj!.topComments!.commentUsers[node.key]!);
+                        })
               ],
             ),
           );
