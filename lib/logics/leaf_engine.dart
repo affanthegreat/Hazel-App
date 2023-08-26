@@ -384,6 +384,22 @@ class LeafEngine {
       return false;
     }
   }
+
+  Future<dynamic> getVote(String comment_id) async{
+    try {
+      var apiEndpoint = 'leaf_engine/get_vote';
+      var box = await Hive.openBox('logged-in-user');
+      var user_obj = box.get('user_obj');
+      var data = {};
+      data['comment_id'] = comment_id;
+      data['user_id'] = user_obj.userId;
+      final response = await dio.post(url + apiEndpoint, data: data);
+      final result = json.decode(response.data);
+      return result;
+    } catch (e) {
+      return false;
+    }
+  }
 }
 
 

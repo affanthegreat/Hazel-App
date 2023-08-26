@@ -328,6 +328,7 @@ class _HazelUserDetailsCollectionState extends State<HazelUserDetailsCollection>
                           'user_age': age.text,
                         };
                         var update_status = json.decode(await UserEngine().updateUserDetails(data));
+                        print("=====++++++++++++++==========");
                         print(update_status);
                         if(!widget.update && update_status['message'] == 100){
                           Navigator.pushReplacementNamed(context, '/home');

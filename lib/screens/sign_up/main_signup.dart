@@ -12,6 +12,7 @@ import 'package:hazel_client/widgets/HazelFieldHeading.dart';
 import 'package:hazel_client/widgets/HazelFieldLabel.dart';
 import 'package:hazel_client/widgets/HazelFocusedButton.dart';
 import 'package:hazel_client/widgets/HazelPrivacyDisclaimer.dart';
+import 'package:hive/hive.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
 
 class SignUp extends StatefulWidget {
@@ -539,7 +540,8 @@ class _SignUpState extends State<SignUp> {
             'password': userPassword2Controller.text
           };
           var status = await UserEngine().login(data);
-          await UserEngine().fetchUserInfo(true);
+          print("+++++++++++++++++++++++++++++++++++++++++");
+          print(status);
           if(status== "true"){
             var snackBar = SnackBar(
               backgroundColor: CupertinoColors.activeGreen,
@@ -551,8 +553,15 @@ class _SignUpState extends State<SignUp> {
                 ),
               ),
             );
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-            Navigator.pushReplacementNamed(context, '/user_data');
+            var box = await Hive.openBox('logged-in-user');
+            var user_obj = box.get('user_obj');
+            if(user_obj.userId != null){
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              Navigator.pushReplacementNamed(context, '/user_data');
+            } else{
+
+            }
+
           }
         }
 

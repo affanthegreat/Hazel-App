@@ -47,13 +47,14 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
     if(!event.refresh){
       emit(UserProfileSuccessfulLoading(user_obj, publicLeavesPost, privateLeafPost));
     }
-
+    print("Refresh is true");
     if (publicLeavesPost.isEmpty && privateLeafPost.isEmpty) {
       emit(UserProfileLoading());
     }
 
     try {
         UserProfileModel? userObj = await UserEngine().fetchUserInfo(event.refresh);
+        print(user_obj.userFullName);
         var public_leaf_set = await LeafEngine().getAllPublicLeaf(publicLeafPage);
         var private_leaf_set = await LeafEngine().getAllPrivateLeaf(privateLeafPage);
         if (userObj == null || userObj.userEmail == null) {

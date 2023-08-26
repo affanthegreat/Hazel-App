@@ -32,3 +32,5 @@ class SignUpDataCollectedEvent extends SignUpEvent{
 
   SignUpDataCollectedEvent(this.password, this.email, this.userName);
 }
+
+class SignUpReload extends SignUpEvent{}

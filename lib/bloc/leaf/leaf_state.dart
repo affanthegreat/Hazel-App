@@ -37,3 +37,13 @@ class LeafDeleteError extends LeafState{}
 
 class LeafCommentDeleteError extends LeafState{}
 
+class LeafCommentLoading extends LeafState{}
+
+class LeafCommentSuccess extends LeafState{
+  final Map vote_status;
+
+  LeafCommentSuccess(this.vote_status);
+
+}
+
+class LeafCommentLoadError extends LeafState{}

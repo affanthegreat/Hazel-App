@@ -15,12 +15,6 @@ class LeafLikeEvent extends LeafEvent{
   LeafLikeEvent(this.obj);
 }
 
-class LeafFullScreenLikeEvent extends LeafEvent{
-  final LeafModel? obj;
-
-  LeafFullScreenLikeEvent(this.obj);
-}
-
 //LIKE REMOVE
 class LeafLikeRemoveEvent extends LeafEvent{
   final LeafModel? obj;
@@ -28,11 +22,6 @@ class LeafLikeRemoveEvent extends LeafEvent{
   LeafLikeRemoveEvent(this.obj);
 }
 
-class LeafFullScreenLikeRemoveEvent extends LeafEvent{
-  final LeafModel? obj;
-
-  LeafFullScreenLikeRemoveEvent(this.obj);
-}
 
 // DISLIKE
 class LeafDislikeEvent extends LeafEvent{
@@ -42,11 +31,7 @@ class LeafDislikeEvent extends LeafEvent{
 }
 
 
-class LeafFullScreenDislikeEvent extends LeafEvent{
-  final LeafModel? obj;
 
-  LeafFullScreenDislikeEvent(this.obj);
-}
 
 // DISLIKE REMOVE
 class LeafDislikeRemoveEvent extends LeafEvent{
@@ -56,11 +41,6 @@ class LeafDislikeRemoveEvent extends LeafEvent{
 }
 
 
-class LeafFullScreenRemoveDislikeEvent extends LeafEvent{
-  final LeafModel? obj;
-
-  LeafFullScreenRemoveDislikeEvent(this.obj);
-}
 
 
 
@@ -72,6 +52,18 @@ class LeafFullScreenViewEvent extends LeafEvent{
   LeafFullScreenViewEvent(this.obj, this.currentUser, this.map);
 
 }
+
+
+class LeafLoadComment extends LeafEvent{
+  final LeafComments comment;
+  final UserProfileModel? obj;
+  final UserProfileModel? currentLoggedInUser;
+
+  LeafLoadComment(this.comment, this.obj, this.currentLoggedInUser);
+}
+
+
+
 
 class LeafSendComment extends LeafEvent{
   final String commentString;

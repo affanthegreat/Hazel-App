@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hazel_client/bloc/leaf/leaf_bloc.dart';
 import 'package:hazel_client/logics/CommentModels.dart';
@@ -26,13 +27,14 @@ class HazelLeafComment extends StatefulWidget {
 
 class _HazelLeafCommentState extends State<HazelLeafComment> {
   final TextEditingController replyController = TextEditingController();
-
-
+  final LeafBloc localLeafBloc = LeafBloc();
 
   @override
   void initState() {
+    localLeafBloc.add(LeafLoadComment(widget.comment, widget.obj, widget.currentLoggedInUser));
     super.initState();
   }
+
   String numToEng(int num) {
     if (num >= 1000000) {
       return (num / 1000000).toStringAsFixed(1) + ' mil';
@@ -175,15 +177,8 @@ class _HazelLeafCommentState extends State<HazelLeafComment> {
                     color: Colors.blue,
                   ),
                   onPressed: () async {
-                    if(replyController.text.isNotEmpty){
-                      var data = {
-                        'leaf_id': widget.comment.leafId,
-                        'parent_comment_id': widget.comment.commentId!,
-                        'comment_string': replyController.text
-                      };
-
-                      print("=======");
-                      print(data);
+                    if (replyController.text.isNotEmpty) {
+                      var data = {'leaf_id': widget.comment.leafId, 'parent_comment_id': widget.comment.commentId!, 'comment_string': replyController.text};
                       leafFullScreenBloc.add(LeafSubComment(data));
                     }
                   },
@@ -204,109 +199,141 @@ class _HazelLeafCommentState extends State<HazelLeafComment> {
       );
     }
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: isDarkTheme ? Colors.grey.shade900.withOpacity(0.75) : Colors.grey.shade300, width: 2)),
-        //color: isDarkTheme ? Colors.grey.shade900.withOpacity(0.3) : Colors.grey.shade50,
-      ),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
-            width: double.infinity,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                InkWell(
-                    onTap: () {
-                      userProfileBloc.leavesPage = 1;
-                      userProfileBloc.leavesSet = {};
-                      Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context) => UserProfile(profileVisit: true, userObj: widget.obj!)));
-                    },
-                    child: buildHighlightedUserText(widget.obj!.userFullName!, widget.obj!.userName!)),
-                Container(
-                  margin: EdgeInsets.only(bottom: 5),
-                  child: Text(dateTimeToWords(widget.comment.createdDate!),
-                      style: GoogleFonts.inter(
-                        textStyle: Theme.of(context).textTheme.labelMedium,
-                        color: isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400,
-                      )),
-                ),
-                buildHighlightedText(widget.comment.comment!)
-              ],
+    Widget comment_body(){
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: isDarkTheme ? Colors.grey.shade900.withOpacity(0.75) : Colors.grey.shade300, width: 2)),
+          //color: isDarkTheme ? Colors.grey.shade900.withOpacity(0.3) : Colors.grey.shade50,
+        ),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+              width: double.infinity,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  InkWell(
+                      onTap: () {
+                        userProfileBloc.leavesPage = 1;
+                        userProfileBloc.leavesSet = {};
+                        Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context) => UserProfile(profileVisit: true, userObj: widget.obj!)));
+                      },
+                      child: buildHighlightedUserText(widget.obj!.userFullName!, widget.obj!.userName!)),
+                  Container(
+                    margin: EdgeInsets.only(bottom: 5),
+                    child: Text(dateTimeToWords(widget.comment.createdDate!),
+                        style: GoogleFonts.inter(
+                          textStyle: Theme.of(context).textTheme.labelMedium,
+                          color: isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400,
+                        )),
+                  ),
+                  buildHighlightedText(widget.comment.comment!)
+                ],
+              ),
             ),
-          ),
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 150),
-            child: textFieldVisible
-                ? Row(
-                    key: const ValueKey<int>(0),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 150),
+              child: textFieldVisible
+                  ? Row(
+                key: const ValueKey<int>(0),
+                children: [
+                  Expanded(child: textField()),
+                  IconButton(
+                      onPressed: () {
+                        setState(() {
+                          textFieldVisible = !textFieldVisible;
+                        });
+                      },
+                      icon: const Icon(Iconsax.message_minus, size: 18, color: Colors.grey))
+                ],
+              )
+                  : Align(
+                alignment: Alignment.centerRight,
+                child: Container(
+                  width: 210,
+                  height: 40,
+                  padding: const EdgeInsets.all(5),
+                  child: Row(
+                    key: const ValueKey<int>(1),
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Expanded(child: textField()),
+                      (widget.currentLoggedInUser!.userId! == widget.comment.commentedById!)
+                          ? IconButton(
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          onPressed: () {
+                            leafFullScreenBloc.add(LeafDeleteComments(widget.comment.commentId!));
+                          },
+                          icon: const Icon(
+                            Icons.delete_rounded,
+                            size: 24,
+                            color: Colors.grey,
+                          ))
+                          : Container(),
                       IconButton(
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          onPressed: () {},
+                          icon: const Icon(
+                            Iconsax.arrow_up,
+                            size: 24,
+                            color: Colors.grey,
+                          )),
+                      IconButton(
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          onPressed: () {},
+                          icon: const Icon(
+                            Iconsax.arrow_down_2,
+                            size: 24,
+                            color: Colors.grey,
+                          )),
+                      IconButton(
+                          padding: EdgeInsets.zero,
+                          constraints: BoxConstraints(),
                           onPressed: () {
                             setState(() {
                               textFieldVisible = !textFieldVisible;
                             });
                           },
-                          icon: const Icon(Iconsax.message_minus, size: 18, color: Colors.grey))
+                          icon: const Icon(Iconsax.message_add_1, size: 24, color: Colors.grey)),
                     ],
-                  )
-                : Align(
-                    alignment: Alignment.centerRight,
-                    child: Container(
-                      width: 210,
-                      height: 40,
-                      padding: const EdgeInsets.all(5),
-                      child: Row(
-                        key: const ValueKey<int>(1),
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          (widget.currentLoggedInUser!.userId! == widget.comment.commentedById!) ?IconButton(
-                              padding: EdgeInsets.zero,
-                              constraints:const BoxConstraints(),
-                              onPressed: () {
-                                  leafFullScreenBloc.add(LeafDeleteComments(widget.comment.commentId!));
-                              },
-                              icon: const Icon(
-                                Icons.delete_rounded,
-                                size: 24,
-                                color: Colors.grey,
-                              )): Container(),
-                          IconButton(
-                              padding: EdgeInsets.zero,
-                              constraints:const  BoxConstraints(),
-                              onPressed: () {
-
-                              },
-                              icon: const Icon(
-                                Iconsax.arrow_up,
-                                size: 24,
-                                color: Colors.grey,
-                              )),
-                          IconButton(
-                              padding: EdgeInsets.zero,
-                              constraints:const BoxConstraints(),
-                              onPressed: () {},
-                              icon: const Icon(
-                                Iconsax.arrow_down_2,
-                                size: 24,
-                                color: Colors.grey,
-                              )),
-                          IconButton(padding: EdgeInsets.zero, constraints: BoxConstraints(), onPressed: () {
-                            setState(() {
-                              textFieldVisible = !textFieldVisible;
-                            });
-                          }, icon: const Icon(Iconsax.message_add_1, size: 24, color: Colors.grey)),
-                        ],
-                      ),
-                    ),
                   ),
-          )
-        ],
-      ),
+                ),
+              ),
+            )
+          ],
+        ),
+      );
+    }
+
+    return BlocConsumer<LeafBloc, LeafState>(
+      bloc: localLeafBloc,
+      listener: (context, state) {
+        // TODO: implement listener
+      },
+      builder: (context, state) {
+        if(state is LeafCommentLoading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        if(state is LeafCommentSuccess){
+          return comment_body();
+        }
+        if(state is LeafCommentLoadError){
+          return Center(
+            child:Text("Some error occured.",  style: GoogleFonts.inter(
+              textStyle: Theme.of(context).textTheme.labelMedium,
+              color: isDarkTheme ? Colors.grey.shade600 : Colors.grey.shade400,
+            ))
+          );
+        }
+        return Container();
+      },
     );
   }
 }

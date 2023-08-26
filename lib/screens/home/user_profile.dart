@@ -428,6 +428,7 @@ class _UserProfileState extends State<UserProfile> {
     }
 
     Widget userProfilePage(UserProfileSuccessfulLoading state) {
+      print(state.obj!.userId);
       return Scaffold(
         backgroundColor: isDarkTheme ? darkScaffoldColor : lightScaffoldColor,
         appBar: AppBar(

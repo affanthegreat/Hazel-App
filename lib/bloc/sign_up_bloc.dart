@@ -64,8 +64,13 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     on<SignUpUserNameEvent>(signUpUserNameEvent);
     on<SignUpPasswordCheck1Event>(signUpPasswordCheck1Event);
     on<SignUpDataCollectedEvent> (signUpDataCollectedEvent);
+    on<SignUpReload> (signUpLoadAgain);
   }
 
+
+  FutureOr<void> signUpLoadAgain(SignUpReload event, Emitter<SignUpState> emit) {
+    emit(SignupAccountCreationSuccessful());
+  }
 }
 
 

@@ -9,6 +9,7 @@ class LeafComments {
   String? rootCommentId;
   String? parentCommentId;
   String? createdDate;
+  int? votes;
 
   LeafComments(
       {this.commentId,
@@ -20,7 +21,9 @@ class LeafComments {
         this.commentEmotion,
         this.rootCommentId,
         this.parentCommentId,
-        this.createdDate});
+        this.createdDate,
+        this.votes,
+      });
 
   LeafComments.fromJson(Map<String, dynamic> json) {
     commentId = json['comment_id'];
@@ -33,6 +36,7 @@ class LeafComments {
     rootCommentId = json['root_comment_id'];
     parentCommentId = json['parent_comment_id'];
     createdDate = json['created_date'];
+    votes = json['votes'];
   }
 
   Map<String, dynamic> toJson() {
@@ -47,6 +51,7 @@ class LeafComments {
     data['root_comment_id'] = this.rootCommentId;
     data['parent_comment_id'] = this.parentCommentId;
     data['created_date'] = this.createdDate;
+    data['votes'] = this.votes;
     return data;
   }
 }

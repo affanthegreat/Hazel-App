@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:hazel_client/logics/CommentModels.dart';
 import 'package:hazel_client/logics/LeafModel.dart';
 import 'package:hazel_client/logics/UserProfileModel.dart';
 import 'package:hazel_client/logics/wrappers.dart';
@@ -18,19 +19,15 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
   LeafBloc() : super(LeafInitial()) {
     on<LeafLoadedEvent>(loadLeaf);
     on<LeafLikeEvent>(likeLeaf);
-   // on<LeafFullScreenLikeEvent>(likeFullScreen);
     on<LeafLikeRemoveEvent>(removeLike);
-   // on<LeafFullScreenLikeRemoveEvent>(removeLikeFullScreen);
-
     on<LeafDislikeEvent>(dislikeLeaf);
-   // on<LeafFullScreenDislikeEvent>(dislikeFullScreen);
     on<LeafDislikeRemoveEvent>(removeDislike);
-   // on<LeafFullScreenRemoveDislikeEvent>(removeDislikeFullScreen);
     on<LeafFullScreenViewEvent>(fullScreenView);
     on<LeafSendComment>(sendComment);
     on<LeafDelete>(deleteLeaf);
     on<LeafDeleteComments>(deleteLeafComment);
     on<LeafSubComment>(sendSubComment);
+    on<LeafLoadComment>(loadComment);
   }
 
   FutureOr<void> likeLeaf(LeafLikeEvent event, Emitter<LeafState> emit) async{
@@ -204,5 +201,16 @@ class LeafBloc extends Bloc<LeafEvent, LeafState> {
     } catch(e){
       emit(LeafCommentDeleteError());
     }
+  }
+
+  FutureOr<void> loadComment(LeafLoadComment event, Emitter<LeafState> emit) async{
+    emit(LeafCommentLoading());
+    try{
+      var vote_status = await leafEngineObj.getVote(event.comment.commentId!);
+      emit(LeafCommentSuccess(vote_status));
+    } catch(e){
+      emit(LeafCommentLoadError());
+    }
+
   }
 }
